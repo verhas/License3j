@@ -12,13 +12,15 @@ keys (private and public) to create license using applications.
  To handle coded licenses you need a key that encodes the license.
 To decode the license you need another key. The coding and
 decoding keys are not the same. This is a nice point in
-assymetric cryptography and makes License3j available.
+asymetric cryptography and makes License3j available.
 
  If both the coding and the decoding used the same key then
-the license application would have need the same key
+the license application would need the same key
 as the one that encoded the license. This way the key (the only
-key) would be available in the executing application and
-anyone would be able to create new licenses. It is nonsense.
+key) would be available in the executing application and hackers
+very soon would extract the key no matter how hard you try to hide 
+and bury it in the code. After that they could be able to create
+new licenses. It is nonsense.
 
  When you encode a license then you use a key that is known only
 to you. You keep it secret. The public pair of the keys that
@@ -28,13 +30,13 @@ of the application.
  Well, almost. To be more precise it is not the keys naked that
 are handled, rather so called key-ring files. These key-ring
 files contain more keys. Some key-ring file contain only public
-keys (pubring.pgp), while the other contains private keys as well
-(secring.pgp).
+keys (<<<pubring.pgp>>>), while the other contains private keys
+as well (<<<secring.pgp>>>).
 
  To start work you need to generate keys and to store them in
 key ring files. For the purpose we use GPG, an open source
 version of PGP, and the demo screens will come from Windows.
-It should be similar undex Linux.
+It should be similar under Linux.
 
  To start GPG you have to type <<<gpg -h>>> at the DOS
 prompt and you will get the help screen:
@@ -299,4 +301,4 @@ by the method <<<getDecodeKeyId()>>> and the digest of the
 key ring that you are going to package into your JAR file.
 
  To see how to embed the license checking in your application visit the
-page {{{sample.html}sample license checking}}.
+page {{{./sample.html}sample license checking}}.

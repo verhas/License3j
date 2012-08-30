@@ -7,7 +7,7 @@ Sample use of license3j
  This document describes via a simple example how to use license3j in your
 application to check the validity of a license. We assume that you are
 familiar up to some extent with public key cryptography and you read
-the introduction of license3j as well as the {{{tuto.html}document}} that
+the introduction of license3j as well as the {{{./tuto.html}document}} that
 describes how to create key rings and how to encode license.
 
  When the program is loaded you should load the encoded license
@@ -69,7 +69,7 @@ to set the encoded license file. Loading the key ring the call to method
 key management. You copy this file into the Java project so that it will be
 available as a resource and thus <<<loadKeyRingFromResource()>>> can load it.
 (Never copy your secring into your java project!)
-To load this safely you have to provide a second argument, a <<<byte []>> byte
+To load this safely you have to provide a second argument, a <<<byte []>>> byte
 array that should contain the digest of the key ring. To get this array you can
 use <<<license3j.bat>>>. If you type
 
@@ -193,5 +193,5 @@ exclusively used for Groowiki licenses.
  More or less this is all that license3j provides and that you should use. The
 details of license handling above features are up to other packages.
 
- You may be interested in {{{macaddr-binding.html}how to bind}} a license to
+ You may be interested in {{{./macaddr-binding.html}how to bind}} a license to
 the Ethernet address.

@@ -17,15 +17,15 @@ import java.security.SignatureException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Properties;
-import org.apache.log4j.Logger;
+
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.bcpg.BCPGOutputStream;
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openpgp.PGPCompressedData;
+import org.bouncycastle.openpgp.PGPCompressedDataGenerator;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPLiteralData;
-import org.bouncycastle.openpgp.PGPCompressedDataGenerator;
-import org.bouncycastle.openpgp.PGPCompressedData;
 import org.bouncycastle.openpgp.PGPLiteralDataGenerator;
 import org.bouncycastle.openpgp.PGPObjectFactory;
 import org.bouncycastle.openpgp.PGPOnePassSignature;
@@ -41,6 +41,8 @@ import org.bouncycastle.openpgp.PGPSignatureGenerator;
 import org.bouncycastle.openpgp.PGPSignatureList;
 import org.bouncycastle.openpgp.PGPSignatureSubpacketGenerator;
 import org.bouncycastle.openpgp.PGPUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A License object is (key,value) pair set that can be interpreted arbitrary.
@@ -66,7 +68,7 @@ public class License {
   static {
     Security.addProvider(new BouncyCastleProvider());
   }
-  private static Logger logger = Logger.getLogger(License.class);
+  private static Logger logger = LoggerFactory.getLogger(License.class);
   protected Properties licenseProperties = null;
   private boolean verified = false;
 
@@ -364,14 +366,14 @@ public class License {
 
     PGPSecretKeyRingCollection pgpSec = new PGPSecretKeyRingCollection(in);
     key = null;
-    Iterator rIt = pgpSec.getKeyRings();
+    Iterator<PGPSecretKeyRing> rIt = pgpSec.getKeyRings();
     while (key == null && rIt.hasNext()) {
-      PGPSecretKeyRing kRing = (PGPSecretKeyRing) rIt.next();
-      Iterator kIt = kRing.getSecretKeys();
+      PGPSecretKeyRing kRing = rIt.next();
+      Iterator<PGPSecretKey> kIt = kRing.getSecretKeys();
 
       while (key == null && kIt.hasNext()) {
-        PGPSecretKey k = (PGPSecretKey) kIt.next();
-        Iterator userIds = k.getUserIDs();
+        PGPSecretKey k = kIt.next();
+        Iterator<String> userIds = k.getUserIDs();
         while (userIds.hasNext()) {
           String keyUserId = (String) userIds.next();
           if (userId == null) {
