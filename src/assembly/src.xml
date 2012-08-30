@@ -1,0 +1,24 @@
+<assembly>
+	<id>src</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<fileSets>
+		<fileSet>
+		<!-- it is not filtered because this is a source distribution -->
+			<filtered>false</filtered>
+			<includes>
+				<include>INSTALL*</include>
+				<include>README*</include>
+				<include>LICENSE*</include>
+				<include>NOTICE*</include>
+				<include>pom.xml</include>
+			</includes>
+			<useDefaultExcludes>true</useDefaultExcludes>
+		</fileSet>
+		<fileSet>
+			<directory>src</directory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+		</fileSet>
+	</fileSets>
+</assembly>

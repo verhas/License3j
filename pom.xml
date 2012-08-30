@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.verhas.licensor</groupId>
+    <artifactId>license3j</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0.4-SNAPSHOT</version>
+    <name>License3j</name>
+    <description>
+        license3j (license free java) is a free license management library.
+        It provides management of licenses utilizing electronic signateure,
+        license features, managing update and upgrade licenses and machine
+        ID checking.
+    </description>
+    <parent>
+        <groupId>com.verhas.maven</groupId>
+        <artifactId>vvsc-base-pom</artifactId>
+        <version>1.0.3</version>
+    </parent>
+    <dependencies>
+        <dependency>
+            <groupId>bouncycastle</groupId>
+            <artifactId>bcpg-jdk15</artifactId>
+            <version>143</version>
+        </dependency>
+        <dependency>
+            <groupId>bouncycastle</groupId>
+            <artifactId>bcprov-jdk15</artifactId>
+            <version>143</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.15</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/assembly/doc.xml</descriptor>
+                        <descriptor>src/assembly/bin.xml</descriptor>
+                        <descriptor>src/assembly/src.xml</descriptor>
+                    </descriptors>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <distributionManagement>
+        <site>
+            <id>site</id>
+            <url>scp://www.emma.hu/home/vvsc-cis/public_html/com.verhas.licensor/license3j/license3j-${version}</url>
+        </site>
+    </distributionManagement>
+    <licenses>
+        <license>
+            <name>LGPL</name>
+            <url>http://www.gnu.org/copyleft/lesser.html</url>
+        </license>
+    </licenses>
+</project>

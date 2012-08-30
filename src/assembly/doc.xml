@@ -1,0 +1,13 @@
+<assembly>
+     <id>doc</id>
+     <formats>
+         <format>zip</format>
+     </formats>
+     <fileSets>
+         <fileSet>
+             <directory>target/site</directory>
+             <outputDirectory></outputDirectory>
+         </fileSet>
+     </fileSets>
+</assembly>
+
