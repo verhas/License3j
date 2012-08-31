@@ -42,7 +42,7 @@ public class HardwareBinder {
 	 * 
 	 */
 	private class NetworkInterfaceData {
-		public NetworkInterfaceData(NetworkInterface networkInterface)
+		public NetworkInterfaceData(final NetworkInterface networkInterface)
 				throws SocketException {
 			name = networkInterface.getName();
 			hwAddress = networkInterface.getHardwareAddress();
@@ -116,11 +116,11 @@ public class HardwareBinder {
 	}
 
 	private int numberOfInterfaces() throws SocketException {
-		Enumeration<NetworkInterface> networkInterfaces = java.net.NetworkInterface
+		final Enumeration<NetworkInterface> networkInterfaces = java.net.NetworkInterface
 				.getNetworkInterfaces();
 		int interfaceCounter = 0;
 		while (networkInterfaces.hasMoreElements()) {
-			NetworkInterface networkInterface = networkInterfaces.nextElement();
+			final NetworkInterface networkInterface = networkInterfaces.nextElement();
 			assertUseHwAddress();
 			if (weShouldUsedForTheCalculationThis(networkInterface)) {
 				interfaceCounter++;
@@ -130,20 +130,20 @@ public class HardwareBinder {
 	}
 
 	private boolean weShouldUsedForTheCalculationThis(
-			NetworkInterface networkInterface) throws SocketException {
+			final NetworkInterface networkInterface) throws SocketException {
 		return !networkInterface.isLoopback() && !networkInterface.isVirtual()
 				&& !networkInterface.isPointToPoint();
 	}
 
 	private NetworkInterfaceData[] networkInterfaceData()
 			throws SocketException {
-		NetworkInterfaceData[] networkInterfaceArray = new NetworkInterfaceData[numberOfInterfaces()];
+		final NetworkInterfaceData[] networkInterfaceArray = new NetworkInterfaceData[numberOfInterfaces()];
 		int index = 0;
 		// collect the interface properties
-		Enumeration<NetworkInterface> networkInterfaces = java.net.NetworkInterface
+		final Enumeration<NetworkInterface> networkInterfaces = java.net.NetworkInterface
 				.getNetworkInterfaces();
 		while (networkInterfaces.hasMoreElements()) {
-			NetworkInterface networkInterface = networkInterfaces.nextElement();
+			final NetworkInterface networkInterface = networkInterfaces.nextElement();
 			assertUseHwAddress();
 			if (weShouldUsedForTheCalculationThis(networkInterface)) {
 				networkInterfaceArray[index] = new NetworkInterfaceData(
@@ -158,18 +158,18 @@ public class HardwareBinder {
 	 * SORT the network interfaces, do not rely on that non-guaranteed feature
 	 * that getNetworkInterfaces() returns the interfaces the same order always
 	 */
-	private void sortNetworkInterfaces(NetworkInterfaceData[] niarr) {
+	private void sortNetworkInterfaces(final NetworkInterfaceData[] niarr) {
 		Arrays.sort(niarr, new Comparator<NetworkInterfaceData>() {
-			public int compare(NetworkInterfaceData a, NetworkInterfaceData b) {
+			public int compare(final NetworkInterfaceData a, final NetworkInterfaceData b) {
 				return a.name.compareTo(b.name);
 			}
 		});
 	}
 
-	private void updateWithNetworkData(MD5Digest md5,
-			NetworkInterfaceData[] networkInterfaces)
+	private void updateWithNetworkData(final MD5Digest md5,
+			final NetworkInterfaceData[] networkInterfaces)
 			throws UnsupportedEncodingException {
-		for (NetworkInterfaceData ni : networkInterfaces) {
+		for (final NetworkInterfaceData ni : networkInterfaces) {
 			md5.update(ni.name.getBytes("utf-8"), 0,
 					ni.name.getBytes("utf-8").length);
 			if (ni.hwAddress != null) {
@@ -178,27 +178,27 @@ public class HardwareBinder {
 		}
 	}
 
-	private void updateWithNetworkData(MD5Digest md5) {
+	private void updateWithNetworkData(final MD5Digest md5) {
 		try {
-			NetworkInterfaceData[] networkInterfaces = networkInterfaceData();
+			final NetworkInterfaceData[] networkInterfaces = networkInterfaceData();
 			sortNetworkInterfaces(networkInterfaces);
 			updateWithNetworkData(md5, networkInterfaces);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			logger.error("Exception while calulating network uuid", e);
 			return;
 		}
 	}
 
-	private void updateWithHostName(MD5Digest md5) throws UnknownHostException,
+	private void updateWithHostName(final MD5Digest md5) throws UnknownHostException,
 			UnsupportedEncodingException {
-		String hostName = java.net.InetAddress.getLocalHost().getHostName();
+		final String hostName = java.net.InetAddress.getLocalHost().getHostName();
 		md5.update(hostName.getBytes("utf-8"), 0,
 				hostName.getBytes("utf-8").length);
 	}
 
-	private void updateWithArchitecture(MD5Digest md5)
+	private void updateWithArchitecture(final MD5Digest md5)
 			throws UnsupportedEncodingException {
-		String architectureString = System.getProperty("os.arch");
+		final String architectureString = System.getProperty("os.arch");
 		md5.update(architectureString.getBytes("utf-8"), 0,
 				architectureString.getBytes("utf-8").length);
 	}
@@ -221,7 +221,7 @@ public class HardwareBinder {
 	 */
 	public UUID getMachineId() {
 		try {
-			MD5Digest md5 = new MD5Digest();
+			final MD5Digest md5 = new MD5Digest();
 			md5.reset();
 			if (useNetwork) {
 				updateWithNetworkData(md5);
@@ -232,10 +232,10 @@ public class HardwareBinder {
 			if (useArchitecture) {
 				updateWithArchitecture(md5);
 			}
-			byte[] digest = new byte[16];
+			final byte[] digest = new byte[16];
 			md5.doFinal(digest, 0);
 			return UUID.nameUUIDFromBytes(digest);
-		} catch (Exception ex) {
+		} catch (final Exception ex) {
 			logger.error("Can not get hardware uuid: ", ex);
 			return null;
 		}
@@ -247,7 +247,7 @@ public class HardwareBinder {
 	 * @return the UUID as a string
 	 */
 	public String getMachineIdString() {
-		UUID uuid = getMachineId();
+		final UUID uuid = getMachineId();
 		if (uuid != null) {
 			return uuid.toString();
 		} else {
@@ -262,8 +262,8 @@ public class HardwareBinder {
 	 *            expected
 	 * @return true if the argument passed is the uuid of the current machine.
 	 */
-	public boolean assertUUID(UUID uuid) {
-		UUID machineUUID = getMachineId();
+	public boolean assertUUID(final UUID uuid) {
+		final UUID machineUUID = getMachineId();
 		if (machineUUID == null) {
 			return false;
 		}
@@ -277,7 +277,7 @@ public class HardwareBinder {
 	 *            expected in String format
 	 * @return true if the argument passed is the uuid of the current machine.
 	 */
-	public boolean assertUUID(String uuid) {
+	public boolean assertUUID(final String uuid) {
 		return assertUUID(java.util.UUID.fromString(uuid));
 	}
 
@@ -290,8 +290,8 @@ public class HardwareBinder {
 	 * 
 	 * @param args
 	 */
-	public static void main(String[] args) {
-		HardwareBinder hb = new HardwareBinder();
+	public static void main(final String[] args) {
+		final HardwareBinder hb = new HardwareBinder();
 		hb.setUseHwAddress();
 		System.out.print(hb.getMachineIdString());
 	}

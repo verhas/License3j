@@ -8,13 +8,13 @@ to make so secure that there is no reason to brake the license enforcement.
 
  License3j runs in a Java environment. The easiest way to store the key ring
 file is in a resource file inside a jar or war file. The format of this file is
-simple and a ZIP program can be used even by a novide user to replace the ring
+simple and a ZIP program can be used even by a novice user to replace the ring
 file to their own ring file and generate their own licenses. To avoid this
-license3j provides api to check the checksum of the key ring file and also the
+license3j provides API to check the checksum of the key ring file and also the
 id of the key that was used to decode the license.
 
  The checksum of the key ring file has to be copied into the Java source code
-and you may even apply (if you want) some obfucation code so it will be
+and you may even apply (if you want) some obfuscation code so it will be
 hard to replace it and when the key ring is loaded it will ensure that the
 ring itself was not tampered.
 
@@ -40,4 +40,4 @@ method <<<getDecodeKeyId()>>>:
 --------------------------------------------------------------------------------
 
  The code above you can see in its environment in the unit test
-<<<TestEncoding.java>>> available in the source distrubution of license3j.
+<<<TestEncoding.java>>> available in the source distribution of license3j.

@@ -97,7 +97,7 @@ your Java code:
 extra security check been performed then you can pass <<<null>>> as second
 argument to method <<<loadKeyRingFromResource()>>>. For more information why
 you need to include your digest into the code and pass it to the key ring
-loading have a look at the page {{fraud.html}}.
+loading have a look at the page {{./fraud.html}}.
 
  If you look at the API you can see that there are other versions of this
 method, namely the overloaded <<<loadKeyRing()>>> with different parameters
