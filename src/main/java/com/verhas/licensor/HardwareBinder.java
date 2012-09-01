@@ -10,8 +10,6 @@ import java.util.Enumeration;
 import java.util.UUID;
 
 import org.bouncycastle.crypto.digests.MD5Digest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The hardware binder binds a license to a certain hardware. The use of this
@@ -32,9 +30,6 @@ import org.slf4j.LoggerFactory;
  */
 public class HardwareBinder {
 
-	private static Logger logger = LoggerFactory
-			.getLogger(HardwareBinder.class);
-
 	/**
 	 * A data class holding the network interface data.
 	 * 
@@ -52,26 +47,6 @@ public class HardwareBinder {
 		byte[] hwAddress;
 	}
 
-	private boolean useHwAddress = false;
-
-	/**
-	 * By default the class does not take the hardware addresses into account.
-	 * Anyway hardware address can only be queried only with Java6 or later.
-	 * Binding software to a specific hardware address may also be annoying when
-	 * customer has to replace an Ethernet card.
-	 * <p>
-	 * Even though it is possible using this class to create a machine ID that
-	 * relies on the hardware addresses and the names of the network cards if
-	 * the software runs on Java6 or later.
-	 * <p>
-	 * To do so call this method before calling any other uuid calculating
-	 * method.
-	 * <p>
-	 * Note that versions following 1.0.3 do NOT support 1.5 anymore.
-	 */
-	public void setUseHwAddress() {
-		useHwAddress = true;
-	}
 
 	private boolean useHostName = true;
 
@@ -109,19 +84,13 @@ public class HardwareBinder {
 		useArchitecture = false;
 	}
 
-	private void assertUseHwAddress() {
-		if (!useHwAddress) {
-			throw new RuntimeException("Forced Java5 fall-back");
-		}
-	}
-
 	private int numberOfInterfaces() throws SocketException {
 		final Enumeration<NetworkInterface> networkInterfaces = java.net.NetworkInterface
 				.getNetworkInterfaces();
 		int interfaceCounter = 0;
 		while (networkInterfaces.hasMoreElements()) {
-			final NetworkInterface networkInterface = networkInterfaces.nextElement();
-			assertUseHwAddress();
+			final NetworkInterface networkInterface = networkInterfaces
+					.nextElement();
 			if (weShouldUsedForTheCalculationThis(networkInterface)) {
 				interfaceCounter++;
 			}
@@ -143,8 +112,8 @@ public class HardwareBinder {
 		final Enumeration<NetworkInterface> networkInterfaces = java.net.NetworkInterface
 				.getNetworkInterfaces();
 		while (networkInterfaces.hasMoreElements()) {
-			final NetworkInterface networkInterface = networkInterfaces.nextElement();
-			assertUseHwAddress();
+			final NetworkInterface networkInterface = networkInterfaces
+					.nextElement();
 			if (weShouldUsedForTheCalculationThis(networkInterface)) {
 				networkInterfaceArray[index] = new NetworkInterfaceData(
 						networkInterface);
@@ -160,7 +129,8 @@ public class HardwareBinder {
 	 */
 	private void sortNetworkInterfaces(final NetworkInterfaceData[] niarr) {
 		Arrays.sort(niarr, new Comparator<NetworkInterfaceData>() {
-			public int compare(final NetworkInterfaceData a, final NetworkInterfaceData b) {
+			public int compare(final NetworkInterfaceData a,
+					final NetworkInterfaceData b) {
 				return a.name.compareTo(b.name);
 			}
 		});
@@ -178,20 +148,17 @@ public class HardwareBinder {
 		}
 	}
 
-	private void updateWithNetworkData(final MD5Digest md5) {
-		try {
-			final NetworkInterfaceData[] networkInterfaces = networkInterfaceData();
-			sortNetworkInterfaces(networkInterfaces);
-			updateWithNetworkData(md5, networkInterfaces);
-		} catch (final Exception e) {
-			logger.error("Exception while calulating network uuid", e);
-			return;
-		}
+	private void updateWithNetworkData(final MD5Digest md5)
+			throws UnsupportedEncodingException, SocketException {
+		final NetworkInterfaceData[] networkInterfaces = networkInterfaceData();
+		sortNetworkInterfaces(networkInterfaces);
+		updateWithNetworkData(md5, networkInterfaces);
 	}
 
-	private void updateWithHostName(final MD5Digest md5) throws UnknownHostException,
-			UnsupportedEncodingException {
-		final String hostName = java.net.InetAddress.getLocalHost().getHostName();
+	private void updateWithHostName(final MD5Digest md5)
+			throws UnknownHostException, UnsupportedEncodingException {
+		final String hostName = java.net.InetAddress.getLocalHost()
+				.getHostName();
 		md5.update(hostName.getBytes("utf-8"), 0,
 				hostName.getBytes("utf-8").length);
 	}
@@ -218,35 +185,38 @@ public class HardwareBinder {
 	 * 
 	 * @return the UUID of the machine or null if the uuid can not be
 	 *         calculated.
+	 * @throws SocketException
+	 * @throws UnsupportedEncodingException
+	 * @throws UnknownHostException
 	 */
-	public UUID getMachineId() {
-		try {
-			final MD5Digest md5 = new MD5Digest();
-			md5.reset();
-			if (useNetwork) {
-				updateWithNetworkData(md5);
-			}
-			if (useHostName) {
-				updateWithHostName(md5);
-			}
-			if (useArchitecture) {
-				updateWithArchitecture(md5);
-			}
-			final byte[] digest = new byte[16];
-			md5.doFinal(digest, 0);
-			return UUID.nameUUIDFromBytes(digest);
-		} catch (final Exception ex) {
-			logger.error("Can not get hardware uuid: ", ex);
-			return null;
+	public UUID getMachineId() throws UnsupportedEncodingException,
+			SocketException, UnknownHostException {
+		final MD5Digest md5 = new MD5Digest();
+		md5.reset();
+		if (useNetwork) {
+			updateWithNetworkData(md5);
 		}
+		if (useHostName) {
+			updateWithHostName(md5);
+		}
+		if (useArchitecture) {
+			updateWithArchitecture(md5);
+		}
+		final byte[] digest = new byte[16];
+		md5.doFinal(digest, 0);
+		return UUID.nameUUIDFromBytes(digest);
 	}
 
 	/**
 	 * Get the machine id as an UUID string.
 	 * 
 	 * @return the UUID as a string
+	 * @throws UnknownHostException
+	 * @throws SocketException
+	 * @throws UnsupportedEncodingException
 	 */
-	public String getMachineIdString() {
+	public String getMachineIdString() throws UnsupportedEncodingException,
+			SocketException, UnknownHostException {
 		final UUID uuid = getMachineId();
 		if (uuid != null) {
 			return uuid.toString();
@@ -261,8 +231,13 @@ public class HardwareBinder {
 	 * @param uuid
 	 *            expected
 	 * @return true if the argument passed is the uuid of the current machine.
+	 * @throws UnknownHostException
+	 * @throws SocketException
+	 * @throws UnsupportedEncodingException
 	 */
-	public boolean assertUUID(final UUID uuid) {
+	public boolean assertUUID(final UUID uuid)
+			throws UnsupportedEncodingException, SocketException,
+			UnknownHostException {
 		final UUID machineUUID = getMachineId();
 		if (machineUUID == null) {
 			return false;
@@ -278,7 +253,11 @@ public class HardwareBinder {
 	 * @return true if the argument passed is the uuid of the current machine.
 	 */
 	public boolean assertUUID(final String uuid) {
-		return assertUUID(java.util.UUID.fromString(uuid));
+		try {
+			return assertUUID(java.util.UUID.fromString(uuid));
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	/**
@@ -289,10 +268,14 @@ public class HardwareBinder {
 	 * calculating the hardware UUID.
 	 * 
 	 * @param args
+	 * @throws UnknownHostException
+	 * @throws SocketException
+	 * @throws UnsupportedEncodingException
 	 */
-	public static void main(final String[] args) {
+	public static void main(final String[] args)
+			throws UnsupportedEncodingException, SocketException,
+			UnknownHostException {
 		final HardwareBinder hb = new HardwareBinder();
-		hb.setUseHwAddress();
 		System.out.print(hb.getMachineIdString());
 	}
 }

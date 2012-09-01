@@ -98,7 +98,7 @@ public class CommandLineProcessor {
 	 *            the arguments passed to the main function
 	 */
 	public void process(final String[] args) {
-		for (int i = 0; i < args.length; i++) {
+		for (int i = 0; args != null && i < args.length; i++) {
 			String arg = args[i];
 			if (arg.startsWith("---")) {
 				files.add(arg.substring(2));

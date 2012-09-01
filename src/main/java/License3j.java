@@ -79,17 +79,19 @@ public class License3j {
 				System.err.println("The license can not be verified.");
 			}
 		} catch (Exception e) {
-			System.err
-					.print("Usage: "
-							+ commandLineString
-							+ " decode options\n"
-							+ " mandatory options are: \n"
-							+ "--license-file, --keyring-file, [ --output ] [--charset]\n");
+			printUsage();
 			throw e;
 		}
 	}
 
 	private static void printUsage() {
+		//TODO better, more informative usage
+		System.err
+		.print("Usage: "
+				+ commandLineString
+				+ " decode options\n"
+				+ " mandatory options are: \n"
+				+ "--license-file, --keyring-file, [ --output ] [--charset]\n");
 		System.err
 				.print("Usage: "
 						+ commandLineString

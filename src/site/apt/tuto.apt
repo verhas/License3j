@@ -244,7 +244,7 @@ licence file:
   valid-until=2009.12.31
 --------------------------------------------------------------------------------
 
- Save the content into a file named <<<license-pain.txt>>>
+ Save the content into a file named <<<license-plain.txt>>>
 
  This time you have to start the command line processor included
 in the license3j JAR file. You also find a bat file in the

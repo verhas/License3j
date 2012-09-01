@@ -223,14 +223,14 @@ public class License {
 	 * 
 	 * @param fn
 	 *            the name of the file that contains the key rings.
-	 * @param userId
-	 *            the user id of the key to be used.
+	 * @param keyId
+	 *            the id of the key to be used.
 	 * @throws java.io.IOException
 	 * @throws org.bouncycastle.openpgp.PGPException
 	 */
-	public License loadKey(final String fn, final String userId)
+	public License loadKey(final String fn, final String keyId)
 			throws IOException, PGPException {
-		loadKey(new File(fn), userId);
+		loadKey(new File(fn), keyId);
 		return this;
 	}
 
@@ -345,6 +345,10 @@ public class License {
 		return digest;
 	}
 
+	private static int convertByteToInt(byte b) {
+		return (int) b & 0xff;
+	}
+
 	/**
 	 * Dump the public key ring digest as a Java code fragment. You can copy
 	 * this string into your licensed code that calls {@code loadKeyRing} to
@@ -356,10 +360,7 @@ public class License {
 		final byte[] calculatedDigest = calculatePublicKeyRingDigest();
 		String retval = "byte [] digest = new byte[] {\n";
 		for (int i = 0; i < calculatedDigest.length; i++) {
-			int intVal = (int) calculatedDigest[i];
-			if (intVal < 0) {
-				intVal += 256;
-			}
+			int intVal = convertByteToInt(calculatedDigest[i]);
 			retval += String.format("(byte)0x%02X, ", intVal);
 			if (i % 8 == 0) {
 				retval += "\n";
@@ -387,6 +388,20 @@ public class License {
 		return this;
 	}
 
+	private boolean keyIsAppropriate(String userId, String keyUserId,
+			PGPSecretKey k) {
+		return k.isSigningKey() && (userId == null || userId.equals(keyUserId));
+	}
+
+	private static <T extends Object> Iterable<T> in(final Iterator<T> iterator) {
+		class SingleUseIterable implements Iterable<T> {
+			public Iterator<T> iterator() {
+				return iterator;
+			}
+		}
+		return new SingleUseIterable();
+	}
+
 	/**
 	 * Load the secret key to be used to encrypt the license. After the key is
 	 * loaded it can be used to encrypt license files.
@@ -394,8 +409,9 @@ public class License {
 	 * @param in
 	 *            input stream of the file containing the key rings
 	 * @param userId
-	 *            the user id of the key. If this parameter is null then the
-	 *            first key on the key ring appropriate to sign will be used.
+	 *            the user id of the key. If this parameter is {@code null} then
+	 *            the first key on the key ring appropriate to sign will be
+	 *            used.
 	 * @throws java.io.IOException
 	 * @throws org.bouncycastle.openpgp.PGPException
 	 */
@@ -407,35 +423,20 @@ public class License {
 		final PGPSecretKeyRingCollection pgpSec = new PGPSecretKeyRingCollection(
 				in);
 		key = null;
-		final Iterator<PGPSecretKeyRing> rIt = pgpSec.getKeyRings();
-		while (key == null && rIt.hasNext()) {
-			final PGPSecretKeyRing kRing = rIt.next();
-			final Iterator<PGPSecretKey> kIt = kRing.getSecretKeys();
-
-			while (key == null && kIt.hasNext()) {
-				final PGPSecretKey k = kIt.next();
-				final Iterator<String> userIds = k.getUserIDs();
-				while (userIds.hasNext()) {
-					final String keyUserId = userIds.next();
-					if (userId == null) {
-						if (k.isSigningKey()) {
-							key = k;
-							return this;
-						}
-					} else if (userId.equals(keyUserId) && k.isSigningKey()) {
+		for (final PGPSecretKeyRing kRing : in((Iterator<PGPSecretKeyRing>) pgpSec
+				.getKeyRings())) {
+			for (final PGPSecretKey k : in((Iterator<PGPSecretKey>)kRing.getSecretKeys())) {
+				for (final String keyUserId : in((Iterator<String>)k.getUserIDs())) {
+					if (keyIsAppropriate(userId, keyUserId, k)) {
 						key = k;
 						return this;
 					}
 				}
 			}
-			return this;
 		}
 
-		if (key == null) {
-			throw new IllegalArgumentException(
-					"Can't find signing key in key ring.");
-		}
-		return this;
+		throw new IllegalArgumentException(
+				"Can't find signing key in key ring.");
 	}
 
 	/**
@@ -453,6 +454,7 @@ public class License {
 	public String encodeLicense(final String keyPassPhraseString)
 			throws IOException, NoSuchAlgorithmException,
 			NoSuchProviderException, PGPException, SignatureException {
+
 		final char[] keyPassPhrase = keyPassPhraseString.toCharArray();
 		final String licensePlain = getLicenseString();
 		final ByteArrayOutputStream baOut = new ByteArrayOutputStream();
