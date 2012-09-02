@@ -1,0 +1,10 @@
+#
+# Sample license file in plan text for test purposes
+#
+#
+
+issuer=Peter Verhas
+licensor=Verhas and Verhas Ltd.
+licensee=sample license3j customer
+expiryDate=2048-01-12
+issueDate=1966-05-29

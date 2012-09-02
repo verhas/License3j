@@ -425,8 +425,10 @@ public class License {
 		key = null;
 		for (final PGPSecretKeyRing kRing : in((Iterator<PGPSecretKeyRing>) pgpSec
 				.getKeyRings())) {
-			for (final PGPSecretKey k : in((Iterator<PGPSecretKey>)kRing.getSecretKeys())) {
-				for (final String keyUserId : in((Iterator<String>)k.getUserIDs())) {
+			for (final PGPSecretKey k : in((Iterator<PGPSecretKey>) kRing
+					.getSecretKeys())) {
+				for (final String keyUserId : in((Iterator<String>) k
+						.getUserIDs())) {
 					if (keyIsAppropriate(userId, keyUserId, k)) {
 						key = k;
 						return this;
@@ -596,6 +598,12 @@ public class License {
 		return decodeKeyId;
 	}
 
+	private void pgpAssertNotNull(Object o) throws PGPException {
+		if (o == null) {
+			throw new PGPException("can not decode");
+		}
+	}
+
 	/**
 	 * Open an encoded license from input stream and decode and load it. If the
 	 * file can not be loaded or is not signed properly then the method {@see
@@ -615,16 +623,22 @@ public class License {
 
 		PGPObjectFactory pgpFact = new PGPObjectFactory(in);
 		final PGPCompressedData c1 = (PGPCompressedData) pgpFact.nextObject();
+		pgpAssertNotNull(c1);
 		pgpFact = new PGPObjectFactory(c1.getDataStream());
 		final PGPOnePassSignatureList p1 = (PGPOnePassSignatureList) pgpFact
 				.nextObject();
+		
+		pgpAssertNotNull(p1);
 		final PGPOnePassSignature ops = p1.get(0);
 		final PGPLiteralData p2 = (PGPLiteralData) pgpFact.nextObject();
+		
+		pgpAssertNotNull(p2);
 		final InputStream dIn = p2.getInputStream();
-
+		pgpAssertNotNull(dIn);
 		int ch;
 		final PGPPublicKeyRingCollection pgpRing = new PGPPublicKeyRingCollection(
 				PGPUtil.getDecoderStream(keyIn));
+		pgpAssertNotNull(ops);
 		decodeKeyId = ops.getKeyID();
 		if (decodeKeyId == null) {
 			// there is no key in the key ring that can decode the license

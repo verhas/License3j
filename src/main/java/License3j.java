@@ -23,7 +23,7 @@ import com.verhas.utils.CommandLineProcessor;
 public class License3j {
 
 	private static final String commandLineString = "java -cp license3j.jar License3j";
-	private static final CommandLineProcessor commandLine = new CommandLineProcessor();
+	private static CommandLineProcessor commandLine;
 
 	private void encode() throws Exception {
 		try {
@@ -57,9 +57,9 @@ public class License3j {
 					os = new FileOutputStream(commandLine.option("output"));
 				}
 				Writer w = null;
-				if (commandLine.optionExists("--charset")) {
+				if (commandLine.optionExists("charset")) {
 					w = new OutputStreamWriter(os,
-							commandLine.option("--charset"));
+							commandLine.option("charset"));
 				} else {
 					w = new OutputStreamWriter(os);
 				}
@@ -79,27 +79,41 @@ public class License3j {
 				System.err.println("The license can not be verified.");
 			}
 		} catch (Exception e) {
-			printUsage();
+			printUsage(null);
+			e.printStackTrace(System.err);
 			throw e;
 		}
 	}
 
-	private static void printUsage() {
-		//TODO better, more informative usage
-		System.err
-		.print("Usage: "
-				+ commandLineString
-				+ " decode options\n"
+	private static void printUsage(String[] args) {
+		System.err.print("Usage: " + commandLineString + " decode options\n"
 				+ " mandatory options are: \n"
 				+ "--license-file, --keyring-file, [ --output ] [--charset]\n");
 		System.err
-				.print("Usage: "
+				.println("Usage: "
 						+ commandLineString
 						+ " command options\n"
 						+ "commands available: \n"
 						+ "      * encode\n"
 						+ "      * decode\n"
 						+ "arguments to the different commands type the command w/o args");
+		if (args != null) {
+			System.err.println("Arguments on the command line:");
+			int i = 1;
+			for (String arg : args) {
+				System.err.println(i + ". " + arg);
+				i++;
+			}
+			System.err.println("Command line options:");
+			i = 1;
+			for (String opt : commandLine.getOptions().keySet()) {
+				System.err.println(i + ". option[" + opt + "]="
+						+ commandLine.option(opt));
+				i++;
+			}
+		}
+		System.err.println("Current working directory "
+				+ System.getProperties().get("user.dir"));
 	}
 
 	/**
@@ -118,13 +132,17 @@ public class License3j {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-
-		if (args.length == 0) {
-			printUsage();
+		commandLine = new CommandLineProcessor();
+		if (args == null || args.length == 0) {
+			printUsage(args);
 			return;
 		}
 
 		commandLine.process(args);
+		if (commandLine.getFiles().size() < 1) {
+			printUsage(args);
+			return;
+		}
 		String command = commandLine.getFiles().get(0);
 
 		if ("encode".equals(command)) {
