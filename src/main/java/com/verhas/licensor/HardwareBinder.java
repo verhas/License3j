@@ -47,7 +47,6 @@ public class HardwareBinder {
 		byte[] hwAddress;
 	}
 
-
 	private boolean useHostName = true;
 
 	/**
@@ -91,14 +90,21 @@ public class HardwareBinder {
 		while (networkInterfaces.hasMoreElements()) {
 			final NetworkInterface networkInterface = networkInterfaces
 					.nextElement();
-			if (weShouldUsedForTheCalculationThis(networkInterface)) {
+			if (weShouldUseForTheCalculationThis(networkInterface)) {
 				interfaceCounter++;
 			}
 		}
 		return interfaceCounter;
 	}
 
-	private boolean weShouldUsedForTheCalculationThis(
+	/**
+	 * 
+	 * @param networkInterface
+	 * @return {@code true} if the actual network interface has to be used for
+	 *         the calculation of the hardware identification id.
+	 * @throws SocketException
+	 */
+	private boolean weShouldUseForTheCalculationThis(
 			final NetworkInterface networkInterface) throws SocketException {
 		return !networkInterface.isLoopback() && !networkInterface.isVirtual()
 				&& !networkInterface.isPointToPoint();
@@ -114,7 +120,7 @@ public class HardwareBinder {
 		while (networkInterfaces.hasMoreElements()) {
 			final NetworkInterface networkInterface = networkInterfaces
 					.nextElement();
-			if (weShouldUsedForTheCalculationThis(networkInterface)) {
+			if (weShouldUseForTheCalculationThis(networkInterface)) {
 				networkInterfaceArray[index] = new NetworkInterfaceData(
 						networkInterface);
 				index++;

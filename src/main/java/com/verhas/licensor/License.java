@@ -78,6 +78,9 @@ public class License {
 	 *            the string value of the feature
 	 */
 	public void setFeature(final String key, final String value) {
+		if (licenseProperties == null) {
+			licenseProperties = new Properties();
+		}
 		licenseProperties.put(key, value);
 	}
 
@@ -140,7 +143,9 @@ public class License {
 	public String getLicenseString() {
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
-			licenseProperties.store(baos, "-- license file");
+			if (licenseProperties != null) {
+				licenseProperties.store(baos, "-- license file");
+			}
 			baos.close();
 			return new String(baos.toByteArray());
 		} catch (final IOException ex) {
@@ -178,7 +183,9 @@ public class License {
 	 * @throws IOException
 	 */
 	public void dumpLicense(final OutputStream os) throws IOException {
-		licenseProperties.store(os, "");
+		if (licenseProperties != null) {
+			licenseProperties.store(os, "");
+		}
 	}
 
 	/**
@@ -627,11 +634,11 @@ public class License {
 		pgpFact = new PGPObjectFactory(c1.getDataStream());
 		final PGPOnePassSignatureList p1 = (PGPOnePassSignatureList) pgpFact
 				.nextObject();
-		
+
 		pgpAssertNotNull(p1);
 		final PGPOnePassSignature ops = p1.get(0);
 		final PGPLiteralData p2 = (PGPLiteralData) pgpFact.nextObject();
-		
+
 		pgpAssertNotNull(p2);
 		final InputStream dIn = p2.getInputStream();
 		pgpAssertNotNull(dIn);

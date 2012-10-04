@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.verhas</groupId>
 	<artifactId>license3j</artifactId>
@@ -14,10 +15,25 @@
 
 	<name>License3j</name>
 	<description>
-        license3j (license free java) is a free license management library.
-        It provides management of licenses utilizing electronic signateure,
-        license features, managing update and upgrade licenses and machine
-        ID checking.
+     License3j is a Java library that can be used to create and
+check license files. This way Java programs can enforce the
+users to compensate their use of the software in the form of
+a payment. This is the usual way when closed source programs
+are distributed.
+
+ License management alone does not guarantee that the program
+will not be stolen, pirated or used in any illegal way. However
+license management may increase the difficulty to use the
+program illegal and therefore may drive users to become
+customers. There is another effect of license management, which
+is legal. Using license management
+illegal users have less probability to successfully claim their
+use was based on the lack or false knowledge of license
+conditions.
+
+ License3j is an open source license manager that you can use
+free of charge. The license terms covered by
+LGPL.
     </description>
 
 	<issueManagement>
@@ -52,23 +68,6 @@
 			<artifactId>bcpg-jdk16</artifactId>
 			<version>1.46</version>
 		</dependency>
-		<!-- 
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-core</artifactId>
-			<version>1.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.6.4</version>
-		</dependency>
-		 -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
