@@ -101,9 +101,19 @@ public class License {
 		return feature;
 	}
 
-	private void setLicense(final InputStream is) throws IOException {
+	/**
+	 * Set the license values from an input stream. The stream has to contain
+	 * properties.
+	 * 
+	 * @param is
+	 *            the input stream to read the properties values from
+	 * @throws IOException
+	 *             when the input stream can not be read
+	 */
+	public void setLicense(final InputStream is) throws IOException {
 		verified = false;
-		(licenseProperties = new Properties()).load(is);
+		licenseProperties = new Properties();
+		licenseProperties.load(is);
 	}
 
 	/**
