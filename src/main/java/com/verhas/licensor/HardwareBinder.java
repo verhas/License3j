@@ -7,6 +7,8 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bouncycastle.crypto.digests.MD5Digest;
@@ -97,6 +99,94 @@ public class HardwareBinder {
 		return interfaceCounter;
 	}
 
+	private final Set<String> allowedInterfaceNames = new HashSet<String>();
+	private final Set<String> deniedInterfaceNames = new HashSet<String>();
+
+	/**
+	 * Add a regular expression to the set of the regular expressions that are
+	 * checked against the display name of the network interface cards. If any
+	 * of the regular expressions are matched against the display name then the
+	 * interface is allowed taken into account during the calculation of the
+	 * machine id.
+	 * <p>
+	 * Note that there is also a denied set of regular expressions. A network
+	 * interface card is used during the calculation of the machine uuid if any
+	 * of the allowing regular expressions match and none of the denying regular
+	 * expressions match.
+	 * <p>
+	 * Note that if there is no any allowing regular expressions, then this is
+	 * treated that all the interface cards are allowed unless explicitly denied
+	 * by any of the denying regular expressions. This way the functionality of
+	 * the hardware binder class is compatible with previous versions. If you
+	 * define nor allowed set, neither denied set then the interface cards are
+	 * treated the same as with the old version.
+	 * <p>
+	 * This functionality is needed only when you have problem with some virtual
+	 * network interface cards that are erroneously reported by the Java run
+	 * time system as physical cards. This is a well known bug that is low
+	 * priority in the Java realm and there is no general workaround. If you
+	 * face that problem, then try programmatically exclude from the calculation
+	 * the network cards that cause you problem.
+	 * 
+	 * @param regex
+	 */
+	public void interfaceAllowed(String regex) {
+		allowedInterfaceNames.add(regex);
+	}
+
+	/**
+	 * Add a regular expression to the set of the regular expressions that are
+	 * checked against the display name of the network interface cards. If any
+	 * of the regular expressions are matched against the display name then the
+	 * interface is denied taken into account during the calculation of the
+	 * machine id.
+	 * <p>
+	 * See also the documentation of the method {@link #interfaceAllowed(String)}.
+	 * 
+	 * @param regex
+	 */
+	public void interfaceDenied(String regex) {
+		interfaceDenied(regex);
+	}
+
+	/**
+	 * Checks the sets of regular expressions against the display name of the
+	 * network interface. If there is a set of denied names then if any of the
+	 * regular expressions matches the name of the interface then the interface
+	 * is denied. If there is no denied set the the processing is not affected
+	 * by the non existence. In other word not specifying any denied interface
+	 * name means that no interface is denied explicitly.
+	 * <p>
+	 * If there is a set of permitted names then if any of the regular
+	 * expressions matches the name of the interface then the interface is
+	 * permitted. If there is no set then the interface is permitted. In other
+	 * words it is not possible to deny all interfaces specifying an empty set.
+	 * Although this would mathematically logical, but there is no valuable use
+	 * case that would require this feature.
+	 * <p>
+	 * Note that the name, which is checked is not the basic name (e.g.
+	 * <tt>eth0</tt>) but the display name, which is more human readable.
+	 * 
+	 * @param networkInterface
+	 * @return
+	 */
+	private boolean matchesRegexLists(final NetworkInterface networkInterface) {
+		String interfaceName = networkInterface.getDisplayName();
+
+		return !matchesAny(interfaceName, deniedInterfaceNames)
+				&& (allowedInterfaceNames.size() == 0 || matchesAny(
+						interfaceName, allowedInterfaceNames));
+	}
+
+	private boolean matchesAny(String name, Set<String> regexSet) {
+		for (String regex : regexSet) {
+			if (name.matches(regex)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * 
 	 * @param networkInterface
@@ -107,7 +197,8 @@ public class HardwareBinder {
 	private boolean weShouldUseForTheCalculationThis(
 			final NetworkInterface networkInterface) throws SocketException {
 		return !networkInterface.isLoopback() && !networkInterface.isVirtual()
-				&& !networkInterface.isPointToPoint();
+				&& !networkInterface.isPointToPoint()
+				&& matchesRegexLists(networkInterface);
 	}
 
 	private NetworkInterfaceData[] networkInterfaceData()
