@@ -1,0 +1,24 @@
+-classpath
+'/Users/verhasp/github/License3j/target/classes:/Users/verhasp/.m2/repository/org/bouncycastle/bcpg-jdk16/1.46/bcpg-jdk16-1.46.jar:/Users/verhasp/.m2/repository/org/bouncycastle/bcprov-jdk16/1.46/bcprov-jdk16-1.46.jar'
+-encoding
+'UTF-8'
+-protected
+-sourcepath
+'/Users/verhasp/github/License3j/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2014. All Rights Reserved.'
+-charset
+'UTF-8'
+-d
+'/Users/verhasp/github/License3j/target/site/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'License3j 1.0.5-SNAPSHOT API'
+-link
+'http://java.sun.com/javase/6/docs/api'
+-use
+-version
+-windowtitle
+'License3j 1.0.5-SNAPSHOT API'
