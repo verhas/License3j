@@ -147,7 +147,7 @@ public class HardwareBinder {
 	 * @param regex
 	 */
 	public void interfaceDenied(String regex) {
-		interfaceDenied(regex);
+		deniedInterfaceNames.add(regex);
 	}
 
 	/**
