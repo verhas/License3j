@@ -89,7 +89,7 @@ public class License {
 	 * 
 	 * @param key
 	 *            the name of the feature.
-	 * @return
+	 * @return the value of the feature as String
 	 */
 	public String getFeature(final String key) {
 		final String feature;
@@ -255,7 +255,7 @@ public class License {
 
 	/**
 	 * Load a key ring from a resource file (a file that is packaged into the
-	 * JAR file). This method invokes {@see #loadKeyRing(InputStream in, byte[]
+	 * JAR file). This method invokes {@link #loadKeyRing(InputStream in, byte[]
 	 * digest)}.
 	 * 
 	 * @param resourceName
@@ -272,7 +272,7 @@ public class License {
 	}
 
 	/**
-	 * Load a key ring from a file. This method invokes {@see
+	 * Load a key ring from a file. This method invokes {@link
 	 * #loadKeyRing(InputStream in, byte[] digest)}.
 	 * 
 	 * @param fileName
@@ -289,7 +289,7 @@ public class License {
 	}
 
 	/**
-	 * Load a key ring from a file. This method invokes {@see
+	 * Load a key ring from a file. This method invokes {@link
 	 * #loadKeyRing(InputStream in, byte[] digest)}.
 	 * 
 	 * @param file
@@ -389,7 +389,7 @@ public class License {
 
 	/**
 	 * Load the secret key to be used to encrypt a license. This is a
-	 * complimentary method that calls {@see #loadKey(InputStream in, String
+	 * complimentary method that calls {@link #loadKey(InputStream in, String
 	 * userId)}.
 	 * 
 	 * @param fin
@@ -623,7 +623,7 @@ public class License {
 
 	/**
 	 * Open an encoded license from input stream and decode and load it. If the
-	 * file can not be loaded or is not signed properly then the method {@see
+	 * file can not be loaded or is not signed properly then the method {@link
 	 * #isVerified()} will return false.
 	 * <p>
 	 * Otherwise the license will be loaded and can be used.

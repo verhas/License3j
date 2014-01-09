@@ -80,7 +80,7 @@ LGPL.
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<version>3.0-beta-3</version>
+				<version>3.3</version>
 				<configuration>
 					<reportPlugins>
 						<plugin>
@@ -144,7 +144,7 @@ LGPL.
 			<plugin>
 				<groupId>com.github.github</groupId>
 				<artifactId>site-maven-plugin</artifactId>
-				<version>0.7</version>
+				<version>0.9</version>
 				<configuration>
 					<message>Building site for ${project.version}</message>
 					<server>github</server>
@@ -156,7 +156,7 @@ LGPL.
 						</goals>
 						<phase>site-deploy</phase>
 						<configuration>
-							<path>${project.version}</path>
+							<!-- <path>${project.version}</path> -->
 							<merge>false</merge>
 						</configuration>
 					</execution>
@@ -193,13 +193,12 @@ LGPL.
 					</descriptors>
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-site-plugin</artifactId>
+				<configuration>
+					<skipDeploy>true</skipDeploy>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
-	<distributionManagement>
-		<site>
-			<id>gitHub</id>
-			<name>gitHub</name>
-			<url>git:git@github.com/verhas/License3j</url>
-		</site>
-	</distributionManagement>
 </project>

@@ -36,7 +36,7 @@ public class ExtendedLicense extends License {
 	 * if the current date is after the specified expiryDate.
 	 * <p>
 	 * Note that this method does not ensure license validity. You separately
-	 * have to call {@see License#isVerified()} to ensure that the license was
+	 * have to call {@link License#isVerified()} to ensure that the license was
 	 * successfully verified.
 	 * <p>
 	 * The time is calculated using the default locale, thus licenses expire
@@ -78,7 +78,7 @@ public class ExtendedLicense extends License {
 	 * Generates a new license id.
 	 * <p>
 	 * Note that this ID is also stored in the license thus there is no need to
-	 * call {@see #setFeature(String, UUID)} separately after the UUID was
+	 * call {@link #setFeature(String, UUID)} separately after the UUID was
 	 * generated.
 	 * <p>
 	 * Generating UUID can be handy when you want to identify each license

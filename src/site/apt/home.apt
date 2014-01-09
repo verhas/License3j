@@ -87,16 +87,25 @@ similar using Java command line.
 
 Download and Installation
 
- The License3j module can be downloaded from left side menu
-under the "download" section. The downloaded package
-(zip) will contain JAR files.
+ The License3j module can be downloaded from the Sonatype
+central repository. To search the central repo
+follow the URL http://www.sonatype.org/central
 
- To use license3j you can include the JAR files into the
-classpath.
+ If you use maven you can insert the lines
+
+--------------------------------------------------------------------------------
+		<dependency>
+		    <groupId>com.verhas</groupId>
+		    <artifactId>license3j</artifactId>
+		    <version>1.0.4</version>
+		</dependency>
+--------------------------------------------------------------------------------
+
+ int your <<<pom.xml>>> file. 
 
 Notes to the installation
 
- The file <<<license3j-1.0.0-SNAPSHOT.jar>>> is probably named
+ The file <<<license3j-1.0.4-SNAPSHOT.jar>>> is probably named
 <<<license3j-x.y.z.jar>>> if you use a released version of License3j.
 
 Name of the game

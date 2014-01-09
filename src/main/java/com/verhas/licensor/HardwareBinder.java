@@ -141,7 +141,8 @@ public class HardwareBinder {
 	 * interface is denied taken into account during the calculation of the
 	 * machine id.
 	 * <p>
-	 * See also the documentation of the method {@link #interfaceAllowed(String)}.
+	 * See also the documentation of the method
+	 * {@link #interfaceAllowed(String)}.
 	 * 
 	 * @param regex
 	 */
@@ -153,7 +154,7 @@ public class HardwareBinder {
 	 * Checks the sets of regular expressions against the display name of the
 	 * network interface. If there is a set of denied names then if any of the
 	 * regular expressions matches the name of the interface then the interface
-	 * is denied. If there is no denied set the the processing is not affected
+	 * is denied. If there is no denied set then the processing is not affected
 	 * by the non existence. In other word not specifying any denied interface
 	 * name means that no interface is denied explicitly.
 	 * <p>
@@ -168,7 +169,9 @@ public class HardwareBinder {
 	 * <tt>eth0</tt>) but the display name, which is more human readable.
 	 * 
 	 * @param networkInterface
-	 * @return
+	 * @return {@code true} if the interface has to be taken into the
+	 *         calculation of the license and {@code false} (ignore the
+	 *         interface) otherwise.
 	 */
 	private boolean matchesRegexLists(final NetworkInterface networkInterface) {
 		String interfaceName = networkInterface.getDisplayName();
