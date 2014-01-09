@@ -17,8 +17,6 @@
 -doctitle
 'License3j 1.0.5-SNAPSHOT Test API'
 -link
-'../apidocs'
--link
 'http://java.sun.com/javase/6/docs/api'
 -use
 -version
