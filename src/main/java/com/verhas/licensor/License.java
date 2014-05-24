@@ -255,8 +255,8 @@ public class License {
 
 	/**
 	 * Load a key ring from a resource file (a file that is packaged into the
-	 * JAR file). This method invokes {@link #loadKeyRing(InputStream in, byte[]
-	 * digest)}.
+	 * JAR file). This method invokes
+	 * {@link #loadKeyRing(InputStream in, byte[] digest)}.
 	 * 
 	 * @param resourceName
 	 *            the name of the file inside the JAR file with full path.
@@ -272,8 +272,8 @@ public class License {
 	}
 
 	/**
-	 * Load a key ring from a file. This method invokes {@link
-	 * #loadKeyRing(InputStream in, byte[] digest)}.
+	 * Load a key ring from a file. This method invokes
+	 * {@link #loadKeyRing(InputStream in, byte[] digest)}.
 	 * 
 	 * @param fileName
 	 *            the name of the file
@@ -289,8 +289,8 @@ public class License {
 	}
 
 	/**
-	 * Load a key ring from a file. This method invokes {@link
-	 * #loadKeyRing(InputStream in, byte[] digest)}.
+	 * Load a key ring from a file. This method invokes
+	 * {@link #loadKeyRing(InputStream in, byte[] digest)}.
 	 * 
 	 * @param file
 	 *            the file
@@ -389,8 +389,8 @@ public class License {
 
 	/**
 	 * Load the secret key to be used to encrypt a license. This is a
-	 * complimentary method that calls {@link #loadKey(InputStream in, String
-	 * userId)}.
+	 * complimentary method that calls
+	 * {@link #loadKey(InputStream in, String userId)}.
 	 * 
 	 * @param fin
 	 *            the file that contains the key ring.
@@ -623,8 +623,8 @@ public class License {
 
 	/**
 	 * Open an encoded license from input stream and decode and load it. If the
-	 * file can not be loaded or is not signed properly then the method {@link
-	 * #isVerified()} will return false.
+	 * file can not be loaded or is not signed properly then the method
+	 * {@link #isVerified()} will return false.
 	 * <p>
 	 * Otherwise the license will be loaded and can be used.
 	 * 
@@ -685,5 +685,10 @@ public class License {
 				licenseProperties = null;
 			}
 		}
+	}
+
+	public static String fromResource(String resourceName) {
+		return License.class.getClassLoader().getResource(resourceName)
+				.getFile();
 	}
 }

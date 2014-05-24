@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.Writer;
 
 import com.verhas.licensor.License;
@@ -24,6 +25,7 @@ public class License3j {
 
 	private static final String commandLineString = "java -cp license3j.jar License3j";
 	private static CommandLineProcessor commandLine;
+	private static PrintStream errorOutput = System.err;
 
 	private void encode() throws Exception {
 		try {
@@ -35,7 +37,7 @@ public class License3j {
 					.option("password"))).getBytes("utf-8"));
 			os.close();
 		} catch (Exception e) {
-			System.err
+			errorOutput
 					.print("Usage: "
 							+ commandLineString
 							+ " encode options\n"
@@ -76,20 +78,20 @@ public class License3j {
 				w.close();
 				os.close();
 			} else {
-				System.err.println("The license can not be verified.");
+				errorOutput.println("The license can not be verified.");
 			}
 		} catch (Exception e) {
 			printUsage(null);
-			e.printStackTrace(System.err);
+			e.printStackTrace(errorOutput);
 			throw e;
 		}
 	}
 
 	private static void printUsage(String[] args) {
-		System.err.print("Usage: " + commandLineString + " decode options\n"
+		errorOutput.print("Usage: " + commandLineString + " decode options\n"
 				+ " mandatory options are: \n"
 				+ "--license-file, --keyring-file, [ --output ] [--charset]\n");
-		System.err
+		errorOutput
 				.println("Usage: "
 						+ commandLineString
 						+ " command options\n"
@@ -98,21 +100,21 @@ public class License3j {
 						+ "      * decode\n"
 						+ "arguments to the different commands type the command w/o args");
 		if (args != null) {
-			System.err.println("Arguments on the command line:");
+			errorOutput.println("Arguments on the command line:");
 			int i = 1;
 			for (String arg : args) {
-				System.err.println(i + ". " + arg);
+				errorOutput.println(i + ". " + arg);
 				i++;
 			}
-			System.err.println("Command line options:");
+			errorOutput.println("Command line options:");
 			i = 1;
 			for (String opt : commandLine.getOptions().keySet()) {
-				System.err.println(i + ". option[" + opt + "]="
+				errorOutput.println(i + ". option[" + opt + "]="
 						+ commandLine.option(opt));
 				i++;
 			}
 		}
-		System.err.println("Current working directory "
+		errorOutput.println("Current working directory "
 				+ System.getProperties().get("user.dir"));
 	}
 
