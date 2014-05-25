@@ -12,37 +12,104 @@ import org.junit.Test;
 public class TestHardwareBinder {
 
 	@Test
-	public void testMain() throws UnsupportedEncodingException, SocketException, UnknownHostException {
+	public void testMain() throws UnsupportedEncodingException,
+			SocketException, UnknownHostException {
 		HardwareBinder.main(null);
 	}
 
-	@Test
-	public void testMachineId() throws UnsupportedEncodingException,
-			SocketException, UnknownHostException {
-		for (int i = 0; i < 8; i++) {
-			HardwareBinder hb = new HardwareBinder();
-			if ((i & 1) != 0)
-				hb.ignoreNetwork();
-			if ((i & 2) != 0)
-				hb.ignoreArchitecture();
-			if ((i & 3) != 0)
-				hb.ignoreHostName();
-			UUID uuid = hb.getMachineId();
-			Assert.assertTrue(hb.assertUUID(uuid));
+	private static final boolean falseTrue[] = new boolean[] { false, true };
 
-			String uuidS = hb.getMachineIdString();
-			Assert.assertTrue(hb.assertUUID(uuidS));
-			String buuid = uuidS + "*";
-			Assert.assertFalse(hb.assertUUID(buuid));
-			String lastChar = uuidS.substring(uuidS.length() - 1);
-			if (lastChar.equals("f")) {
-				lastChar = "e";
-			} else {
-				lastChar = "f";
+	@Test
+	public void machineHasUuid() throws UnsupportedEncodingException,
+			SocketException, UnknownHostException {
+		for (final boolean ignoreNetwork : falseTrue) {
+			for (final boolean ignoreArchitecture : falseTrue) {
+				for (final boolean ignoreHostName : falseTrue) {
+					final HardwareBinder hb = new HardwareBinder();
+					if (ignoreNetwork)
+						hb.ignoreNetwork();
+					if (ignoreArchitecture)
+						hb.ignoreArchitecture();
+					if (ignoreHostName)
+						hb.ignoreHostName();
+					final UUID uuid = hb.getMachineId();
+					Assert.assertTrue(hb.assertUUID(uuid));
+				}
 			}
-			uuidS = uuidS.substring(0, uuidS.length() - 1) + lastChar;
-			Assert.assertFalse(hb.assertUUID(uuidS));
 		}
 	}
 
+	@Test
+	public void machineHasUuidString() throws UnsupportedEncodingException,
+			SocketException, UnknownHostException {
+		for (final boolean ignoreNetwork : falseTrue) {
+			for (final boolean ignoreArchitecture : falseTrue) {
+				for (final boolean ignoreHostName : falseTrue) {
+					final HardwareBinder hb = new HardwareBinder();
+					if (ignoreNetwork)
+						hb.ignoreNetwork();
+					if (ignoreArchitecture)
+						hb.ignoreArchitecture();
+					if (ignoreHostName)
+						hb.ignoreHostName();
+					final String uuidS = hb.getMachineIdString();
+					Assert.assertTrue(hb.assertUUID(uuidS));
+				}
+			}
+		}
+	}
+
+	@Test
+	public void tooLongUuidStringAssertsFalse()
+			throws UnsupportedEncodingException, SocketException,
+			UnknownHostException {
+		for (final boolean ignoreNetwork : falseTrue) {
+			for (final boolean ignoreArchitecture : falseTrue) {
+				for (final boolean ignoreHostName : falseTrue) {
+					final HardwareBinder hb = new HardwareBinder();
+					if (ignoreNetwork)
+						hb.ignoreNetwork();
+					if (ignoreArchitecture)
+						hb.ignoreArchitecture();
+					if (ignoreHostName)
+						hb.ignoreHostName();
+					final String uuid = hb.getMachineIdString();
+					final String buuid = uuid + "*";
+					Assert.assertFalse(hb.assertUUID(buuid));
+				}
+			}
+		}
+	}
+
+	private String alterLastHexaChar(final String s) {
+		String lastChar = s.substring(s.length() - 1);
+		if (lastChar.equals("f")) {
+			lastChar = "e";
+		} else {
+			lastChar = "f";
+		}
+		return s.substring(0, s.length() - 1) + lastChar;
+
+	}
+
+	@Test
+	public void wrongUuisStringAssertsFalse()
+			throws UnsupportedEncodingException, SocketException,
+			UnknownHostException {
+		for (final boolean ignoreNetwork : falseTrue) {
+			for (final boolean ignoreArchitecture : falseTrue) {
+				for (final boolean ignoreHostName : falseTrue) {
+					final HardwareBinder hb = new HardwareBinder();
+					if (ignoreNetwork)
+						hb.ignoreNetwork();
+					if (ignoreArchitecture)
+						hb.ignoreArchitecture();
+					if (ignoreHostName)
+						hb.ignoreHostName();
+					final String uuid = alterLastHexaChar(hb.getMachineIdString());
+					Assert.assertFalse(hb.assertUUID(uuid));
+				}
+			}
+		}
+	}
 }

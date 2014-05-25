@@ -567,13 +567,14 @@ public class License {
 	}
 
 	/**
-	 * Same as {@code setLicenseEncoded(File file)}.
+	 * Deprecated. Use {@link #setLicenseEncoded(File file)}.
 	 * 
 	 * @param file
 	 * @throws PGPException
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
+	@Deprecated
 	public void setLicenseEncodedFromFile(final File file)
 			throws FileNotFoundException, IOException, PGPException {
 		setLicenseEncoded(file);
