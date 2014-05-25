@@ -82,6 +82,7 @@ LGPL.
 				<artifactId>maven-site-plugin</artifactId>
 				<version>3.3</version>
 				<configuration>
+					<skipDeploy>true</skipDeploy>
 					<reportPlugins>
 						<plugin>
 							<groupId>org.apache.maven.plugins</groupId>
@@ -191,12 +192,6 @@ LGPL.
 						<descriptor>src/assembly/bin.xml</descriptor>
 						<descriptor>src/assembly/src.xml</descriptor>
 					</descriptors>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-site-plugin</artifactId>
-				<configuration>
-					<skipDeploy>true</skipDeploy>
 				</configuration>
 			</plugin>
 		</plugins>
