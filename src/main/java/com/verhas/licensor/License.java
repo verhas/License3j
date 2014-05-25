@@ -59,7 +59,7 @@ import org.bouncycastle.openpgp.PGPUtil;
  * signature and coding is applied using the format PGP. The library used to
  * handle encryption is BouncyCastle.
  * 
- * @author Peter Verhas <peter@verhas.com>
+ * @author Peter Verhas
  */
 public class License {
 

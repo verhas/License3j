@@ -28,7 +28,7 @@ import org.bouncycastle.crypto.digests.MD5Digest;
  * license and send it to the log, but do not deter the operation of the
  * software.
  * 
- * @author Peter Verhas <peter@verhas.com>
+ * @author Peter Verhas
  */
 public class HardwareBinder {
 
