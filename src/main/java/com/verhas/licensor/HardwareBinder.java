@@ -1,5 +1,6 @@
 package com.verhas.licensor;
 
+import static com.verhas.utils.Sugar.matchesAny;
 import java.io.UnsupportedEncodingException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -181,15 +182,6 @@ public class HardwareBinder {
 						interfaceName, allowedInterfaceNames));
 	}
 
-	private boolean matchesAny(String name, Set<String> regexSet) {
-		for (String regex : regexSet) {
-			if (name.matches(regex)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	/**
 	 * 
 	 * @param networkInterface
@@ -224,11 +216,12 @@ public class HardwareBinder {
 	}
 
 	/**
-	 * SORT the network interfaces, do not rely on that non-guaranteed feature
+	 * SORT the network interfaces. We do not rely on that non-guaranteed feature
 	 * that getNetworkInterfaces() returns the interfaces the same order always
 	 */
-	private void sortNetworkInterfaces(final NetworkInterfaceData[] niarr) {
-		Arrays.sort(niarr, new Comparator<NetworkInterfaceData>() {
+	private void sortNetworkInterfaces(final NetworkInterfaceData[] networkInterfaceData) {
+		Arrays.sort(networkInterfaceData, new Comparator<NetworkInterfaceData>() {
+                        @Override
 			public int compare(final NetworkInterfaceData a,
 					final NetworkInterfaceData b) {
 				return a.name.compareTo(b.name);
@@ -367,7 +360,7 @@ public class HardwareBinder {
 	 * This code takes into account the hardware address (Ethernet MAC) when
 	 * calculating the hardware UUID.
 	 * 
-	 * @param args
+	 * @param args not used
 	 * @throws UnknownHostException
 	 * @throws SocketException
 	 * @throws UnsupportedEncodingException
