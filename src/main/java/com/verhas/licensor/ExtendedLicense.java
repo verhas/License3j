@@ -239,7 +239,7 @@ public class ExtendedLicense extends License {
      * Check if the license was revoked or not. For more information see the
      * documentation of the method {@link #isRevoked(boolean)}. Calling this
      * method is equivalent to calling {@code isRevoked(false)}, meaning that
-     * the license is signaled to be revoked if the revocation URL can not be
+     * the license is signaled not revoked if the revocation URL can not be
      * reached.
      *
      * @return {@code true} if the license was revoked and {@code false} if the
@@ -274,11 +274,10 @@ public class ExtendedLicense extends License {
      * revocation service is not reachable.
      *
      * @param forceOnline should be {@code true} to treat the license revoked
-     * when the revocation service is not reachable. In this case the program
-     * using the license manager will treat the license revoked if the
-     * revocation service is not reachable. Setting this argument {@code false}
-     * makes the revocation handling more polite: if the license revocation
-     * service is not reachable then the license is treated as not revoked.
+     * when the revocation service is not reachable. Setting this argument
+     * {@code false} makes the revocation handling more polite: if the license
+     * revocation service is not reachable then the license is treated as not
+     * revoked.
      * @return {@code true} if the license is revoked and {@code false} is the
      * license is not revoked.
      */
