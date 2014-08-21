@@ -299,16 +299,8 @@ public class TestLicenseClass {
         lic.setLicenseEncodedFromFile(licenseOutputTextFileName);
         Assert.assertTrue(lic.isVerified());
         String z = lic.getLicenseString();
-        final int start;
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            start = z.length() - 5;
-        } else {
-            start = z.length() - 4;
-        }
-        z = z.substring(start, start + 3);
-        Assert.assertEquals("a=b", z);
-        Assert.assertEquals((Long) (-3623885160523215197L),
-                (Long) lic.getDecodeKeyId());
+        Assert.assertEquals(false, -1 == z.indexOf("a=b"));
+        Assert.assertEquals((Long) (-3623885160523215197L), lic.getDecodeKeyId());
         Assert.assertEquals("b", lic.getFeature("a"));
         Assert.assertNull(lic.getFeature("abraka-dabra"));
     }
