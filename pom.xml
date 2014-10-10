@@ -4,7 +4,7 @@
 	<groupId>com.verhas</groupId>
 	<artifactId>license3j</artifactId>
 	<version>1.0.6-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>bundle</packaging>
 
 	<parent>
 		<groupId>org.sonatype.oss</groupId>
@@ -126,22 +126,6 @@ LGPL.
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.1</version>
-				<configuration>
-					<archive>
-						<manifestEntries>
-							<Main-Class>License3j</Main-Class>
-						</manifestEntries>
-						<manifest>
-							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>com.github.github</groupId>
 				<artifactId>site-maven-plugin</artifactId>
 				<version>0.9</version>
@@ -193,6 +177,19 @@ LGPL.
 					</descriptors>
 				</configuration>
 			</plugin>
+            <plugin>
+              <groupId>org.apache.felix</groupId>
+              <artifactId>maven-bundle-plugin</artifactId>
+              <version>2.3.7</version>
+              <extensions>true</extensions>
+              <configuration>
+                <instructions>
+                  <Export-Package>com.verhas.licensor</Export-Package>
+                  <Private-Package>.</Private-Package>
+                  <Import-Package>!.,*</Import-Package>
+                </instructions>
+              </configuration>
+            </plugin>
 		</plugins>
 	</build>
 </project>
