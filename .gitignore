@@ -1,0 +1,11 @@
+.metadata
+.settings
+bin
+build
+dist
+generated
+target
+private
+*.prefs
+*.classpath
+*.project

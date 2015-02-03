@@ -1,3 +1,4 @@
+package com.verhas.sample;
 /**
  * A sample command line tool application that
  * demonstrate the use of license3j

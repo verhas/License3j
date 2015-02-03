@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.verhas</groupId>
+	<groupId>com.cloudyle.license3j</groupId>
 	<artifactId>license3j</artifactId>
-	<version>1.0.6-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<version>1.0.6</version>
 
-	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>7</version>
-	</parent>
 
 	<name>License3j</name>
 	<description>
@@ -60,11 +55,21 @@ LGPL.
 		</developer>
 	</developers>
 
+	<properties>
+		<currentProductionVersion>1.0.5</currentProductionVersion>
+		<currentSnapshotVersion>1.0.6-SNAPSHOT</currentSnapshotVersion>
+	</properties>
+
 
 	<dependencies>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcpg-jdk15on</artifactId>
+			<version>1.51</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
 			<version>1.51</version>
 		</dependency>
 		<dependency>
@@ -76,6 +81,19 @@ LGPL.
 	</dependencies>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>2.5.3</version>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Import-Package>org.slf4j;provider=paxlogging,
+							*
+						</Import-Package>
+					</instructions>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
@@ -125,6 +143,7 @@ LGPL.
 					<target>1.6</target>
 				</configuration>
 			</plugin>
+			<!-- 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -141,6 +160,7 @@ LGPL.
 					</archive>
 				</configuration>
 			</plugin>
+			-->
 			<plugin>
 				<groupId>com.github.github</groupId>
 				<artifactId>site-maven-plugin</artifactId>
@@ -162,6 +182,7 @@ LGPL.
 					</execution>
 				</executions>
 			</plugin>
+			<!-- akley: will not run in batch mode (maven) 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
@@ -176,6 +197,7 @@ LGPL.
 					</execution>
 				</executions>
 			</plugin>
+			-->
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>2.4</version>
@@ -195,4 +217,5 @@ LGPL.
 			</plugin>
 		</plugins>
 	</build>
+	<packaging>bundle</packaging>
 </project>
