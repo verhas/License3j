@@ -53,6 +53,14 @@ public class TestLicenseClass {
         new File(dumpFile2).delete();
     }
 
+    private int getOffset() {
+        if (System.getProperty("os.name").startsWith("Windows")){
+            return 2;
+        }else{
+            return 1;
+        }
+    }
+
     private final byte[] digest = new byte[]{(byte) 0x69, (byte) 0xBB,
         (byte) 0x8E, (byte) 0x6F, (byte) 0x99, (byte) 0xF2, (byte) 0x15,
         (byte) 0x37, (byte) 0x7C, (byte) 0x39, (byte) 0x54, (byte) 0x6F,
@@ -126,6 +134,7 @@ public class TestLicenseClass {
             NoSuchAlgorithmException, NoSuchProviderException,
             SignatureException {
         final License lic = new License();
+        final String checkProperty = "a=b";
         lic.loadKeyRingFromResource("pubring.gpg", digest);
         lic.setLicenseEncoded("-----BEGIN PGP MESSAGE-----\n"
                 + "Version: BCPG v1.46\n"
@@ -138,8 +147,8 @@ public class TestLicenseClass {
                 + "-----END PGP MESSAGE-----\n");
         Assert.assertTrue(lic.isVerified());
         String z = lic.getLicenseString();
-        z = z.substring(z.length() - 4);
-        Assert.assertEquals("a=b\n", z);
+        z = z.substring(z.length() - (checkProperty.length() + getOffset()), z.length() - getOffset());
+        Assert.assertEquals(checkProperty, z);
         Assert.assertEquals((Long) (-3623885160523215197L),
                 (Long) lic.getDecodeKeyId());
         Assert.assertEquals("b", lic.getFeature("a"));
@@ -150,12 +159,13 @@ public class TestLicenseClass {
             NoSuchAlgorithmException, NoSuchProviderException,
             SignatureException {
         final License lic = new License();
+        final String checkProperty = "a=b";
         lic.loadKeyRingFromResource("pubring.gpg", digest);
         lic.setLicenseEncodedFromResource("license-encoded.txt");
         Assert.assertTrue(lic.isVerified());
         String z = lic.getLicenseString();
-        z = z.substring(z.length() - 4);
-        Assert.assertEquals("a=b\n", z);
+        z = z.substring(z.length() - (checkProperty.length() + getOffset()), z.length() - getOffset());
+        Assert.assertEquals(checkProperty, z);
         Assert.assertEquals((Long) (-3623885160523215197L),
                 (Long) lic.getDecodeKeyId());
         Assert.assertEquals("b", lic.getFeature("a"));
