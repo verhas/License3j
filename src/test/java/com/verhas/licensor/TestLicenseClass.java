@@ -34,10 +34,24 @@ public class TestLicenseClass {
     final private String dumpFile1 = testTmpFilesDirectory + "dumpfile1.txt";
     final private String dumpFile2 = testTmpFilesDirectory + "dumpfile2.txt";
 
+    private static final String checkFeature = "a=b";
+
     private void createLicenseInputFile() throws IOException {
         final OutputStream os = new FileOutputStream(licenseInputFile);
         os.write("feature=value\n".getBytes());
         os.close();
+    }
+
+    private int numberOfLineSeparatorCharacters() {
+        return System.getProperty("line.separator").length();
+    }
+
+    private int calculateSubStringStart(int stringLength) {
+        return stringLength - (checkFeature.length() + numberOfLineSeparatorCharacters());
+    }
+
+    private int calculateSubStringEnd(int stringLength) {
+        return stringLength - numberOfLineSeparatorCharacters();
     }
 
     @Before
@@ -138,8 +152,8 @@ public class TestLicenseClass {
                 + "-----END PGP MESSAGE-----\n");
         Assert.assertTrue(lic.isVerified());
         String z = lic.getLicenseString();
-        z = z.substring(z.length() - 4);
-        Assert.assertEquals("a=b\n", z);
+        z = z.substring(calculateSubStringStart(z.length()), calculateSubStringEnd(z.length()));
+        Assert.assertEquals(checkFeature, z);
         Assert.assertEquals((Long) (-3623885160523215197L),
                 (Long) lic.getDecodeKeyId());
         Assert.assertEquals("b", lic.getFeature("a"));
@@ -154,8 +168,8 @@ public class TestLicenseClass {
         lic.setLicenseEncodedFromResource("license-encoded.txt");
         Assert.assertTrue(lic.isVerified());
         String z = lic.getLicenseString();
-        z = z.substring(z.length() - 4);
-        Assert.assertEquals("a=b\n", z);
+        z = z.substring(calculateSubStringStart(z.length()), calculateSubStringEnd(z.length()));
+        Assert.assertEquals(checkFeature, z);
         Assert.assertEquals((Long) (-3623885160523215197L),
                 (Long) lic.getDecodeKeyId());
         Assert.assertEquals("b", lic.getFeature("a"));
@@ -299,7 +313,7 @@ public class TestLicenseClass {
         lic.setLicenseEncodedFromFile(licenseOutputTextFileName);
         Assert.assertTrue(lic.isVerified());
         String z = lic.getLicenseString();
-        Assert.assertEquals(false, -1 == z.indexOf("a=b"));
+        Assert.assertEquals(false, -1 == z.indexOf(checkFeature));
         Assert.assertEquals((Long) (-3623885160523215197L), lic.getDecodeKeyId());
         Assert.assertEquals("b", lic.getFeature("a"));
         Assert.assertNull(lic.getFeature("abraka-dabra"));
