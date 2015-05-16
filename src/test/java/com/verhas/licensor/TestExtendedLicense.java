@@ -1,6 +1,12 @@
 package com.verhas.licensor;
 
+import static com.verhas.licensor.TestExtendedLicense.NullTester.anyOf;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -29,18 +35,28 @@ public class TestExtendedLicense {
 		}
 	}
 
-	private static boolean thereIsNull(final Object... objects) {
-		for (final Object object : objects) {
-			if (object == null) {
-				return true;
-			}
+	static class NullTester {
+		final Object[] objects;
+		private NullTester(Object[] objects){
+			this.objects = objects;
 		}
-		return false;
+		static NullTester anyOf(Object ...objects){
+			return new NullTester(objects);
+		}
+		boolean isNull(){
+			for (final Object object : objects) {
+				if (object == null) {
+					return true;
+				}
+			}
+			return false;
+		}
 	}
+	
 
 	@BeforeClass
 	public static void setupIsCorrect() throws InvalidParameterException {
-		if (thereIsNull(unreachableUrl, githubUrl)) {
+		if (anyOf(unreachableUrl, githubUrl).isNull()) {
 			throw new InvalidParameterException(
 					"unreachableUrl was not properly initialized");
 		}
@@ -70,9 +86,21 @@ public class TestExtendedLicense {
 		}
 	}
 
+	private void mockHttpFetch(final ExtendedLicense lic, final int status, final IOException exception) throws IOException{
+		HttpHandler handler = mock(HttpHandler.class);
+		if( exception == null ){
+			when(handler.getResponseCode((HttpURLConnection)any())).thenReturn(status);
+		}else{
+			when(handler.getResponseCode((HttpURLConnection)any())).thenThrow(exception);
+		}
+		when(handler.openConnection((URL)any())).thenReturn(mock(HttpURLConnection.class));
+		lic.httpHandler = handler;
+	}
+	
 	@Test
 	public void licenseIsNotRevokedWhenHttpReturns200OK() throws IOException {
 		final ExtendedLicense lic = new ExtendedLicense();
+		mockHttpFetch(lic,200,null);
 		lic.setRevocationURL(githubUrl);
 		assertGracefullyNotRevoked(lic.isRevoked(true));
 	}
@@ -80,13 +108,15 @@ public class TestExtendedLicense {
 	@Test
 	public void licenseIsNotRevokedWhenUnreachableGraceful() throws IOException {
 		final ExtendedLicense lic = new ExtendedLicense();
+		mockHttpFetch(lic,0,new IOException());
 		lic.setRevocationURL(unreachableUrl);
 		Assert.assertFalse(lic.isRevoked(false));
 	}
 
 	@Test
-	public void licenseIsNotRevokedWhenUnreachableStrickt() throws IOException {
+	public void licenseIsNotRevokedWhenUnreachableStrict() throws IOException {
 		final ExtendedLicense lic = new ExtendedLicense();
+		mockHttpFetch(lic,0,new IOException());
 		lic.setRevocationURL(unreachableUrl);
 		Assert.assertTrue(lic.isRevoked(true));
 	}
@@ -95,30 +125,34 @@ public class TestExtendedLicense {
 	public void licenseIsNotRevokedWhenNoIdIsInUrlTemplateAndTheUrlIsOK()
 			throws IOException {
 		final ExtendedLicense lic = new ExtendedLicense();
+		mockHttpFetch(lic,200,null);
 		lic.setRevocationURL(githubUrlString);
 		lic.setLicenseId(new UUID(0, 1L));
 		assertGracefullyNotRevoked(lic.isRevoked());
 	}
 
 	@Test
-	public void licenseIsNotRevokedWhenIdFileIsThere() throws ParseException {
+	public void licenseIsNotRevokedWhenIdFileIsThere() throws ParseException, IOException {
 		final ExtendedLicense lic = new ExtendedLicense();
+		mockHttpFetch(lic,0,new IOException());
 		lic.setRevocationURL(licenceUrlTemplate);
 		lic.setLicenseId(new UUID(0, 1L));
 		Assert.assertFalse(lic.isRevoked(false));
 	}
 
 	@Test
-	public void licenseIsRevokedWhenIdFileIsNotThere() throws ParseException {
+	public void licenseIsRevokedWhenIdFileIsNotThere() throws ParseException, IOException {
 		final ExtendedLicense lic = new ExtendedLicense();
+		mockHttpFetch(lic,404,null);
 		lic.setRevocationURL(licenceUrlTemplate);
 		lic.setLicenseId(new UUID(0, 2L));
 		Assert.assertTrue(lic.isRevoked(false));
 	}
 
 	@Test
-	public void licenseIsRevokedWhenUrlIsMalformed() throws ParseException {
+	public void licenseIsRevokedWhenUrlIsMalformed() throws ParseException, IOException {
 		final ExtendedLicense lic = new ExtendedLicense();
+		mockHttpFetch(lic,0,new IOException());
 		lic.setRevocationURL("ftp://index.hu/");
 		Assert.assertTrue(lic.isRevoked(true));
 	}

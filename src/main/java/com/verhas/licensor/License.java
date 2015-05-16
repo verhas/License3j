@@ -1,8 +1,8 @@
 package com.verhas.licensor;
 
+import static com.verhas.utils.Sugar.in;
 import static com.verhas.utils.Sugar.to;
 import static com.verhas.utils.Sugar.using;
-import static com.verhas.utils.Sugar.in;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -36,7 +36,6 @@ import org.bouncycastle.openpgp.PGPOnePassSignature;
 import org.bouncycastle.openpgp.PGPOnePassSignatureList;
 import org.bouncycastle.openpgp.PGPPrivateKey;
 import org.bouncycastle.openpgp.PGPPublicKey;
-import org.bouncycastle.openpgp.PGPPublicKeyRingCollection;
 import org.bouncycastle.openpgp.PGPSecretKey;
 import org.bouncycastle.openpgp.PGPSecretKeyRing;
 import org.bouncycastle.openpgp.PGPSecretKeyRingCollection;
@@ -45,6 +44,7 @@ import org.bouncycastle.openpgp.PGPSignatureGenerator;
 import org.bouncycastle.openpgp.PGPSignatureList;
 import org.bouncycastle.openpgp.PGPSignatureSubpacketGenerator;
 import org.bouncycastle.openpgp.PGPUtil;
+import org.bouncycastle.openpgp.bc.BcPGPPublicKeyRingCollection;
 import org.bouncycastle.openpgp.jcajce.JcaPGPObjectFactory;
 import org.bouncycastle.openpgp.jcajce.JcaPGPSecretKeyRingCollection;
 import org.bouncycastle.openpgp.operator.PBESecretKeyDecryptor;
@@ -661,7 +661,7 @@ public class License {
         final InputStream dIn = p2.getInputStream();
         pgpAssertNotNull(dIn);
         int ch;
-        final PGPPublicKeyRingCollection pgpRing = new PGPPublicKeyRingCollection(
+        final BcPGPPublicKeyRingCollection pgpRing = new BcPGPPublicKeyRingCollection(
                 PGPUtil.getDecoderStream(keyIn));
         pgpAssertNotNull(ops);
         decodeKeyId = ops.getKeyID();
