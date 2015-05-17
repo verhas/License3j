@@ -130,6 +130,7 @@ public class License {
      * properties file.
      *
      * @param file the file to read the license data.
+     * @return {@code this}
      * @throws IOException when the file can not be read
      */
     public License setLicense(final File file) throws IOException {
@@ -172,7 +173,7 @@ public class License {
      * Dump the license as clear text into a file.
      *
      * @param fileName the name of the file to dump the license into.
-     * @throws IOException
+     * @throws IOException when there is an error writing the file
      */
     public void dumpLicense(final String fileName) throws IOException {
         dumpLicense(new File(fileName));
@@ -182,7 +183,7 @@ public class License {
      * Dump the license as clear text into the file.
      *
      * @param file the file to write the license text.
-     * @throws IOException
+     * @throws IOException when there is an error writing the file
      */
     public void dumpLicense(final File file) throws IOException {
         dumpLicense(new FileOutputStream(file));

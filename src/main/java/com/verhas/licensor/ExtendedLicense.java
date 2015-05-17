@@ -46,7 +46,7 @@ public class ExtendedLicense extends License {
 	 *
 	 * @return {@code true} if the license is expired
 	 *
-	 * @throws ParseException
+	 * @throws ParseException if the date is badly formatted
 	 */
 	public boolean isExpired() throws ParseException {
 		boolean expired;
@@ -69,8 +69,6 @@ public class ExtendedLicense extends License {
 	 * Set the expiration date of the license. Since the date is stored in the
 	 * format {@code yyyy-MM-dd} the actual hours, minutes and so on will be
 	 * chopped off.
-	 *
-	 * @param expiryDate
 	 */
 	public void setExpiry(final Date expiryDate) {
 		setFeature(EXPIRATION_DATE, expiryDate);
@@ -202,7 +200,7 @@ public class ExtendedLicense extends License {
 	 * will not be replaced.
 	 *
 	 * @return the revocation URL with the license id place holder filled in.
-	 * @throws MalformedURLException
+	 * @throws MalformedURLException when the revocation url is not well formatted
 	 */
 	public URL getRevocationURL() throws MalformedURLException {
 		URL url = null;

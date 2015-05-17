@@ -129,9 +129,7 @@ public class License3j {
 	 *       decode
 	 * to get arguments to the different commands type the command w/o args
 	 * </pre>
-	 * 
-	 * @param args
-	 * @throws Exception
+	 * </p>
 	 */
 	public static void main(String[] args) throws Exception {
 		commandLine = new CommandLineProcessor();
