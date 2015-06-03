@@ -684,7 +684,7 @@ public class License {
                         .nextObject();
 
                 if (ops.verify(p3.get(0))) {
-                    setLicense(new String(out.toByteArray()));
+                    setLicense(new String(out.toByteArray(),"utf-8"));
                     verified = true;
                 } else {
                     verified = false;
