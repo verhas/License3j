@@ -110,7 +110,7 @@ public class ExtendedLicense extends License {
 	}
 
 	public UUID getLicenseId() {
-		UUID licenseId = null;
+		UUID licenseId;
 		try {
 			licenseId = getFeature(LICENSE_ID, UUID.class);
 		} catch (final Exception e) {
@@ -168,7 +168,17 @@ public class ExtendedLicense extends License {
 		setFeature(name, uuid.toString());
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * Get the value of a feature in the given class format.
+	 * @param name identifying the feature
+	 * @param klass can be Integer.class, Date.class, UUID.class or URL.class
+	 * @param <T> the class template type
+	 * @return the parsed value as an instance of the second argument 'klass'
+	 * @throws InstantiationException in case class can not be instantiated
+	 * @throws IllegalAccessException
+	 * @throws ParseException
+	 * @throws MalformedURLException
+	 */
 	public <T> T getFeature(final String name, final Class<? extends T> klass)
 			throws InstantiationException, IllegalAccessException,
 			ParseException, MalformedURLException {
@@ -198,7 +208,10 @@ public class ExtendedLicense extends License {
 	 * <p>
 	 * If there is no license id defined in the license then the place holder
 	 * will not be replaced.
-	 *
+	 * <p>
+     * Later versions will be extended to allow <code>${featureName}</code>
+     * placeholders for any feature.
+     *
 	 * @return the revocation URL with the license id place holder filled in.
 	 * @throws MalformedURLException when the revocation url is not well formatted
 	 */
@@ -305,9 +318,7 @@ public class ExtendedLicense extends License {
 					final HttpURLConnection httpUrlConnection = (HttpURLConnection) connection;
 					final int responseCode = httpHandler
 							.getResponseCode(httpUrlConnection);
-					if (responseCode == 200) {
-						revoked = false;
-					}
+					revoked = responseCode != 200;
 				}
 			} else {
 				revoked = false;

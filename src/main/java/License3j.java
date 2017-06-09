@@ -25,13 +25,13 @@ public class License3j {
 
 	private static final String commandLineString = "java -cp license3j.jar License3j";
 	private static CommandLineProcessor commandLine;
-	private static PrintStream errorOutput = System.err;
+	private static final PrintStream errorOutput = System.err;
 
 	private void encode() throws Exception {
 		try {
 			OutputStream os = new FileOutputStream(commandLine.option("output"));
 			os.write((new License().setLicense(
-					new File(commandLine.option("license-file"))).loadKey(
+					new File(commandLine.option("license-file")),"utf-8").loadKey(
 					commandLine.option("keyring-file"),
 					commandLine.option("key")).encodeLicense(commandLine
 					.option("password"))).getBytes("utf-8"));
@@ -53,7 +53,7 @@ public class License3j {
 			if ((license = new License())
 					.loadKeyRing(commandLine.option("keyring-file"), null)
 					.setLicenseEncodedFromFile(
-							commandLine.option("license-file")).isVerified()) {
+							commandLine.option("license-file"),"utf-8").isVerified()) {
 				OutputStream os = System.out;
 				if (commandLine.optionExists("output")) {
 					os = new FileOutputStream(commandLine.option("output"));

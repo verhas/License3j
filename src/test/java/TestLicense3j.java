@@ -3,9 +3,9 @@ import java.io.File;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 
-import junit.framework.Assert;
 
 import org.bouncycastle.openpgp.PGPException;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;

@@ -5,8 +5,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.UUID;
 
-import junit.framework.Assert;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class TestHardwareBinder {

@@ -7,8 +7,8 @@ import java.util.Map;
 
 public class CommandLineProcessor {
 
-	private final Map<String, String> options = new HashMap<String, String>();
-	private final List<String> files = new ArrayList<String>();
+	private final Map<String, String> options = new HashMap<>();
+	private final List<String> files = new ArrayList<>();
 
 	/**
 	 * Get the options that were gathered by the method {@code process()}.

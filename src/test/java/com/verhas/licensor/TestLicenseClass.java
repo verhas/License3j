@@ -1,31 +1,34 @@
 package com.verhas.licensor;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import org.bouncycastle.openpgp.PGPException;
+import org.bouncycastle.openpgp.PGPUtil;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
 import java.util.Arrays;
 
-import junit.framework.Assert;
-
-import org.bouncycastle.openpgp.PGPException;
-import org.bouncycastle.openpgp.PGPUtil;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import static com.verhas.licensor.License.fromResource;
-
 /**
- *
  * @author Peter Verhas <peter@verhas.com>
  */
 public class TestLicenseClass {
 
+    private static final String digestReference = "byte [] digest = new byte[] {\n"
+            + "(byte)0x69, \n"
+            + "(byte)0xBB, (byte)0x8E, (byte)0x6F, (byte)0x99, (byte)0xF2, (byte)0x15, (byte)0x37, (byte)0x7C, \n"
+            + "(byte)0x39, (byte)0x54, (byte)0x6F, (byte)0x1F, (byte)0x5D, (byte)0xBA, (byte)0xC9, (byte)0x7E, \n"
+            + "(byte)0x35, (byte)0x7C, (byte)0xBF, (byte)0x7F, (byte)0xE6, (byte)0xA2, (byte)0x17, (byte)0x9B, \n"
+            + "(byte)0x7E, (byte)0x3E, (byte)0x92, (byte)0x7F, (byte)0xB6, (byte)0x0C, (byte)0x6A, (byte)0xDA, \n"
+            + "(byte)0x8D, (byte)0x46, (byte)0xBE, (byte)0xED, (byte)0x96, (byte)0x87, (byte)0x24, (byte)0x06, \n"
+            + "(byte)0x98, (byte)0x7C, (byte)0x6B, (byte)0x80, (byte)0xB2, (byte)0x91, (byte)0x19, (byte)0x0D, \n"
+            + "(byte)0x22, (byte)0x66, (byte)0x89, (byte)0x9E, (byte)0xF0, (byte)0xB1, (byte)0xDA, (byte)0xE9, \n"
+            + "(byte)0x74, (byte)0x70, (byte)0x2F, (byte)0x80, (byte)0x6E, (byte)0x6F, (byte)0x67, \n"
+            + "};\n";
     final private String testTmpFilesDirectory = "target/";
     final private String licenseOutputTextFileName = testTmpFilesDirectory
             + "license.txt";
@@ -33,6 +36,25 @@ public class TestLicenseClass {
             + "license-plain.txt";
     final private String dumpFile1 = testTmpFilesDirectory + "dumpfile1.txt";
     final private String dumpFile2 = testTmpFilesDirectory + "dumpfile2.txt";
+    private final byte[] digest = new byte[]{(byte) 0x69, (byte) 0xBB,
+            (byte) 0x8E, (byte) 0x6F, (byte) 0x99, (byte) 0xF2, (byte) 0x15,
+            (byte) 0x37, (byte) 0x7C, (byte) 0x39, (byte) 0x54, (byte) 0x6F,
+            (byte) 0x1F, (byte) 0x5D, (byte) 0xBA, (byte) 0xC9, (byte) 0x7E,
+            (byte) 0x35, (byte) 0x7C, (byte) 0xBF, (byte) 0x7F, (byte) 0xE6,
+            (byte) 0xA2, (byte) 0x17, (byte) 0x9B, (byte) 0x7E, (byte) 0x3E,
+            (byte) 0x92, (byte) 0x7F, (byte) 0xB6, (byte) 0x0C, (byte) 0x6A,
+            (byte) 0xDA, (byte) 0x8D, (byte) 0x46, (byte) 0xBE, (byte) 0xED,
+            (byte) 0x96, (byte) 0x87, (byte) 0x24, (byte) 0x06, (byte) 0x98,
+            (byte) 0x7C, (byte) 0x6B, (byte) 0x80, (byte) 0xB2, (byte) 0x91,
+            (byte) 0x19, (byte) 0x0D, (byte) 0x22, (byte) 0x66, (byte) 0x89,
+            (byte) 0x9E, (byte) 0xF0, (byte) 0xB1, (byte) 0xDA, (byte) 0xE9,
+            (byte) 0x74, (byte) 0x70, (byte) 0x2F, (byte) 0x80, (byte) 0x6E,
+            (byte) 0x6F, (byte) 0x67};
+
+    private static String fromResource(String resourceName) {
+        return License.class.getClassLoader().getResource(resourceName)
+                .getFile();
+    }
 
     private void createLicenseInputFile() throws IOException {
         final OutputStream os = new FileOutputStream(licenseInputFile);
@@ -52,21 +74,6 @@ public class TestLicenseClass {
         new File(dumpFile1).delete();
         new File(dumpFile2).delete();
     }
-
-    private final byte[] digest = new byte[]{(byte) 0x69, (byte) 0xBB,
-        (byte) 0x8E, (byte) 0x6F, (byte) 0x99, (byte) 0xF2, (byte) 0x15,
-        (byte) 0x37, (byte) 0x7C, (byte) 0x39, (byte) 0x54, (byte) 0x6F,
-        (byte) 0x1F, (byte) 0x5D, (byte) 0xBA, (byte) 0xC9, (byte) 0x7E,
-        (byte) 0x35, (byte) 0x7C, (byte) 0xBF, (byte) 0x7F, (byte) 0xE6,
-        (byte) 0xA2, (byte) 0x17, (byte) 0x9B, (byte) 0x7E, (byte) 0x3E,
-        (byte) 0x92, (byte) 0x7F, (byte) 0xB6, (byte) 0x0C, (byte) 0x6A,
-        (byte) 0xDA, (byte) 0x8D, (byte) 0x46, (byte) 0xBE, (byte) 0xED,
-        (byte) 0x96, (byte) 0x87, (byte) 0x24, (byte) 0x06, (byte) 0x98,
-        (byte) 0x7C, (byte) 0x6B, (byte) 0x80, (byte) 0xB2, (byte) 0x91,
-        (byte) 0x19, (byte) 0x0D, (byte) 0x22, (byte) 0x66, (byte) 0x89,
-        (byte) 0x9E, (byte) 0xF0, (byte) 0xB1, (byte) 0xDA, (byte) 0xE9,
-        (byte) 0x74, (byte) 0x70, (byte) 0x2F, (byte) 0x80, (byte) 0x6E,
-        (byte) 0x6F, (byte) 0x67};
 
     @Test
     public void calculatesPublicKeyRingDigest() throws IOException,
@@ -151,7 +158,7 @@ public class TestLicenseClass {
             SignatureException {
         final License lic = new License();
         lic.loadKeyRingFromResource("pubring.gpg", digest);
-        lic.setLicenseEncodedFromResource("license-encoded.txt");
+        lic.setLicenseEncodedFromResource("license-encoded.txt", "utf-8");
         Assert.assertTrue(lic.isVerified());
         String z = lic.getLicenseString();
         z = z.substring(z.length() - 4);
@@ -248,18 +255,6 @@ public class TestLicenseClass {
         os.write(encoded.getBytes("utf-8"));
         os.close();
     }
-
-    private static final String digestReference = "byte [] digest = new byte[] {\n"
-            + "(byte)0x69, \n"
-            + "(byte)0xBB, (byte)0x8E, (byte)0x6F, (byte)0x99, (byte)0xF2, (byte)0x15, (byte)0x37, (byte)0x7C, \n"
-            + "(byte)0x39, (byte)0x54, (byte)0x6F, (byte)0x1F, (byte)0x5D, (byte)0xBA, (byte)0xC9, (byte)0x7E, \n"
-            + "(byte)0x35, (byte)0x7C, (byte)0xBF, (byte)0x7F, (byte)0xE6, (byte)0xA2, (byte)0x17, (byte)0x9B, \n"
-            + "(byte)0x7E, (byte)0x3E, (byte)0x92, (byte)0x7F, (byte)0xB6, (byte)0x0C, (byte)0x6A, (byte)0xDA, \n"
-            + "(byte)0x8D, (byte)0x46, (byte)0xBE, (byte)0xED, (byte)0x96, (byte)0x87, (byte)0x24, (byte)0x06, \n"
-            + "(byte)0x98, (byte)0x7C, (byte)0x6B, (byte)0x80, (byte)0xB2, (byte)0x91, (byte)0x19, (byte)0x0D, \n"
-            + "(byte)0x22, (byte)0x66, (byte)0x89, (byte)0x9E, (byte)0xF0, (byte)0xB1, (byte)0xDA, (byte)0xE9, \n"
-            + "(byte)0x74, (byte)0x70, (byte)0x2F, (byte)0x80, (byte)0x6E, (byte)0x6F, (byte)0x67, \n"
-            + "};\n";
 
     @Test
     public void licenseLoadedFromFileHasAppropriateDigest()
