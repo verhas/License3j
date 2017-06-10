@@ -89,11 +89,11 @@ public class TestExtendedLicense {
 	private void mockHttpFetch(final ExtendedLicense lic, final int status, final IOException exception) throws IOException{
 		HttpHandler handler = mock(HttpHandler.class);
 		if( exception == null ){
-			when(handler.getResponseCode((HttpURLConnection)any())).thenReturn(status);
+			when(handler.getResponseCode(any())).thenReturn(status);
 		}else{
-			when(handler.getResponseCode((HttpURLConnection)any())).thenThrow(exception);
+			when(handler.getResponseCode(any())).thenThrow(exception);
 		}
-		when(handler.openConnection((URL)any())).thenReturn(mock(HttpURLConnection.class));
+		when(handler.openConnection(any())).thenReturn(mock(HttpURLConnection.class));
 		lic.httpHandler = handler;
 	}
 	

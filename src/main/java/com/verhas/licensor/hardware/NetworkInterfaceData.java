@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  *
  * @author Peter Verhas
  */
-public class NetworkInterfaceData {
+class NetworkInterfaceData {
     public final String name;
     byte[] hwAddress;
 

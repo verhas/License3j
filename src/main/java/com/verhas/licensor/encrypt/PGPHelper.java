@@ -70,7 +70,7 @@ public class PGPHelper {
         return new PGPCompressedDataGenerator(PGPCompressedData.ZLIB);
     }
 
-    public void encode(final String licensePlain,
+    private void encode(final String licensePlain,
                        final PGPSignatureGenerator signatureGenerator,
                        OutputStream outputStream) throws IOException {
 
