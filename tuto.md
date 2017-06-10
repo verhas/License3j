@@ -243,8 +243,8 @@ valid-until=2009.12.31
 Save the content into a file named `license-plain.txt`
 
 This time you have to start the command line processor included
-in the license3j JAR file. You also find a bat file in the
-package that starts the program so you have to type:
+in the license3j JAR file. You also download a bat file from the
+GitHub repository that starts the program so you have to type:
 
 ```
 E:\PROJECTS\research\licensor>license3j.bat encode --license-file=license-plain.
@@ -264,7 +264,7 @@ Now type
 
 ```
 E:\PROJECTS\research\licensor>license3j.bat decode --license-file=license.out --
-keyring-file="c:\Documents and Settings\verhas\Application Data\gnupg\pubring.gpg"
+keyring-file="C:\Documents and Settings\verhas\Application Data\gnupg\pubring.gpg"
 ```
 
 and you will get the result:
