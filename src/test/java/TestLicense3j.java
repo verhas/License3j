@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.verhas.filecompare.FilesAre;
+import com.javax0.license3j.filecompare.FilesAre;
 
 public class TestLicense3j {
 	private static final ByteArrayOutputStream baos = new ByteArrayOutputStream();

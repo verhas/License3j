@@ -1,5 +1,7 @@
-import com.verhas.licensor.License;
-import com.verhas.utils.CommandLineProcessor;
+package com.javax0.license3j;
+
+import com.javax0.license3j.licensor.License;
+import com.javax0.license3j.utils.CommandLineProcessor;
 
 import java.io.*;
 

@@ -1,4 +1,4 @@
-package com.verhas.utils;
+package com.javax0.license3j.utils;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;

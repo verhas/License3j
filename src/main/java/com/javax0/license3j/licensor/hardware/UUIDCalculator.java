@@ -1,4 +1,4 @@
-package com.verhas.licensor.hardware;
+package com.javax0.license3j.licensor.hardware;
 
 import org.bouncycastle.crypto.digests.MD5Digest;
 

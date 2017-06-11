@@ -1,4 +1,4 @@
-package com.verhas.licensor;
+package com.javax0.license3j.licensor;
 
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPUtil;

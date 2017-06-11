@@ -158,7 +158,7 @@ REM is calculated correctly.
 SET BATCH_FILE_NAME=license3j.bat
 REM the location of the configuration file
 REM the main class that is to be executed
-SET MAIN_CLASS=License3j
+SET MAIN_CLASS=com.javax0.license3j.License3j
 REM local java options
 SET LOCAL_JAVA_OPTS=-Xmx1024m
 REM arguments to be passed to the Java program before the BAT file arguments

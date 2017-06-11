@@ -1,4 +1,4 @@
-package com.verhas.filecompare;
+package com.javax0.license3j.filecompare;
 
 import java.io.BufferedReader;
 import java.io.File;

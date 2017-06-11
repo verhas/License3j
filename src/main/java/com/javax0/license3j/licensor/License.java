@@ -1,6 +1,6 @@
-package com.verhas.licensor;
+package com.javax0.license3j.licensor;
 
-import com.verhas.licensor.encrypt.PGPHelper;
+import com.javax0.license3j.licensor.encrypt.PGPHelper;
 import org.bouncycastle.crypto.digests.SHA512Digest;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.*;
@@ -15,8 +15,6 @@ import java.security.Security;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.stream.Stream;
-
-import static com.verhas.licensor.encrypt.PGPHelper.keyIsAppropriate;
 
 /**
  * A License object is (key,value) pair set that can be interpreted arbitrary.
@@ -450,7 +448,7 @@ public class License {
     for (final PGPSecretKeyRing ring : in(keyRingCollection.getKeyRings())) {
       for (final PGPSecretKey key : in(ring.getSecretKeys())) {
         for (final String keyUserId : inS(key.getUserIDs())) {
-          if (keyIsAppropriate(key, user, keyUserId)) {
+          if (PGPHelper.keyIsAppropriate(key, user, keyUserId)) {
             cryptor.setKey(key);
             return this;
           }

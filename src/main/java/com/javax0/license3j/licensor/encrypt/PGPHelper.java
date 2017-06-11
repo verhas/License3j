@@ -1,4 +1,4 @@
-package com.verhas.licensor.encrypt;
+package com.javax0.license3j.licensor.encrypt;
 
 import org.bouncycastle.bcpg.ArmoredOutputStream;
 import org.bouncycastle.bcpg.BCPGOutputStream;

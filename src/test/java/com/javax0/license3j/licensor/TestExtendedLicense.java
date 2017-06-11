@@ -1,6 +1,6 @@
-package com.verhas.licensor;
+package com.javax0.license3j.licensor;
 
-import static com.verhas.licensor.TestExtendedLicense.NullTester.anyOf;
+import static com.javax0.license3j.licensor.TestExtendedLicense.NullTester.anyOf;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

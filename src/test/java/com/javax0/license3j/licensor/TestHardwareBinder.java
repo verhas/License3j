@@ -1,4 +1,4 @@
-package com.verhas.licensor;
+package com.javax0.license3j.licensor;
 
 import java.io.UnsupportedEncodingException;
 import java.net.SocketException;

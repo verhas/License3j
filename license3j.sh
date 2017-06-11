@@ -5,5 +5,5 @@ for i in lib/*
 do
 cp=$cp:$i
 done
-java -cp $cp License3j $*
+java -cp $cp com.javax0.license3j.License3j $*
 echo $cp

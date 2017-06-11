@@ -1,7 +1,7 @@
-package com.verhas.licensor;
+package com.javax0.license3j.licensor;
 
-import com.verhas.licensor.hardware.InterfaceSelector;
-import com.verhas.licensor.hardware.UUIDCalculator;
+import com.javax0.license3j.licensor.hardware.InterfaceSelector;
+import com.javax0.license3j.licensor.hardware.UUIDCalculator;
 
 import java.io.UnsupportedEncodingException;
 import java.net.SocketException;
