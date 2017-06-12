@@ -79,7 +79,7 @@ similar using Java command line.
 
  The License3j module can be downloaded from the Sonatype
 central repository. To search the central repo
-follow the URL http://www.sonatype.org/central
+follow the URL http://central.sonatype.org/
 
  If you use maven you can insert the lines
 
