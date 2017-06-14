@@ -11,8 +11,8 @@ class SourceLine {
     return line == null;
   }
 
-  boolean isComment() {
-    return line != null && line.startsWith("#");
+  boolean isNotComment() {
+    return line == null || !line.startsWith("#");
   }
 
   boolean doesNotEqual(Object other) {

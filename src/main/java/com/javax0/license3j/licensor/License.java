@@ -52,6 +52,7 @@ public class License {
     return () -> iterator;
   }
 
+  @SuppressWarnings("unchecked")
   private static Iterable<String> inS(final Iterator iterator) {
     return () -> (Iterator<String>) iterator;
   }
@@ -70,7 +71,7 @@ public class License {
    * @deprecated the functionality of this method is genertal and has nothing to do
    * with license management. It will be removed from the next version of the library.
    */
-  @Deprecated(since = "1.0.8", forRemoval = true)
+  @Deprecated
   public static String fromResource(String resourceName) {
     return License.class.getClassLoader().getResource(resourceName)
         .getFile();
@@ -125,7 +126,7 @@ public class License {
    * @throws IOException when the input stream can not be read
    * @deprecated use the version of the method that specified the character set as argument
    */
-  @Deprecated(since = "1.0.8")
+  @Deprecated
   public void setLicense(final InputStream is) throws IOException {
     verified = false;
     licenseProperties = new Properties();
@@ -155,7 +156,8 @@ public class License {
    * @throws IOException when the file can not be read
    * @deprecated use the version of the method that also specifies the character set
    */
-  @Deprecated(since = "1.0.8")
+  @SuppressWarnings("DeprecatedIsStillUsed")
+  @Deprecated
   public License setLicense(final File file) throws IOException {
     setLicense(new FileInputStream(file));
     return this;
@@ -483,7 +485,7 @@ public class License {
    * @throws IOException  if the file can not be read
    */
   public License setLicenseEncoded(final String license)
-      throws UnsupportedEncodingException, IOException, PGPException {
+      throws IOException, PGPException {
     try {
       setLicenseEncoded(new ByteArrayInputStream(
           license.getBytes(DEFAULT_CHARSET)), DEFAULT_CHARSET);
@@ -503,7 +505,7 @@ public class License {
    * @throws IOException  if the file can not be read
    * @deprecated because it does not define the character set
    */
-  @Deprecated(since = "1.0.8")
+  @Deprecated
   public License setLicenseEncodedFromResource(final String resourceName)
       throws IOException, PGPException {
     setLicenseEncoded(License.class.getClassLoader().getResourceAsStream(
@@ -538,9 +540,9 @@ public class License {
    * @throws IOException           if the file can not be read
    * @throws FileNotFoundException if the file can not be found
    */
-  @Deprecated(since = "1.0.7")
+  @Deprecated
   public License setLicenseEncodedFromFile(final String fileName)
-      throws FileNotFoundException, IOException, PGPException {
+      throws IOException, PGPException {
     setLicenseEncodedFromFile(fileName, null);
     return this;
   }
@@ -556,7 +558,7 @@ public class License {
    * @throws FileNotFoundException if the file can not be found
    */
   public License setLicenseEncodedFromFile(final String fileName,
-                                           final String charset) throws FileNotFoundException, IOException,
+                                           final String charset) throws IOException,
       PGPException {
     setLicenseEncoded(new File(fileName), charset);
     return this;
@@ -572,9 +574,9 @@ public class License {
    * @deprecated because it does not define the character set and the new method name is simpler
    * using method overload
    */
-  @Deprecated(since = "1.0.7", forRemoval = true)
+  @Deprecated
   public void setLicenseEncodedFromFile(final File file)
-      throws FileNotFoundException, IOException, PGPException {
+      throws IOException, PGPException {
     setLicenseEncoded(file);
   }
 
@@ -588,7 +590,7 @@ public class License {
    */
   @Deprecated
   public void setLicenseEncoded(final File file)
-      throws FileNotFoundException, IOException, PGPException {
+      throws IOException, PGPException {
     setLicenseEncoded(file, null);
   }
 
@@ -602,7 +604,7 @@ public class License {
    * @throws FileNotFoundException if the file can not be found
    */
   public void setLicenseEncoded(final File file, String charset)
-      throws FileNotFoundException, IOException, PGPException {
+      throws IOException, PGPException {
     setLicenseEncoded(new FileInputStream(file), charset);
   }
 
@@ -638,7 +640,7 @@ public class License {
    * @throws PGPException is underlying pgp library throws
    * @deprecated use the version that specifies the charater set as argument
    */
-  @Deprecated(since = "1.0.8")
+  @Deprecated
   public void setLicenseEncoded(InputStream inputStream) throws IOException,
       PGPException {
     setLicenseEncoded(inputStream, null);

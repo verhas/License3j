@@ -165,6 +165,7 @@ public class ExtendedLicense extends License {
    * @param <T>   the class template type
    * @return the parsed value as an instance of the second argument 'klass'
    */
+  @SuppressWarnings("unchecked")
   public <T> T getFeature(final String name, final Class<? extends T> klass) {
     final T result;
     final String resultString = getFeature(name);
@@ -182,7 +183,7 @@ public class ExtendedLicense extends License {
         throw new IllegalArgumentException("'" + klass.toString()
             + "' is not handled");
       }
-    } catch (ParseException | MalformedURLException | IllegalArgumentException shouldNotHappen) {
+    } catch (ParseException | MalformedURLException shouldNotHappen) {
       throw new RuntimeException(shouldNotHappen);
     }
     return result;

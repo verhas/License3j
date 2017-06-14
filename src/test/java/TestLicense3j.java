@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import java.lang.reflect.Field;
 
 
+import com.javax0.license3j.License3j;
 import org.bouncycastle.openpgp.PGPException;
 import org.junit.Assert;
 import org.junit.Before;
