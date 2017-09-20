@@ -17,7 +17,7 @@ import java.io.*;
  */
 public class License3j {
 
-  private static final String commandLineString = "java -cp license3j.jar License3j";
+  private static final String commandLineString = "java -cp license3j.jar com.javax0.license3j.License3j";
   private static PrintStream errorOutput = System.err;
   private static CommandLineProcessor commandLine;
 
@@ -57,7 +57,7 @@ public class License3j {
    * <p>
    * <p>
    * <pre>
-   *  java -cp license3j.jar License3j command options
+   *  java -cp license3j.jar com.javax0.license3j.License3j command options
    *   commands available:
    *       encode
    *       decode
