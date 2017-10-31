@@ -93,7 +93,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Main-Class>License3j</Main-Class>
+                            <Main-Class>com.javax0.license3j.License3j</Main-Class>
                         </manifestEntries>
                         <manifest>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
