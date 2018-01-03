@@ -18,7 +18,7 @@ import java.io.*;
 public class License3j {
 
   private static final String commandLineString = "java -cp license3j.jar License3j";
-  private static final PrintStream errorOutput = System.err;
+  private static PrintStream errorOutput = System.err;
   private static CommandLineProcessor commandLine;
 
   private static void printUsage(String[] args) {
