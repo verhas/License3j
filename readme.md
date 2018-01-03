@@ -2,10 +2,10 @@
 
 Table of content
 
-* [this file:](readme.md) is what you are reading
-* [tutorial:](tuto.md) how to manage keys and encode license from the command line
-* [sample:](sample.md) how to load and check encoded license in your program
-* [mac address binding:](macaddr-binding.md) how to bind license to Ethernet addresses
+* [this file:](https://github.com/verhas/License3j/wiki/Home) is what you are reading
+* [tutorial:](https://github.com/verhas/License3j/wiki/tuto) how to manage keys and encode license from the command line
+* [sample:](https://github.com/verhas/License3j/wiki/sample) how to load and check encoded license in your program
+* [mac address binding:](https://github.com/verhas/License3j/wiki/macaddr-binding) how to bind license to Ethernet addresses
 
 ## Introduction
 
@@ -69,7 +69,7 @@ encode it using GPG. It is your choice.
 
 To manage the key rings you have to use some PGP compatible
 program, like GPG. We did not develop the key management.
-However we provided a little [document](tuto.md)
+However we provided a little [document](https://github.com/verhas/License3j/wiki/tuto)
 to help your first steps to create your licenses. This document tells you how to
 create your key ring files, add keys to it and how to encode a license under
 Windows using the bat file `license3j.bat` Encoding under Unix is
