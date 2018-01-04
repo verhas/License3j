@@ -74,6 +74,6 @@ public class FilesAre {
     }
 
     private static boolean theyAreNotComments(SourceLine a, SourceLine b) {
-        return !(a.isComment() && b.isComment());
+        return a.isNotComment() || b.isNotComment();
     }
 }
