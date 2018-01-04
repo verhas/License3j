@@ -7,9 +7,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+
 import java.util.List;
 
 public class FilesAre {
+    private static int TYPICAL_TEST_FILE_SIZE = 25;
 
     public static boolean theSame(String fnA, String fnB)
             throws IOException {
@@ -65,6 +67,7 @@ public class FilesAre {
     private static boolean bothAreEof(SourceLine a, SourceLine b) {
         return a.eof() && b.eof();
     }
+
 
     private static boolean oneIsEof(SourceLine a, SourceLine b) {
         return a.eof() || b.eof();

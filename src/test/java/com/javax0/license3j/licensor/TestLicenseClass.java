@@ -68,6 +68,7 @@ public class TestLicenseClass {
     }
 
     @After
+
     public void tearDown() throws IOException {
         new File(licenseOutputTextFileName).delete();
         new File(licenseInputFile).delete();
@@ -76,6 +77,7 @@ public class TestLicenseClass {
     }
 
     @Test
+
     public void calculatesPublicKeyRingDigest() throws IOException,
             PGPException {
         final License license = new License();
@@ -184,7 +186,6 @@ public class TestLicenseClass {
         os.close();
     }
 
-    @Test
     public void testEncodeLicense2() throws IOException, PGPException,
             NoSuchAlgorithmException, NoSuchProviderException,
             SignatureException {
@@ -280,7 +281,6 @@ public class TestLicenseClass {
     public void testMain() throws IOException, PGPException,
             NoSuchAlgorithmException, NoSuchProviderException,
             SignatureException {
-
         final License license = new License();
         license.setLicense("");
         license.setFeature("a", "b");

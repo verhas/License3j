@@ -82,8 +82,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
                 <configuration>
-                    <source>1.9</source>
-                    <target>1.9</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
             <plugin>
@@ -93,7 +93,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Main-Class>License3j</Main-Class>
+                            <Main-Class>com.javax0.license3j.License3j</Main-Class>
                         </manifestEntries>
                         <manifest>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
