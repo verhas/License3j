@@ -68,7 +68,8 @@ public class TestLicenseClass {
     }
 
     @After
-    public void tearDown() throws Exception {
+
+    public void tearDown() throws IOException {
         new File(licenseOutputTextFileName).delete();
         new File(licenseInputFile).delete();
         new File(dumpFile1).delete();
@@ -76,7 +77,9 @@ public class TestLicenseClass {
     }
 
     @Test
-    public void calculatesPublicKeyRingDigest() throws Exception {
+
+    public void calculatesPublicKeyRingDigest() throws IOException,
+            PGPException {
         final License license = new License();
         license.loadKey(fromResource("secring.gpg"),
                 "Peter Verhas (licensor test key) <peter@verhas.com>");
@@ -88,7 +91,7 @@ public class TestLicenseClass {
     @Test
     @Deprecated
     public void licenseLoadedFromFileContainsFeatureAndValue()
-            throws Exception {
+            throws IOException {
         final License license = new License();
         license.setLicense(new File(licenseInputFile));
         Assert.assertEquals("value", license.getFeature("feature"));
@@ -96,7 +99,7 @@ public class TestLicenseClass {
 
     @Test
     @Deprecated
-    public void dumpsLicenseToFilesAndReadsBack() throws Exception {
+    public void dumpsLicenseToFilesAndReadsBack() throws IOException {
         final License license = new License();
         final StringBuilder sb = new StringBuilder();
         final int featureSetSize = 10;
@@ -131,7 +134,9 @@ public class TestLicenseClass {
     }
 
     @Test
-    public void loadsEncodedLicenseString() throws Exception {
+    public void loadsEncodedLicenseString() throws IOException, PGPException,
+            NoSuchAlgorithmException, NoSuchProviderException,
+            SignatureException {
         final License lic = new License();
         lic.loadKeyRingFromResource("pubring.gpg", digest);
         lic.setLicenseEncoded("-----BEGIN PGP MESSAGE-----\n"
@@ -144,7 +149,7 @@ public class TestLicenseClass {
                 + "ChTbYWL6YrrSob8nNqtzXAMAt5JOhw==\n" + "=xVq4\n"
                 + "-----END PGP MESSAGE-----\n");
         Assert.assertTrue(lic.isVerified());
-        String z = lic.getLicenseString();
+        String z = lic.getLicenseString().replaceAll("\r\n", "\n");
         z = z.substring(z.length() - 4);
         Assert.assertEquals("a=b\n", z);
         Assert.assertEquals((Long) (-3623885160523215197L), lic.getDecodeKeyId());
@@ -152,12 +157,14 @@ public class TestLicenseClass {
     }
 
     @Test
-    public void loadsEncodedLicenseFile() throws Exception {
+    public void loadsEncodedLicenseFile() throws IOException, PGPException,
+            NoSuchAlgorithmException, NoSuchProviderException,
+            SignatureException {
         final License lic = new License();
         lic.loadKeyRingFromResource("pubring.gpg", digest);
         lic.setLicenseEncodedFromResource("license-encoded.txt", "utf-8");
         Assert.assertTrue(lic.isVerified());
-        String z = lic.getLicenseString();
+        String z = lic.getLicenseString().replaceAll("\r\n", "\n");
         z = z.substring(z.length() - 4);
         Assert.assertEquals("a=b\n", z);
         Assert.assertEquals((Long) (-3623885160523215197L), lic.getDecodeKeyId());
@@ -165,7 +172,9 @@ public class TestLicenseClass {
     }
 
     @Test
-    public void encodesLicense1() throws Exception {
+    public void encodesLicense1() throws IOException, PGPException,
+            NoSuchAlgorithmException, NoSuchProviderException,
+            SignatureException {
         final License license = new License();
         license.setLicense("");
         license.setFeature("a", "b");
@@ -177,8 +186,9 @@ public class TestLicenseClass {
         os.close();
     }
 
-    @Test
-    public void testEncodeLicense2() throws Exception {
+    public void testEncodeLicense2() throws IOException, PGPException,
+            NoSuchAlgorithmException, NoSuchProviderException,
+            SignatureException {
         final License license = new License();
         license.setLicense("");
         license.setFeature("a", "b");
@@ -249,7 +259,8 @@ public class TestLicenseClass {
     }
 
     @Test
-    public void licenseLoadedFromFileHasAppropriateDigest() throws IOException {
+    public void licenseLoadedFromFileHasAppropriateDigest()
+            throws IOException {
         final License license = new License();
         license.loadKeyRing(new File(fromResource("pubring.gpg")), digest);
         final String s = license.dumpPublicKeyRingDigest();
@@ -257,7 +268,8 @@ public class TestLicenseClass {
     }
 
     @Test
-    public void licenseLoadedFromFileNameHasAppropriateDigest() throws IOException {
+    public void licenseLoadedFromFileNameHasAppropriateDigest()
+            throws  IOException {
         final License license = new License();
         license.loadKeyRing(fromResource("pubring.gpg"), digest);
         final String s = license.dumpPublicKeyRingDigest();
@@ -266,8 +278,9 @@ public class TestLicenseClass {
 
     @Test
     @Deprecated
-    public void testMain() throws Exception {
-
+    public void testMain() throws IOException, PGPException,
+            NoSuchAlgorithmException, NoSuchProviderException,
+            SignatureException {
         final License license = new License();
         license.setLicense("");
         license.setFeature("a", "b");

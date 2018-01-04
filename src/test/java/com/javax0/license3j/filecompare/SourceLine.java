@@ -1,6 +1,6 @@
 package com.javax0.license3j.filecompare;
 
-class SourceLine {
+class SourceLine implements Comparable<SourceLine> {
   final private String line;
 
   SourceLine(String line) {
@@ -27,5 +27,10 @@ class SourceLine {
 
   public String toString() {
     return line;
+  }
+
+  @Override
+  public int compareTo(SourceLine o) {
+    return line.compareTo(o.line);
   }
 }
