@@ -1,5 +1,22 @@
 language: java
-install: mvn -X -Dgpg.skip clean install
+
+
+before_install:
+  - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
+
+matrix:
+  include:
+    - env: JDK='Oracle JDK 10'
+      jdk: oraclejdk10
+    - env: JDK='OpenJDK 10'
+      install: . ./install-jdk.sh -F 10 -L GPL
+
+script:
+  - echo PATH = ${PATH}
+  - echo JAVA_HOME = ${JAVA_HOME}
+  - java -version
+
+install: mvn -X -Dgpg.skip -Dmaven.javadoc.skip=true clean install
 jdk:
  - oraclejdk10
 
