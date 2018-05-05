@@ -7,7 +7,6 @@ import org.bouncycastle.openpgp.*;
 import org.bouncycastle.openpgp.bc.BcPGPPublicKeyRingCollection;
 import org.bouncycastle.openpgp.jcajce.JcaPGPObjectFactory;
 import org.bouncycastle.openpgp.jcajce.JcaPGPSecretKeyRingCollection;
-import org.bouncycastle.openpgp.operator.PGPContentVerifierBuilderProvider;
 import org.bouncycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 
 import java.io.*;
@@ -22,7 +21,7 @@ import java.util.stream.Stream;
  * can be electronically signed and saved into a file and loaded and verified.
  * <p>
  * You can use a License object for two purposes:
- * <p>
+ *
  * <ul>
  * <li>Create a new license from pure text properties file, from a string or
  * build it up programmatically and then sign and save it to a file.
@@ -74,7 +73,7 @@ public class License {
     @Deprecated
     public static String fromResource(String resourceName) {
         return License.class.getClassLoader().getResource(resourceName)
-                .getFile();
+            .getFile();
     }
 
     /**
@@ -82,9 +81,9 @@ public class License {
      */
     public Stream<String> features() {
         return licenseProperties
-                .keySet()
-                .stream()
-                .map(s -> (String) s);
+            .keySet()
+            .stream()
+            .map(s -> (String) s);
     }
 
     /**
@@ -204,13 +203,13 @@ public class License {
      * @return the license as clear text
      */
     public String getLicenseString() {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final var baos = new ByteArrayOutputStream();
         try {
             if (licenseProperties != null) {
                 licenseProperties.store(baos, "-- license file");
             }
             baos.close();
-            final String loadedLicense = new String(baos.toByteArray());
+            final var loadedLicense = new String(baos.toByteArray());
             return loadedLicense.replaceAll("\r\n", "\n");
         } catch (final IOException ex) {
             return "";
@@ -294,7 +293,7 @@ public class License {
      * @throws PGPException is underlying pgp library throws
      */
     public License loadKey(final String fn, final String keyId)
-            throws IOException, PGPException {
+        throws IOException, PGPException {
         loadKey(new File(fn), keyId);
         return this;
     }
@@ -311,8 +310,8 @@ public class License {
     public License loadKeyRingFromResource(final String resourceName,
                                            final byte[] digest) throws IOException {
         return loadKeyRing(
-                this.getClass().getClassLoader()
-                        .getResourceAsStream(resourceName), digest);
+            this.getClass().getClassLoader()
+                .getResourceAsStream(resourceName), digest);
     }
 
     /**
@@ -324,7 +323,7 @@ public class License {
      * @throws IOException if the file can not be read
      */
     public License loadKeyRing(final String fileName, final byte[] digest)
-            throws IOException {
+        throws IOException {
         loadKeyRing(new File(fileName), digest);
         return this;
     }
@@ -338,7 +337,7 @@ public class License {
      * @throws IOException if the file can not be read
      */
     public License loadKeyRing(final File file, final byte[] digest)
-            throws IOException {
+        throws IOException {
         loadKeyRing(new FileInputStream(file), digest);
         return this;
     }
@@ -362,20 +361,20 @@ public class License {
      *                                  key ring is not loaded in such a case.
      */
     public License loadKeyRing(final InputStream in, final byte[] digest)
-            throws IOException {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        throws IOException {
+        final var baos = new ByteArrayOutputStream();
         int ch;
         while ((ch = in.read()) >= 0) {
             baos.write(ch);
         }
         publicKeyRing = baos.toByteArray();
         if (digest != null) {
-            final byte[] calculatedDigest = calculatePublicKeyRingDigest();
+            final var calculatedDigest = calculatePublicKeyRingDigest();
             for (int i = 0; i < calculatedDigest.length; i++) {
                 if (calculatedDigest[i] != (digest[i])) {
                     publicKeyRing = null;
                     throw new IllegalArgumentException(
-                            "Key ring digest does not match.");
+                        "Key ring digest does not match.");
                 }
             }
         }
@@ -389,10 +388,10 @@ public class License {
      * @return the digest as a byte array.
      */
     public byte[] calculatePublicKeyRingDigest() {
-        final SHA512Digest dig = new SHA512Digest();
+        final var dig = new SHA512Digest();
         dig.reset();
         dig.update(publicKeyRing, 0, publicKeyRing.length);
-        final byte[] digest = new byte[dig.getDigestSize()];
+        final var digest = new byte[dig.getDigestSize()];
         dig.doFinal(digest, 0);
         return digest;
     }
@@ -405,8 +404,8 @@ public class License {
      * @return the Java program code fragment as string.
      */
     public String dumpPublicKeyRingDigest() {
-        final byte[] calculatedDigest = calculatePublicKeyRingDigest();
-        StringBuilder retval = new StringBuilder("byte [] digest = new byte[] {\n");
+        final var calculatedDigest = calculatePublicKeyRingDigest();
+        final var retval = new StringBuilder("byte [] digest = new byte[] {\n");
         for (int i = 0; i < calculatedDigest.length; i++) {
             int intVal = ((int) calculatedDigest[i]) & 0xff;
             retval.append(String.format("(byte)0x%02X, ", intVal));
@@ -430,7 +429,7 @@ public class License {
      * @throws PGPException is underlying pgp library throws
      */
     public License loadKey(final File fin, final String user)
-            throws IOException, PGPException {
+        throws IOException, PGPException {
         loadKey(new FileInputStream(fin), user);
         return this;
     }
@@ -448,15 +447,14 @@ public class License {
      * @throws PGPException is underlying pgp library throws
      */
     public License loadKey(final InputStream keyRing, final String user)
-            throws IOException, PGPException {
-        final InputStream decoder = PGPUtil.getDecoderStream(keyRing);
+        throws IOException, PGPException {
+        final var decoder = PGPUtil.getDecoderStream(keyRing);
 
-        final PGPSecretKeyRingCollection keyRingCollection =
-                new JcaPGPSecretKeyRingCollection(decoder);
+        final var keyRingCollection = new JcaPGPSecretKeyRingCollection(decoder);
 
-        for (final PGPSecretKeyRing ring : in(keyRingCollection.getKeyRings())) {
-            for (final PGPSecretKey key : in(ring.getSecretKeys())) {
-                for (final String keyUserId : inS(key.getUserIDs())) {
+        for (final var ring : in(keyRingCollection.getKeyRings())) {
+            for (final var key : in(ring.getSecretKeys())) {
+                for (final var keyUserId : inS(key.getUserIDs())) {
                     if (PGPHelper.keyIsAppropriate(key, user, keyUserId)) {
                         cryptor.setKey(key);
                         return this;
@@ -477,9 +475,9 @@ public class License {
      * @throws PGPException is underlying pgp library throws
      */
     public String encodeLicense(final String keyPassPhraseString)
-            throws IOException, PGPException {
+        throws IOException, PGPException {
 
-        final String licensePlain = getLicenseString();
+        final var licensePlain = getLicenseString();
         return new String(cryptor.encodeLicense(keyPassPhraseString, licensePlain), DEFAULT_CHARSET);
     }
 
@@ -492,10 +490,10 @@ public class License {
      * @throws IOException  if the file can not be read
      */
     public License setLicenseEncoded(final String license)
-            throws IOException, PGPException {
+        throws IOException, PGPException {
         try {
             setLicenseEncoded(new ByteArrayInputStream(
-                    license.getBytes(DEFAULT_CHARSET)), DEFAULT_CHARSET);
+                license.getBytes(DEFAULT_CHARSET)), DEFAULT_CHARSET);
         } catch (UnsupportedEncodingException shouldNotEverHappen) {
             throw new RuntimeException(shouldNotEverHappen);
         }
@@ -514,9 +512,9 @@ public class License {
      */
     @Deprecated
     public License setLicenseEncodedFromResource(final String resourceName)
-            throws IOException, PGPException {
+        throws IOException, PGPException {
         setLicenseEncoded(License.class.getClassLoader().getResourceAsStream(
-                resourceName));
+            resourceName));
         return this;
     }
 
@@ -532,9 +530,9 @@ public class License {
      */
     public License setLicenseEncodedFromResource(final String resourceName,
                                                  final String charset)
-            throws IOException, PGPException {
+        throws IOException, PGPException {
         setLicenseEncoded(License.class.getClassLoader().getResourceAsStream(
-                resourceName), charset);
+            resourceName), charset);
         return this;
     }
 
@@ -549,7 +547,7 @@ public class License {
      */
     @Deprecated
     public License setLicenseEncodedFromFile(final String fileName)
-            throws IOException, PGPException {
+        throws IOException, PGPException {
         setLicenseEncodedFromFile(fileName, null);
         return this;
     }
@@ -566,7 +564,7 @@ public class License {
      */
     public License setLicenseEncodedFromFile(final String fileName,
                                              final String charset) throws IOException,
-            PGPException {
+        PGPException {
         setLicenseEncoded(new File(fileName), charset);
         return this;
     }
@@ -583,7 +581,7 @@ public class License {
      */
     @Deprecated
     public void setLicenseEncodedFromFile(final File file)
-            throws IOException, PGPException {
+        throws IOException, PGPException {
         setLicenseEncoded(file);
     }
 
@@ -597,7 +595,7 @@ public class License {
      */
     @Deprecated
     public void setLicenseEncoded(final File file)
-            throws IOException, PGPException {
+        throws IOException, PGPException {
         setLicenseEncoded(file, null);
     }
 
@@ -611,7 +609,7 @@ public class License {
      * @throws FileNotFoundException if the file can not be found
      */
     public void setLicenseEncoded(final File file, String charset)
-            throws IOException, PGPException {
+        throws IOException, PGPException {
         setLicenseEncoded(new FileInputStream(file), charset);
     }
 
@@ -649,7 +647,7 @@ public class License {
      */
     @Deprecated
     public void setLicenseEncoded(InputStream inputStream) throws IOException,
-            PGPException {
+        PGPException {
         setLicenseEncoded(inputStream, null);
     }
 
@@ -666,43 +664,41 @@ public class License {
      * @throws PGPException is underlying pgp library throws
      */
     public License setLicenseEncoded(InputStream inputStream, String charset)
-            throws IOException, PGPException {
+        throws IOException, PGPException {
         final ByteArrayInputStream keyIn = new ByteArrayInputStream(
-                publicKeyRing);
-        final InputStream decoderInputStream = PGPUtil
-                .getDecoderStream(inputStream);
+            publicKeyRing);
+        final var decoderInputStream = PGPUtil
+            .getDecoderStream(inputStream);
 
-        PGPObjectFactory pgpFact = new JcaPGPObjectFactory(decoderInputStream);
+        var pgpFact = new JcaPGPObjectFactory(decoderInputStream);
         final PGPCompressedData c1 = (PGPCompressedData) pgpFact.nextObject();
         notNull(c1);
         pgpFact = new JcaPGPObjectFactory(c1.getDataStream());
-        final PGPOnePassSignatureList p1 = (PGPOnePassSignatureList) pgpFact
-                .nextObject();
+        final var p1 = (PGPOnePassSignatureList) pgpFact.nextObject();
 
         notNull(p1);
-        final PGPOnePassSignature ops = p1.get(0);
-        final PGPLiteralData p2 = (PGPLiteralData) pgpFact.nextObject();
+        final var ops = p1.get(0);
+        final var p2 = (PGPLiteralData) pgpFact.nextObject();
 
         notNull(p2);
-        final InputStream dIn = p2.getInputStream();
+        final var dIn = p2.getInputStream();
         notNull(dIn);
         int ch;
-        final BcPGPPublicKeyRingCollection pgpRing = new BcPGPPublicKeyRingCollection(
-                PGPUtil.getDecoderStream(keyIn));
+        final var pgpRing =
+            new BcPGPPublicKeyRingCollection(PGPUtil.getDecoderStream(keyIn));
         notNull(ops);
         decodeKeyId = ops.getKeyID();
 
-        final PGPPublicKey decodeKey = pgpRing.getPublicKey(decodeKeyId);
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final var decodeKey = pgpRing.getPublicKey(decodeKeyId);
+        final var out = new ByteArrayOutputStream();
         try {
-            final PGPContentVerifierBuilderProvider cvBuilder = new JcaPGPContentVerifierBuilderProvider();
+            final var cvBuilder = new JcaPGPContentVerifierBuilderProvider();
             ops.init(cvBuilder, decodeKey);
             while ((ch = dIn.read()) >= 0) {
                 ops.update((byte) ch);
                 out.write(ch);
             }
-            final PGPSignatureList p3 = (PGPSignatureList) pgpFact
-                    .nextObject();
+            final var p3 = (PGPSignatureList) pgpFact.nextObject();
 
             if (ops.verify(p3.get(0))) {
                 if (charset == null) {

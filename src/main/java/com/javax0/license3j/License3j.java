@@ -36,14 +36,14 @@ public class License3j {
             + "arguments to the different commands type the command w/o args");
     if (args != null) {
       errorOutput.println("Arguments on the command line:");
-      int i = 1;
-      for (String arg : args) {
+      var i = 1;
+      for (final var arg : args) {
         errorOutput.println(i + ". " + arg);
         i++;
       }
       errorOutput.println("Command line options:");
       i = 1;
-      for (String opt : commandLine.getOptions().keySet()) {
+      for (final var opt : commandLine.getOptions().keySet()) {
         errorOutput.println(i + ". option[" + opt + "]="
             + commandLine.option(opt));
         i++;
@@ -78,7 +78,7 @@ public class License3j {
       printUsage(args);
       return;
     }
-    String command = commandLine.getFiles().get(0);
+    var command = commandLine.getFiles().get(0);
 
     if ("encode".equals(command)) {
       // encode a license file
@@ -92,7 +92,7 @@ public class License3j {
 
   private void encode() throws Exception {
     try {
-      OutputStream os = new FileOutputStream(commandLine.option("output"));
+      final var os = new FileOutputStream(commandLine.option("output"));
       os.write((new License().setLicense(
           new File(commandLine.option("license-file")), "utf-8").loadKey(
           commandLine.option("keyring-file"),
