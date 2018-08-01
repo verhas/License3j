@@ -47,7 +47,7 @@ public class InterfaceSelector {
 
         return !matchesAny(name, deniedInterfaceNames)
                 &&
-                (!allowedInterfaceNames.isEmpty() ||
+                (allowedInterfaceNames.isEmpty() ||
                         matchesAny(name, allowedInterfaceNames));
     }
 
