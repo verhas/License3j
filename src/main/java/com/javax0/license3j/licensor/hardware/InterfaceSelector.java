@@ -46,9 +46,9 @@ public class InterfaceSelector {
         final String name = netIf.getDisplayName();
 
         return !matchesAny(name, deniedInterfaceNames)
-                &&
-                (!allowedInterfaceNames.isEmpty() ||
-                        matchesAny(name, allowedInterfaceNames));
+            &&
+            (allowedInterfaceNames.isEmpty() ||
+                matchesAny(name, allowedInterfaceNames));
     }
 
     public void interfaceAllowed(String regex) {
@@ -66,11 +66,14 @@ public class InterfaceSelector {
      */
     boolean usable(final NetworkInterface netIf) {
         try {
-            return !netIf.isLoopback() && !netIf.isVirtual()
-                    && !netIf.isPointToPoint()
-                    && matchesRegexLists(netIf);
+            return !isSpecial(netIf)
+                && matchesRegexLists(netIf);
         } catch (SocketException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    boolean isSpecial(NetworkInterface netIf) throws SocketException {
+        return netIf.isLoopback() || netIf.isVirtual() || netIf.isPointToPoint();
     }
 }
