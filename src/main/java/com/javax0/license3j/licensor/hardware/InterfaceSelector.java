@@ -46,9 +46,9 @@ public class InterfaceSelector {
         final String name = netIf.getDisplayName();
 
         return !matchesAny(name, deniedInterfaceNames)
-            &&
-            (allowedInterfaceNames.isEmpty() ||
-                matchesAny(name, allowedInterfaceNames));
+                &&
+                (allowedInterfaceNames.isEmpty() ||
+                        matchesAny(name, allowedInterfaceNames));
     }
 
     public void interfaceAllowed(String regex) {
