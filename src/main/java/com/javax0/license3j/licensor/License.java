@@ -178,7 +178,7 @@ public class License {
 
     /**
      * Set the license from clear text format. This text should be a properties
-     * format file.
+     * format: lines with 'key: value' style.
      *
      * @param licenseString the properties content.
      * @return the license object so method calls can be chained

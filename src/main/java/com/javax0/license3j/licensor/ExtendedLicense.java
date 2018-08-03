@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -170,18 +171,18 @@ public class ExtendedLicense extends License {
                 result = (T) (Integer) Integer.parseInt(resultString);
             } else if (Date.class == klass) {
                 result = (T) new SimpleDateFormat(DATE_FORMAT)
-                    .parse(getFeature(name));
+                        .parse(getFeature(name));
             } else if (UUID.class == klass) {
                 result = (T) UUID.fromString(getFeature(name));
             } else if (URL.class == klass) {
                 result = (T) new URL(getFeature(name));
             } else {
                 throw new IllegalArgumentException("'" + klass.toString()
-                    + "' is not handled");
+                        + "' is not handled");
             }
         } catch (ParseException |
-            MalformedURLException |
-            IllegalArgumentException shouldNotHappen) {
+                MalformedURLException |
+                IllegalArgumentException shouldNotHappen) {
             throw new IllegalArgumentException(shouldNotHappen);
         }
         return result;
@@ -210,24 +211,13 @@ public class ExtendedLicense extends License {
             final UUID licenseId = getLicenseId();
             if (licenseId != null) {
                 revocationURL = revocationURLTemplate.replaceAll(
-                    "\\$\\{licenseId}", licenseId.toString());
+                        "\\$\\{licenseId}", licenseId.toString());
             } else {
                 revocationURL = revocationURLTemplate;
             }
             url = new URL(revocationURL);
         }
         return url;
-    }
-
-    /**
-     * Set the revocation URL. Using this method is discouraged in case the URL
-     * contains the <code>${licenseId}</code> place holder. In that case it is
-     * recommended to use the {@link #setRevocationURL(String)} method instead.
-     *
-     * @param url the revocation url
-     */
-    public void setRevocationURL(final URL url) {
-        setRevocationURL(url.toString());
     }
 
     /**
@@ -240,6 +230,17 @@ public class ExtendedLicense extends License {
      */
     public void setRevocationURL(final String url) {
         setFeature(REVOCATION_URL, url);
+    }
+
+    /**
+     * Set the revocation URL. Using this method is discouraged in case the URL
+     * contains the <code>${licenseId}</code> place holder. In that case it is
+     * recommended to use the {@link #setRevocationURL(String)} method instead.
+     *
+     * @param url the revocation url
+     */
+    public void setRevocationURL(final URL url) {
+        setRevocationURL(url.toString());
     }
 
     /**
@@ -293,12 +294,11 @@ public class ExtendedLicense extends License {
             final var url = getRevocationURL();
             if (url != null) {
                 final var connection = httpHandler.openConnection(url);
-                connection.setUseCaches(false);
+                doNotUseCache(connection);
                 if (connection instanceof HttpURLConnection) {
-                    connection.connect();
                     final var httpUrlConnection = (HttpURLConnection) connection;
-                    final int responseCode =
-                        httpHandler.getResponseCode(httpUrlConnection);
+                    httpUrlConnection.connect();
+                    final int responseCode = httpHandler.getResponseCode(httpUrlConnection);
                     revoked = responseCode != 200;
                 }
             } else {
@@ -308,6 +308,10 @@ public class ExtendedLicense extends License {
             revoked = defaultRevocationState;
         }
         return revoked;
+    }
+
+    private void doNotUseCache(URLConnection connection) {
+        connection.setUseCaches(false);
     }
 
 }

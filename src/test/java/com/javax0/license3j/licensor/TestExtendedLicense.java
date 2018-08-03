@@ -1,7 +1,8 @@
 package com.javax0.license3j.licensor;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -17,6 +18,12 @@ public class TestExtendedLicense {
     private static final String reachableUrlString = "https://github.com/verhas/License3j";
     private static final String unreachableUrlString = "https://any.com";
 
+    /**
+     * Set up a mock HttpHandler in the license that will return with the status or will throw exception.
+     * @param lic the license where the mock will be inserted into
+     * @param status to be returned when {@code exception} is {@code null}
+     * @param exception the exception to be thrown or {@code null} if there should be no exception calling the handler
+     */
     private void mockHttpFetch(final ExtendedLicense lic, final int status, final IOException exception) {
         var handler = new MockHttpHandler();
         if (exception == null) {
@@ -28,19 +35,21 @@ public class TestExtendedLicense {
     }
 
     @Test
+    @DisplayName("license is not revoked when the http request returns true")
     public void licenseIsNotRevokedWhenHttpReturns200OK() throws IOException {
         final var lic = new ExtendedLicense();
         mockHttpFetch(lic, 200, null);
         lic.setRevocationURL(new URL(reachableUrlString));
-        Assert.assertFalse(lic.isRevoked(true));
+        Assertions.assertFalse(lic.isRevoked(true));
     }
 
     @Test
+    @DisplayName("license is not revoked when the URL is not reachable")
     public void licenseIsNotRevokedWhenUnreachableGraceful() throws IOException {
         final var lic = new ExtendedLicense();
         mockHttpFetch(lic, 0, new IOException());
         lic.setRevocationURL(new URL(unreachableUrlString));
-        Assert.assertFalse(lic.isRevoked(false));
+        Assertions.assertFalse(lic.isRevoked(false));
     }
 
     @Test
@@ -48,17 +57,17 @@ public class TestExtendedLicense {
         final var lic = new ExtendedLicense();
         mockHttpFetch(lic, 0, new IOException());
         lic.setRevocationURL(new URL(unreachableUrlString));
-        Assert.assertTrue(lic.isRevoked(true));
+        Assertions.assertTrue(lic.isRevoked(true));
     }
 
     @Test
     public void licenseIsNotRevokedWhenNoIdIsInUrlTemplateAndTheUrlIsOK()
-        throws IOException {
+            throws IOException {
         final var lic = new ExtendedLicense();
         mockHttpFetch(lic, 200, null);
         lic.setRevocationURL(reachableUrlString);
         lic.setLicenseId(new UUID(0, 1L));
-        Assert.assertFalse(lic.isRevoked());
+        Assertions.assertFalse(lic.isRevoked());
     }
 
     @Test
@@ -67,7 +76,7 @@ public class TestExtendedLicense {
         mockHttpFetch(lic, 0, new IOException());
         lic.setRevocationURL(licenceUrlTemplate);
         lic.setLicenseId(new UUID(0, 1L));
-        Assert.assertFalse(lic.isRevoked(false));
+        Assertions.assertFalse(lic.isRevoked(false));
     }
 
     @Test
@@ -76,7 +85,7 @@ public class TestExtendedLicense {
         mockHttpFetch(lic, 404, null);
         lic.setRevocationURL(licenceUrlTemplate);
         lic.setLicenseId(new UUID(0, 2L));
-        Assert.assertTrue(lic.isRevoked());
+        Assertions.assertTrue(lic.isRevoked());
     }
 
     @Test
@@ -84,36 +93,36 @@ public class TestExtendedLicense {
         final var lic = new ExtendedLicense();
         mockHttpFetch(lic, 0, new IOException());
         lic.setRevocationURL("ftp://index.hu/");
-        Assert.assertTrue(lic.isRevoked(true));
+        Assertions.assertTrue(lic.isRevoked(true));
     }
 
     @Test
     public void pastExpiryTimeReportsExpired() throws ParseException {
         final var lic = new ExtendedLicense();
         lic.setExpiry(new Date(new Date().getTime() - 24 * 60 * 60 * 1000));
-        Assert.assertTrue(lic.isExpired());
+        Assertions.assertTrue(lic.isExpired());
     }
 
     @Test
     public void futureExpiryTimeReportsNonExpired() throws ParseException {
         final var lic = new ExtendedLicense();
         lic.setExpiry(new Date(new Date().getTime() + 24 * 60 * 60 * 1000));
-        Assert.assertFalse(lic.isExpired());
+        Assertions.assertFalse(lic.isExpired());
     }
 
     @Test
     public void badlyFormattedExpiryDateReportsExpiredLicense()
-        throws ParseException {
+            throws ParseException {
         final var lic = new ExtendedLicense();
         lic.setFeature("expiryDate", "not a valid date");
-        Assert.assertTrue(lic.isExpired());
+        Assertions.assertTrue(lic.isExpired());
     }
 
     @Test
     public void uuidGenerationResultsNonNullUuid() throws ParseException {
         final var lic = new ExtendedLicense();
         lic.generateLicenseId();
-        Assert.assertNotNull(lic.getLicenseId());
+        Assertions.assertNotNull(lic.getLicenseId());
     }
 
     @Test
@@ -124,8 +133,8 @@ public class TestExtendedLicense {
             lic.setFeature("testInteger" + i, i);
         }
         for (int i = 0; i < n; i++) {
-            Assert.assertEquals((Integer) i,
-                lic.getFeature("testInteger" + i, Integer.class));
+            Assertions.assertEquals((Integer) i,
+                    lic.getFeature("testInteger" + i, Integer.class));
         }
     }
 
@@ -133,44 +142,45 @@ public class TestExtendedLicense {
     public void settingUrlFeatureReturnsTheUrl() throws MalformedURLException {
         final var lic = new ExtendedLicense();
         lic.setFeature("testURL", new URL("http://index.hu"));
-        Assert.assertEquals(new URL("http://index.hu"),
-            lic.getFeature("testURL", URL.class));
+        Assertions.assertEquals(new URL("http://index.hu"),
+                lic.getFeature("testURL", URL.class));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void gettingInvalidFeatureTypeThrowsException() {
-        final var lic = new ExtendedLicense();
-        lic.getFeature("testURL", Object.class);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            final var lic = new ExtendedLicense();
+            lic.getFeature("testURL", Object.class);
+        });
     }
 
     @Test
     public void notSettingRevocationUrlResultNullRevocationUrl()
-        throws MalformedURLException {
+            throws MalformedURLException {
         final var lic = new ExtendedLicense();
-        Assert.assertNull(lic.getRevocationURL());
+        Assertions.assertNull(lic.getRevocationURL());
     }
 
     @Test
     public void licenseWithNoRevocationUrlIsNotRevoked() {
         final var lic = new ExtendedLicense();
-        Assert.assertFalse(lic.isRevoked(true));
+        Assertions.assertFalse(lic.isRevoked(true));
     }
 
     private static class MockHttpHandler extends HttpHandler {
         private int responseCode;
+        private IOException exception = null;
 
         public void setException(IOException exception) {
             this.exception = exception;
         }
-
-        private IOException exception = null;
 
         public void setResponseCode(int responseCode) {
             this.responseCode = responseCode;
         }
 
         int getResponseCode(final HttpURLConnection httpUrlConnection)
-            throws IOException {
+                throws IOException {
             if (exception != null) {
                 throw exception;
             }
