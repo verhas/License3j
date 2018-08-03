@@ -1,8 +1,9 @@
 package com.javax0.license3j.utils;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class TestCommandLineProcessor {
 	private static final String[] commandLine = new String[] { "--arg1=value1",
@@ -11,7 +12,7 @@ public class TestCommandLineProcessor {
 
 	private static final CommandLineProcessor processor = new CommandLineProcessor();
 
-	@BeforeClass
+	@BeforeAll
 	public static void processCommandLine() {
 		processor.process(commandLine);
 	}
@@ -30,37 +31,37 @@ public class TestCommandLineProcessor {
 
 	@Test
 	public void processesProperlyFormattedOptions() {
-		Assert.assertEquals("value1", processor.option("arg1"));
-		Assert.assertEquals("value2", processor.option("arg2"));
-		Assert.assertEquals("value3", processor.option("arg3"));
+		Assertions.assertEquals("value1", processor.option("arg1"));
+		Assertions.assertEquals("value2", processor.option("arg2"));
+		Assertions.assertEquals("value3", processor.option("arg3"));
 	}
 
 	@Test
 	public void processesProperlyFormattedFileNameParameters() {
-		Assert.assertEquals("fileNameParameter", processor.getFiles().get(0));
+		Assertions.assertEquals("fileNameParameter", processor.getFiles().get(0));
 	}
 
 	@Test
 	public void processesFileNameParametersStartingWithDash() {
-		Assert.assertEquals("-dashFile", processor.getFiles().get(1));
+		Assertions.assertEquals("-dashFile", processor.getFiles().get(1));
 	}
 
 	@Test
 	public void valuelessOptionsReturnNullValue() {
-		Assert.assertNull(processor.option("arg4"));
-		Assert.assertNull(processor.option("arg5"));
+		Assertions.assertNull(processor.option("arg4"));
+		Assertions.assertNull(processor.option("arg5"));
 	}
 
 	@Test
 	public void optionsAreReportedAsExisting() {
 		for (int i = 1; i < 6; i++) {
-			Assert.assertTrue(processor.optionExists("arg" + i));
+			Assertions.assertTrue(processor.optionExists("arg" + i));
 		}
 	}
 
 	@Test
 	public void nonExistingOptionsAreReportedAsNonExisting() {
 		CommandLineProcessor processor = new CommandLineProcessor();
-		Assert.assertFalse(processor.optionExists("arg0"));
+		Assertions.assertFalse(processor.optionExists("arg0"));
 	}
 }

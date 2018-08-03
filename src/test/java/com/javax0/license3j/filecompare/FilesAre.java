@@ -11,17 +11,16 @@ import java.util.Iterator;
 import java.util.List;
 
 public class FilesAre {
-    private static int TYPICAL_TEST_FILE_SIZE = 25;
 
     public static boolean theSame(String fnA, String fnB)
             throws IOException {
-        final List<SourceLine> linesA = new ArrayList<>();
-        final List<SourceLine> linesB = new ArrayList<>();
-        try (final BufferedReader rA = new BufferedReader(new FileReader(new File(fnA)));
-             final BufferedReader rB = new BufferedReader(new FileReader(new File(fnB)))) {
+        final var linesA = new ArrayList<SourceLine>();
+        final var linesB = new ArrayList<SourceLine>();
+        try (final var rA = new BufferedReader(new FileReader(new File(fnA)));
+             final var rB = new BufferedReader(new FileReader(new File(fnB)))) {
             do {
-                final SourceLine a = new SourceLine(rA.readLine());
-                final SourceLine b = new SourceLine(rB.readLine());
+                final var a = new SourceLine(rA.readLine());
+                final var b = new SourceLine(rB.readLine());
                 if (bothAreEof(a, b)) {
                     return listAreTheSame(linesA, linesB);
                 }
@@ -52,11 +51,11 @@ public class FilesAre {
         }
         Collections.sort(linesA);
         Collections.sort(linesB);
-        Iterator<SourceLine> itA = linesA.iterator();
-        Iterator<SourceLine> itB = linesB.iterator();
+        var itA = linesA.<SourceLine>iterator();
+        var itB = linesB.<SourceLine>iterator();
         while (itA.hasNext()) {
-            final SourceLine a = itA.next();
-            final SourceLine b = itB.next();
+            final var a = itA.next();
+            final var b = itB.next();
             if (!a.equals(b)) {
                 return false;
             }
