@@ -305,6 +305,7 @@ public class License {
      *
      * @param resourceName the name of the file inside the JAR file with full path.
      * @param digest       the SHA512 digest of the key ring.
+     * @return the license object
      * @throws IOException if the file can not be read
      */
     public License loadKeyRingFromResource(final String resourceName,
@@ -320,6 +321,7 @@ public class License {
      *
      * @param fileName the name of the file
      * @param digest   the SHA512 digest of the ring
+     * @return the license object
      * @throws IOException if the file can not be read
      */
     public License loadKeyRing(final String fileName, final byte[] digest)
@@ -334,6 +336,7 @@ public class License {
      *
      * @param file   the file
      * @param digest the SHA512 digest of the ring
+     * @return the license object
      * @throws IOException if the file can not be read
      */
     public License loadKeyRing(final File file, final byte[] digest)
@@ -352,6 +355,7 @@ public class License {
      * @param in     the input stream where the key ring comes from.
      * @param digest the digest of the key ring. If this parameter is {@code null}
      *               then the key ring is loaded no matter of its checksum.
+     * @return the license object
      * @throws IOException              if the file can not be read
      * @throws IllegalArgumentException when the digest does not match the supplied digest. This
      *                                  means that the JAR file containing the key ring was tampered
@@ -660,6 +664,7 @@ public class License {
      *
      * @param inputStream from where the license is read
      * @param charset     the character set of the input stream
+     * @return the license object
      * @throws IOException  if the file can not be read
      * @throws PGPException is underlying pgp library throws
      */

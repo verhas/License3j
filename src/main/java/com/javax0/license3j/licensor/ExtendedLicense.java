@@ -65,6 +65,8 @@ public class ExtendedLicense extends License {
      * Set the expiration date of the license. Since the date is stored in the
      * format {@code yyyy-MM-dd} the actual hours, minutes and so on will be
      * chopped off.
+     *
+     * @param expiryDate the date when the license expires
      */
     public void setExpiry(final Date expiryDate) {
         setFeature(EXPIRATION_DATE, expiryDate);

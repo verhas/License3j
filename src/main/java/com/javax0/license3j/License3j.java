@@ -53,10 +53,9 @@ public class License3j {
                 + System.getProperties().get("user.dir"));
     }
 
+
     /**
      * Call this method from the command line.
-     * <p>
-     * <p>
      * <pre>
      *  java -cp license3j.jar com.javax0.license3j.License3j command options
      *   commands available:
@@ -64,7 +63,9 @@ public class License3j {
      *       decode
      * to get arguments to the different commands type the command w/o args
      * </pre>
-     * </p>
+     *
+     * @param args command line arguments
+     * @throws Exception when something goes wrong
      */
     public static void main(String[] args) throws Exception {
         commandLine = new CommandLineProcessor();
