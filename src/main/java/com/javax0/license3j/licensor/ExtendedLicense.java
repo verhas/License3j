@@ -82,7 +82,7 @@ public class ExtendedLicense extends License {
      * Generating UUID can be handy when you want to identify each license
      * individually. For example you want to store revocation information about
      * each license. The url to check the revocation may contain the
-     * <tt>${licenseId}</tt> place holder that will be replaced by the actual
+     * {@code $&#123;licenseId&#125;} place holder that will be replaced by the actual
      * uuid stored in the license.
      *
      * @return the generated uuid.

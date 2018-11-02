@@ -19,7 +19,7 @@ public class License3j {
 
     private static final String commandLineString = "java -cp license3j.jar com.javax0.license3j.License3j";
 
-    private static PrintStream errorOutput = System.err;
+    static PrintStream errorOutput = System.err;
     private static CommandLineProcessor commandLine;
 
     private static void printUsage(String[] args) {
