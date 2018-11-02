@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.verhas</groupId>
     <artifactId>license3j</artifactId>
@@ -7,37 +8,25 @@
     <packaging>jar</packaging>
 
     <name>License3j</name>
-    <description>https://github.com/verhas/License3j</description>
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-    <issueManagement>
-        <url>https://github.com/verhas/License3j/issues</url>
-        <system>GitHub Issues</system>
-    </issueManagement>
+    <description>Free license manager</description>
+    <url>https://github.com/verhas/License3j/tree/master</url>
     <licenses>
         <license>
-            <name>LGPL License</name>
-            <url>http://www.gnu.org/copyleft/lesser.html</url>
-            <distribution>repo</distribution>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
-    <scm>
-        <connection>scm:git:git@github.com:verhas/License3j.git</connection>
-        <url>https://github.com/verhas/License3j</url>
-        <developerConnection>scm:git:git@github.com:verhas/License3j.git</developerConnection>
-    </scm>
     <developers>
         <developer>
-            <email>peter@verhas.com</email>
             <name>Peter Verhas</name>
-            <url>https://github.com/verhas</url>
-            <id>verhas</id>
+            <email>peter@verhas.com</email>
         </developer>
     </developers>
+    <scm>
+        <connection>scm:git:git@github.com:verhas/License3j.git</connection>
+        <developerConnection>scm:git:ssh://github.com/verhas/License3j.git</developerConnection>
+        <url>https://github.com/verhas/License3j/tree/master</url>
+    </scm>
     <dependencies>
         <dependency>
             <groupId>org.bouncycastle</groupId>

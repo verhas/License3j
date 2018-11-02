@@ -18,6 +18,6 @@ script:
 
 install: mvn -X -Dgpg.skip -Dmaven.javadoc.skip=true clean install
 jdk:
- - oraclejdk10
+ - openjdk10
 
 sudo: false # faster builds
