@@ -14,13 +14,13 @@ public class FilesAre {
 
     public static boolean theSame(String fnA, String fnB)
             throws IOException {
-        final var linesA = new ArrayList<SourceLine>();
-        final var linesB = new ArrayList<SourceLine>();
-        try (final var rA = new BufferedReader(new FileReader(new File(fnA)));
-             final var rB = new BufferedReader(new FileReader(new File(fnB)))) {
+        final ArrayList linesA = new ArrayList<SourceLine>();
+        final ArrayList linesB = new ArrayList<SourceLine>();
+        try (final BufferedReader rA = new BufferedReader(new FileReader(new File(fnA)));
+             final BufferedReader rB = new BufferedReader(new FileReader(new File(fnB)))) {
             do {
-                final var a = new SourceLine(rA.readLine());
-                final var b = new SourceLine(rB.readLine());
+                final SourceLine a = new SourceLine(rA.readLine());
+                final SourceLine b = new SourceLine(rB.readLine());
                 if (bothAreEof(a, b)) {
                     return listAreTheSame(linesA, linesB);
                 }
@@ -51,11 +51,11 @@ public class FilesAre {
         }
         Collections.sort(linesA);
         Collections.sort(linesB);
-        var itA = linesA.<SourceLine>iterator();
-        var itB = linesB.<SourceLine>iterator();
+        Iterator<SourceLine> itA = linesA.<SourceLine>iterator();
+        Iterator<SourceLine> itB = linesB.<SourceLine>iterator();
         while (itA.hasNext()) {
-            final var a = itA.next();
-            final var b = itB.next();
+            final SourceLine a = itA.next();
+            final SourceLine b = itB.next();
             if (!a.equals(b)) {
                 return false;
             }

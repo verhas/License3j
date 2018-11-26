@@ -49,7 +49,7 @@ public class HardwareBinder {
     public static void main(final String[] args)
             throws UnsupportedEncodingException, SocketException,
             UnknownHostException {
-        final var hb = new HardwareBinder();
+        final HardwareBinder hb = new HardwareBinder();
         System.out.print(hb.getMachineIdString());
     }
 

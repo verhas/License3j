@@ -203,13 +203,13 @@ public class License {
      * @return the license as clear text
      */
     public String getLicenseString() {
-        final var baos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             if (licenseProperties != null) {
                 licenseProperties.store(baos, "-- license file");
             }
             baos.close();
-            final var loadedLicense = new String(baos.toByteArray());
+            final String loadedLicense = new String(baos.toByteArray());
             return loadedLicense.replaceAll("\r\n", "\n");
         } catch (final IOException ex) {
             return "";
@@ -366,14 +366,14 @@ public class License {
      */
     public License loadKeyRing(final InputStream in, final byte[] digest)
         throws IOException {
-        final var baos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int ch;
         while ((ch = in.read()) >= 0) {
             baos.write(ch);
         }
         publicKeyRing = baos.toByteArray();
         if (digest != null) {
-            final var calculatedDigest = calculatePublicKeyRingDigest();
+            final byte[] calculatedDigest = calculatePublicKeyRingDigest();
             for (int i = 0; i < calculatedDigest.length; i++) {
                 if (calculatedDigest[i] != (digest[i])) {
                     publicKeyRing = null;
@@ -392,10 +392,10 @@ public class License {
      * @return the digest as a byte array.
      */
     public byte[] calculatePublicKeyRingDigest() {
-        final var dig = new SHA512Digest();
+        final SHA512Digest dig = new SHA512Digest();
         dig.reset();
         dig.update(publicKeyRing, 0, publicKeyRing.length);
-        final var digest = new byte[dig.getDigestSize()];
+        final byte[] digest = new byte[dig.getDigestSize()];
         dig.doFinal(digest, 0);
         return digest;
     }
@@ -408,8 +408,8 @@ public class License {
      * @return the Java program code fragment as string.
      */
     public String dumpPublicKeyRingDigest() {
-        final var calculatedDigest = calculatePublicKeyRingDigest();
-        final var retval = new StringBuilder("byte [] digest = new byte[] {\n");
+        final byte[] calculatedDigest = calculatePublicKeyRingDigest();
+        final StringBuilder retval = new StringBuilder("byte [] digest = new byte[] {\n");
         for (int i = 0; i < calculatedDigest.length; i++) {
             int intVal = ((int) calculatedDigest[i]) & 0xff;
             retval.append(String.format("(byte)0x%02X, ", intVal));
@@ -452,13 +452,13 @@ public class License {
      */
     public License loadKey(final InputStream keyRing, final String user)
         throws IOException, PGPException {
-        final var decoder = PGPUtil.getDecoderStream(keyRing);
+        final InputStream decoder = PGPUtil.getDecoderStream(keyRing);
 
-        final var keyRingCollection = new JcaPGPSecretKeyRingCollection(decoder);
+        final JcaPGPSecretKeyRingCollection keyRingCollection = new JcaPGPSecretKeyRingCollection(decoder);
 
-        for (final var ring : in(keyRingCollection.getKeyRings())) {
-            for (final var key : in(ring.getSecretKeys())) {
-                for (final var keyUserId : inS(key.getUserIDs())) {
+        for (final PGPSecretKeyRing ring : in(keyRingCollection.getKeyRings())) {
+            for (final PGPSecretKey key : in(ring.getSecretKeys())) {
+                for (final String keyUserId : inS(key.getUserIDs())) {
                     if (PGPHelper.keyIsAppropriate(key, user, keyUserId)) {
                         cryptor.setKey(key);
                         return this;
@@ -481,7 +481,7 @@ public class License {
     public String encodeLicense(final String keyPassPhraseString)
         throws IOException, PGPException {
 
-        final var licensePlain = getLicenseString();
+        final String licensePlain = getLicenseString();
         return new String(cryptor.encodeLicense(keyPassPhraseString, licensePlain), DEFAULT_CHARSET);
     }
 
@@ -672,38 +672,38 @@ public class License {
         throws IOException, PGPException {
         final ByteArrayInputStream keyIn = new ByteArrayInputStream(
             publicKeyRing);
-        final var decoderInputStream = PGPUtil
+        final InputStream decoderInputStream = PGPUtil
             .getDecoderStream(inputStream);
 
-        var pgpFact = new JcaPGPObjectFactory(decoderInputStream);
+        JcaPGPObjectFactory pgpFact = new JcaPGPObjectFactory(decoderInputStream);
         final PGPCompressedData c1 = (PGPCompressedData) pgpFact.nextObject();
         notNull(c1);
         pgpFact = new JcaPGPObjectFactory(c1.getDataStream());
-        final var p1 = (PGPOnePassSignatureList) pgpFact.nextObject();
+        final PGPOnePassSignatureList p1 = (PGPOnePassSignatureList) pgpFact.nextObject();
 
         notNull(p1);
-        final var ops = p1.get(0);
-        final var p2 = (PGPLiteralData) pgpFact.nextObject();
+        final PGPOnePassSignature ops = p1.get(0);
+        final PGPLiteralData p2 = (PGPLiteralData) pgpFact.nextObject();
 
         notNull(p2);
-        final var dIn = p2.getInputStream();
+        final InputStream dIn = p2.getInputStream();
         notNull(dIn);
         int ch;
-        final var pgpRing =
+        final BcPGPPublicKeyRingCollection pgpRing =
             new BcPGPPublicKeyRingCollection(PGPUtil.getDecoderStream(keyIn));
         notNull(ops);
         decodeKeyId = ops.getKeyID();
 
-        final var decodeKey = pgpRing.getPublicKey(decodeKeyId);
-        final var out = new ByteArrayOutputStream();
+        final PGPPublicKey decodeKey = pgpRing.getPublicKey(decodeKeyId);
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {
-            final var cvBuilder = new JcaPGPContentVerifierBuilderProvider();
+            final JcaPGPContentVerifierBuilderProvider cvBuilder = new JcaPGPContentVerifierBuilderProvider();
             ops.init(cvBuilder, decodeKey);
             while ((ch = dIn.read()) >= 0) {
                 ops.update((byte) ch);
                 out.write(ch);
             }
-            final var p3 = (PGPSignatureList) pgpFact.nextObject();
+            final PGPSignatureList p3 = (PGPSignatureList) pgpFact.nextObject();
 
             if (ops.verify(p3.get(0))) {
                 if (charset == null) {

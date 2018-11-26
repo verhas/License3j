@@ -19,7 +19,7 @@ public class TestInterfaceSelector {
 
     private static InterfaceSelector newSut() {
 
-        final var sut = new InterfaceSelector() {
+        final InterfaceSelector sut = new InterfaceSelector() {
             boolean isSpecial(NetworkInterface netIf) throws SocketException {
                 return false;
             }
@@ -97,14 +97,14 @@ public class TestInterfaceSelector {
         }
 
         IfTest allowed(String... alloweds) {
-            for (var allowed : alloweds) {
+            for (String allowed : alloweds) {
                 sut.interfaceAllowed(allowed);
             }
             return this;
         }
 
         IfTest denied(String... denieds) {
-            for (var denied : denieds) {
+            for (String denied : denieds) {
                 sut.interfaceDenied(denied);
             }
             return this;

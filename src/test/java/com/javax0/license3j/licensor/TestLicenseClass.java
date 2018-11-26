@@ -60,7 +60,7 @@ public class TestLicenseClass {
     }
 
     private void createLicenseInputFile() throws IOException {
-        try (final var os = new FileOutputStream(licenseInputFile)) {
+        try (final FileOutputStream os = new FileOutputStream(licenseInputFile)) {
             os.write("feature=value\n".getBytes());
         }
     }
@@ -82,7 +82,7 @@ public class TestLicenseClass {
     @DisplayName("can calculate the public key ring digest properly")
     public void calculatesPublicKeyRingDigest() throws IOException,
             PGPException {
-        final var license = new License();
+        final License license = new License();
         license.loadKey(fromResource("secring.gpg"),
                 "Peter Verhas (licensor test key) <peter@verhas.com>");
         license.loadKeyRingFromResource("pubring.gpg", null);
@@ -95,7 +95,7 @@ public class TestLicenseClass {
     @DisplayName("can load the license from a file")
     public void licenseLoadedFromFileContainsFeatureAndValue()
             throws IOException {
-        final var license = new License();
+        final License license = new License();
         license.setLicense(new File(licenseInputFile));
         assertEquals("value", license.getFeature("feature"));
     }
@@ -104,9 +104,9 @@ public class TestLicenseClass {
     @Deprecated
     @DisplayName("can dump a license to a file and then read it back")
     public void dumpsLicenseToFilesAndReadsBack() throws IOException {
-        final var license = new License();
-        final var sb = new StringBuilder();
-        final var featureSetSize = 10;
+        final License license = new License();
+        final StringBuilder sb = new StringBuilder();
+        final int featureSetSize = 10;
         for (int i = 1; i < featureSetSize; i++) {
             sb.append("key").append(i).append("=value").append(i).append(
                     "\n");
@@ -131,7 +131,7 @@ public class TestLicenseClass {
     @Test
     @DisplayName("when the digest does not match it throws exception")
     public void wrongDigestCausesException() throws IOException {
-        final var lic = new License();
+        final License lic = new License();
         final byte[] myDigest = new byte[digest.length];
         System.arraycopy(digest, 0, myDigest, 0, digest.length);
         myDigest[myDigest.length - 1] = (byte) (myDigest[myDigest.length - 1] ^ 8);
@@ -145,7 +145,7 @@ public class TestLicenseClass {
     public void loadsEncodedLicenseString() throws IOException, PGPException,
             NoSuchAlgorithmException, NoSuchProviderException,
             SignatureException {
-        final var lic = new License();
+        final License lic = new License();
         lic.loadKeyRingFromResource("pubring.gpg", digest);
         lic.setLicenseEncoded("-----BEGIN PGP MESSAGE-----\n"
                 + "Version: BCPG v1.46\n"
@@ -169,7 +169,7 @@ public class TestLicenseClass {
     public void loadsEncodedLicenseFile() throws IOException, PGPException,
             NoSuchAlgorithmException, NoSuchProviderException,
             SignatureException {
-        final var lic = new License();
+        final License lic = new License();
         lic.loadKeyRingFromResource("pubring.gpg", digest);
         lic.setLicenseEncodedFromResource("license-encoded.txt", "utf-8");
         assertTrue(lic.isVerified());
@@ -183,13 +183,13 @@ public class TestLicenseClass {
     @Test
     @DisplayName("can encode license")
     public void encodesLicense1() throws IOException, PGPException {
-        final var license = new License();
+        final License license = new License();
         license.setLicense("");
         license.setFeature("a", "b");
         license.loadKey(new File(fromResource("secring.gpg")),
                 "Peter Verhas (licensor test key) <peter@verhas.com>");
-        final var encoded = license.encodeLicense("alma");
-        try (final var os = new FileOutputStream(licenseOutputTextFileName)) {
+        final String encoded = license.encodeLicense("alma");
+        try (final FileOutputStream os = new FileOutputStream(licenseOutputTextFileName)) {
             os.write(encoded.getBytes("utf-8"));
         }
     }
@@ -197,7 +197,7 @@ public class TestLicenseClass {
     @Test
     @DisplayName("can set a feature in a license and then retrieve it")
     public void canSetFeatureAndRetrieveOnFreshLicenseObject() {
-        final var license = new License();
+        final License license = new License();
         license.setFeature("a", "b");
         assertEquals("b", license.getFeature("a"));
     }
@@ -205,14 +205,14 @@ public class TestLicenseClass {
     @Test
     @DisplayName("gets null for any feature in an empty (no feature) license")
     public void getsNullForNonExistingFeatureOnFreshLicenseObject() {
-        final var license = new License();
+        final License license = new License();
         assertNull(license.getFeature("xxx"));
     }
 
     @Test
     @DisplayName("returns null if the feature does not exist in a license")
     public void getsNullForNonExistingFeature() {
-        final var license = new License();
+        final License license = new License();
         license.setFeature("a", "b");
         assertNull(license.getFeature("xxx"));
     }
@@ -220,8 +220,8 @@ public class TestLicenseClass {
     @Test
     @DisplayName("empty license dump is zero length")
     public void dumpsNothingFromFreshLicenseObject() throws IOException {
-        final var license = new License();
-        var baos = new ByteArrayOutputStream();
+        final License license = new License();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         license.dumpLicense(baos);
         assertEquals(0, baos.size());
     }
@@ -230,13 +230,13 @@ public class TestLicenseClass {
     @DisplayName("loading a key to a license with user name that is not in the gpg ring throws exception")
     public void loadingKeyWithBadNameThrowsException() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            final var license = new License();
+            final License license = new License();
             license.setLicense("");
             license.setFeature("a", "b");
             license.loadKey(new File(fromResource("secring.gpg")),
                     "Name that does not exist <peter@verhas.com>");
-            final var encoded = license.encodeLicense("alma");
-            try (final var os = new FileOutputStream(licenseOutputTextFileName)) {
+            final String encoded = license.encodeLicense("alma");
+            try (final FileOutputStream os = new FileOutputStream(licenseOutputTextFileName)) {
                 os.write(encoded.getBytes("utf-8"));
             }
         });
@@ -246,13 +246,13 @@ public class TestLicenseClass {
     @DisplayName("loading a key to a license with wrong password throws exception")
     public void loadingKeyWithBadPasswordThrowsException() {
         Assertions.assertThrows(PGPException.class, () -> {
-            final var license = new License();
+            final License license = new License();
             license.setLicense("");
             license.setFeature("a", "b");
             license.loadKey(new File(fromResource("secring.gpg")),
                     "Peter Verhas (licensor test key) <peter@verhas.com>");
-            final var encoded = license.encodeLicense("bad password");
-            try (final var os = new FileOutputStream(licenseOutputTextFileName)) {
+            final String encoded = license.encodeLicense("bad password");
+            try (final FileOutputStream os = new FileOutputStream(licenseOutputTextFileName)) {
                 os.write(encoded.getBytes("utf-8"));
             }
         });
@@ -262,9 +262,9 @@ public class TestLicenseClass {
     @DisplayName("license loaded from a file has the expected digest")
     public void licenseLoadedFromFileHasAppropriateDigest()
             throws IOException {
-        final var license = new License();
+        final License license = new License();
         license.loadKeyRing(new File(fromResource("pubring.gpg")), digest);
-        final var s = license.dumpPublicKeyRingDigest();
+        final String s = license.dumpPublicKeyRingDigest();
         assertEquals(digestReference, s);
     }
 
@@ -272,9 +272,9 @@ public class TestLicenseClass {
     @DisplayName("license loaded from a file given by the name has the expected digest")
     public void licenseLoadedFromFileNameHasAppropriateDigest()
             throws IOException {
-        final var license = new License();
+        final License license = new License();
         license.loadKeyRing(fromResource("pubring.gpg"), digest);
-        final var s = license.dumpPublicKeyRingDigest();
+        final String s = license.dumpPublicKeyRingDigest();
         assertEquals(digestReference, s);
     }
 
@@ -282,17 +282,17 @@ public class TestLicenseClass {
     @Deprecated
     public void testMain()
             throws IOException, PGPException {
-        final var license = new License();
+        final License license = new License();
         license.setLicense("");
         license.setFeature("a", "b");
         license.loadKey(fromResource("secring.gpg"),
                 "Peter Verhas (licensor test key) <peter@verhas.com>");
-        final var encoded = license.encodeLicense("alma");
-        try (final var os = new FileOutputStream(licenseOutputTextFileName)) {
+        final String encoded = license.encodeLicense("alma");
+        try (final FileOutputStream os = new FileOutputStream(licenseOutputTextFileName)) {
             os.write(encoded.getBytes("utf-8"));
         }
 
-        final var lic = new License();
+        final License lic = new License();
         lic.loadKeyRingFromResource("pubring.gpg", digest);
         lic.setLicenseEncodedFromFile(licenseOutputTextFileName);
         assertTrue(lic.isVerified());

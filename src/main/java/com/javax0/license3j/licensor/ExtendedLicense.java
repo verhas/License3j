@@ -48,8 +48,8 @@ public class ExtendedLicense extends License {
     public boolean isExpired() {
         boolean expired;
         try {
-            final var expiryDate = getFeature(EXPIRATION_DATE, Date.class);
-            final var today = new GregorianCalendar();
+            final Date expiryDate = getFeature(EXPIRATION_DATE, Date.class);
+            final GregorianCalendar today = new GregorianCalendar();
             today.set(Calendar.HOUR_OF_DAY, 0);
             today.set(Calendar.MINUTE, 0);
             today.set(Calendar.SECOND, 0);
@@ -88,7 +88,7 @@ public class ExtendedLicense extends License {
      * @return the generated uuid.
      */
     public UUID generateLicenseId() {
-        final var uuid = UUID.randomUUID();
+        final UUID uuid = UUID.randomUUID();
         setLicenseId(uuid);
         return uuid;
     }
@@ -133,7 +133,7 @@ public class ExtendedLicense extends License {
      * @param date the date to be stored for the feature name in the license
      */
     public void setFeature(final String name, final Date date) {
-        final var formatter = new SimpleDateFormat(DATE_FORMAT);
+        final SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
         setFeature(name, formatter.format(date));
     }
 
@@ -167,7 +167,7 @@ public class ExtendedLicense extends License {
      */
     public <T> T getFeature(final String name, final Class<? extends T> klass) {
         final T result;
-        final var resultString = getFeature(name);
+        final String resultString = getFeature(name);
         try {
             if (Integer.class == klass) {
                 result = (T) (Integer) Integer.parseInt(resultString);
@@ -207,7 +207,7 @@ public class ExtendedLicense extends License {
      */
     public URL getRevocationURL() throws MalformedURLException {
         URL url = null;
-        final var revocationURLTemplate = getFeature(REVOCATION_URL);
+        final String revocationURLTemplate = getFeature(REVOCATION_URL);
         final String revocationURL;
         if (revocationURLTemplate != null) {
             final UUID licenseId = getLicenseId();
@@ -291,14 +291,14 @@ public class ExtendedLicense extends License {
      * license is not revoked.
      */
     public boolean isRevoked(final boolean defaultRevocationState) {
-        var revoked = true;
+        boolean revoked = true;
         try {
-            final var url = getRevocationURL();
+            final URL url = getRevocationURL();
             if (url != null) {
-                final var connection = httpHandler.openConnection(url);
+                final URLConnection connection = httpHandler.openConnection(url);
                 doNotUseCache(connection);
                 if (connection instanceof HttpURLConnection) {
-                    final var httpUrlConnection = (HttpURLConnection) connection;
+                    final HttpURLConnection httpUrlConnection = (HttpURLConnection) connection;
                     httpUrlConnection.connect();
                     final int responseCode = httpHandler.getResponseCode(httpUrlConnection);
                     revoked = responseCode != 200;

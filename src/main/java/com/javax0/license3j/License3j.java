@@ -36,14 +36,14 @@ public class License3j {
                         + "arguments to the different commands type the command w/o args");
         if (args != null) {
             errorOutput.println("Arguments on the command line:");
-            var i = 1;
-            for (final var arg : args) {
+            int i = 1;
+            for (final String arg : args) {
                 errorOutput.println(i + ". " + arg);
                 i++;
             }
             errorOutput.println("Command line options:");
             i = 1;
-            for (final var opt : commandLine.getOptions().keySet()) {
+            for (final String opt : commandLine.getOptions().keySet()) {
                 errorOutput.println(i + ". option[" + opt + "]="
                         + commandLine.option(opt));
                 i++;
@@ -79,7 +79,7 @@ public class License3j {
             printUsage(args);
             return;
         }
-        var command = commandLine.getFiles().get(0);
+        String command = commandLine.getFiles().get(0);
 
         if ("encode".equals(command)) {
             // encode a license file
@@ -93,7 +93,7 @@ public class License3j {
 
     private void encode() throws Exception {
         try {
-            final var os = new FileOutputStream(commandLine.option("output"));
+            final OutputStream os = new FileOutputStream(commandLine.option("output"));
             os.write((new License().setLicense(
                     new File(commandLine.option("license-file")), "utf-8").loadKey(
                     commandLine.option("keyring-file"),
@@ -113,11 +113,11 @@ public class License3j {
 
     private void decode() throws Exception {
         try {
-            final var license = new License();
+            final License license = new License();
             if (license.loadKeyRing(commandLine.option("keyring-file"), null)
                     .setLicenseEncodedFromFile(
                             commandLine.option("license-file"), "utf-8").isVerified()) {
-                try (final var os = getOutput(); final Writer w = getOutputWriter(os);) {
+                try (final OutputStream os = getOutput(); final Writer w = getOutputWriter(os);) {
                     w.write("---LICENSE STRING PLAIN TEXT START\n");
                     w.flush();
                     license.dumpLicense(os);

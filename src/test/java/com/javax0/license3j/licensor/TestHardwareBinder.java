@@ -27,7 +27,7 @@ public class TestHardwareBinder {
         for (final boolean ignoreNetwork : falseTrue) {
             for (final boolean ignoreArchitecture : falseTrue) {
                 for (final boolean ignoreHostName : falseTrue) {
-                    final var hb = new HardwareBinder();
+                    final HardwareBinder hb = new HardwareBinder();
                     if (ignoreNetwork)
                         hb.ignoreNetwork();
                     if (ignoreArchitecture)
