@@ -7,6 +7,23 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Date;
 
+/**
+ * A feature is a single feature in a license. It has a name, a type and a value. The type can be one of the
+ * types that are defined in the enumeration {@link Type}.
+ *
+ * There is a utility class inside this class called {@link Create} that contains public static methods to
+ * create features for each type. Invoking one of those methods is the way to create a new feature instance.
+ * <p>
+ * A feature can be tested against the type calling one of the {@code boolean} methods {@code isXXX()},
+ * where  {@code XXX} is one
+ * of the types. Getting the value from a type should be via the methods {@code getXXX}, where, again, {@code XXX} is
+ * one of the types. Invoking {@code getXXX} for a feature that has a type that is not {@code XXX} will throw
+ * {@link IllegalArgumentException}.
+ * <p>
+ * Features can be serialized to a byte array invoking the method {@link #serialized()}. The same byte array can be
+ * used as an argument to the utility methog {@link Create#from(byte[])} to create a {@code Feature} of the same name
+ * and the same value.
+ */
 public class Feature {
     private static final int VARIABLE_LENGTH = -1;
     private final String name;
@@ -28,13 +45,14 @@ public class Feature {
         final var typeLength = Integer.BYTES;
         final var nameLength = Integer.BYTES + nameBuffer.length;
         final var valueLength = Integer.BYTES + value.length;
-        return ByteBuffer.allocate(typeLength + nameLength + valueLength)
+        final var buffer = ByteBuffer.allocate(typeLength + nameLength + valueLength)
                 .putInt(type.serialized)
-                .putInt(nameBuffer.length)
-                .putInt(value.length)
-                .put(nameBuffer)
-                .put(value)
-                .array();
+                .putInt(nameBuffer.length);
+        if (type.fixedSize == VARIABLE_LENGTH) {
+            buffer.putInt(value.length);
+        }
+        buffer.put(nameBuffer).put(value);
+        return buffer.array();
     }
 
     public boolean isBinary() {
@@ -53,8 +71,8 @@ public class Feature {
         return type == Type.SHORT;
     }
 
-    public boolean isInteger() {
-        return type == Type.INTEGER;
+    public boolean isInt() {
+        return type == Type.INT;
     }
 
     public boolean isLong() {
@@ -110,8 +128,8 @@ public class Feature {
     }
 
     public int getInt() {
-        if (type != Type.INTEGER) {
-            throw new IllegalArgumentException("Feature is not INTEGER");
+        if (type != Type.INT) {
+            throw new IllegalArgumentException("Feature is not INT");
         }
         return ByteBuffer.wrap(value).getInt();
     }
@@ -161,12 +179,12 @@ public class Feature {
         return new Date(ByteBuffer.wrap(value).getLong());
     }
 
-    public enum Type {
+    private enum Type {
         BINARY(1, VARIABLE_LENGTH),
         STRING(2, VARIABLE_LENGTH),
         BYTE(3, Byte.BYTES),
         SHORT(4, Short.BYTES),
-        INTEGER(5, Integer.BYTES), LONG(6, Long.BYTES),
+        INT(5, Integer.BYTES), LONG(6, Long.BYTES),
         FLOAT(7, Float.BYTES), DOUBLE(8, Double.BYTES),
 
         BIGINTEGER(9, VARIABLE_LENGTH), BIGDECIMAL(10, VARIABLE_LENGTH),
@@ -183,6 +201,9 @@ public class Feature {
     }
 
     public static class Create {
+        private Create() {
+        }
+
         private static void notNull(Object value) {
             if (value == null) {
                 throw new IllegalArgumentException("Cannot create a feature from null value.");
@@ -211,7 +232,7 @@ public class Feature {
 
         public static Feature intFeature(String name, Integer value) {
             notNull(value);
-            return new Feature(name, Type.INTEGER, ByteBuffer.allocate(Integer.BYTES).putInt(value).array());
+            return new Feature(name, Type.INT, ByteBuffer.allocate(Integer.BYTES).putInt(value).array());
         }
 
         public static Feature longFeature(String name, Long value) {
@@ -257,11 +278,7 @@ public class Feature {
             var typeSerialized = bb.getInt();
             final Type type = typeFrom(typeSerialized);
             final var nameLength = bb.getInt();
-            final var valueLength = bb.getInt();
-            if (type.fixedSize != VARIABLE_LENGTH && type.fixedSize != valueLength) {
-                throw new IllegalArgumentException("Cannot load a " + type.toString() + " type feature from " +
-                        valueLength + " bytes. It needs exactly " + type.fixedSize + " bytes.");
-            }
+            final var valueLength = type.fixedSize == VARIABLE_LENGTH ? bb.getInt() : type.fixedSize;
             final var expectedLength = Integer.BYTES * 3 + valueLength + nameLength;
             if (serialized.length != expectedLength) {
                 throw new IllegalArgumentException("Cannot load feature from a byte array that has "
