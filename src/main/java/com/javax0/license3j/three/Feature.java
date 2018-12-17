@@ -79,8 +79,8 @@ public class Feature {
         final var nameLength = Integer.BYTES + nameBuffer.length;
         final var valueLength = Integer.BYTES + value.length;
         final var buffer = ByteBuffer.allocate(typeLength + nameLength + valueLength)
-                .putInt(type.serialized)
-                .putInt(nameBuffer.length);
+            .putInt(type.serialized)
+            .putInt(nameBuffer.length);
         if (type.fixedSize == VARIABLE_LENGTH) {
             buffer.putInt(value.length);
         }
@@ -214,51 +214,51 @@ public class Feature {
 
     private enum Type {
         BINARY(1, VARIABLE_LENGTH,
-                Feature::getBinary,
-                (name, value) -> Create.binaryFeature(name, (byte[]) value),
-                ba -> Base64.getEncoder().encodeToString((byte[]) ba), enc -> Base64.getDecoder().decode(enc)),
+            Feature::getBinary,
+            (name, value) -> Create.binaryFeature(name, (byte[]) value),
+            ba -> Base64.getEncoder().encodeToString((byte[]) ba), enc -> Base64.getDecoder().decode(enc)),
         STRING(2, VARIABLE_LENGTH,
-                Feature::getString,
-                (name, value) -> Create.stringFeature(name, (String) value),
-                Object::toString, s -> s),
+            Feature::getString,
+            (name, value) -> Create.stringFeature(name, (String) value),
+            Object::toString, s -> s),
         BYTE(3, Byte.BYTES,
-                Feature::getByte,
-                (name, value) -> Create.byteFeature(name, (Byte) value),
-                b -> String.format("0x%02X", (byte) (Byte) b), NumericParser.Byte::parse),
+            Feature::getByte,
+            (name, value) -> Create.byteFeature(name, (Byte) value),
+            b -> String.format("0x%02X", (byte) (Byte) b), NumericParser.Byte::parse),
         SHORT(4, Short.BYTES,
-                Feature::getShort,
-                (name, value) -> Create.shortFeature(name, (Short) value),
-                Object::toString, NumericParser.Short::parse),
+            Feature::getShort,
+            (name, value) -> Create.shortFeature(name, (Short) value),
+            Object::toString, NumericParser.Short::parse),
         INT(5, Integer.BYTES,
-                Feature::getInt,
-                (name, value) -> Create.intFeature(name, (Integer) value),
-                Object::toString, NumericParser.Int::parse),
+            Feature::getInt,
+            (name, value) -> Create.intFeature(name, (Integer) value),
+            Object::toString, NumericParser.Int::parse),
         LONG(6, Long.BYTES,
-                Feature::getLong,
-                (name, value) -> Create.longFeature(name, (Long) value),
-                Object::toString, NumericParser.Long::parse),
+            Feature::getLong,
+            (name, value) -> Create.longFeature(name, (Long) value),
+            Object::toString, NumericParser.Long::parse),
         FLOAT(7, Float.BYTES,
-                Feature::getFloat,
-                (name, value) -> Create.floatFeature(name, (Float) value),
-                Object::toString, Float::parseFloat),
+            Feature::getFloat,
+            (name, value) -> Create.floatFeature(name, (Float) value),
+            Object::toString, Float::parseFloat),
         DOUBLE(8, Double.BYTES,
-                Feature::getDouble,
-                (name, value) -> Create.doubleFeature(name, (Double) value),
-                Object::toString, Double::parseDouble),
+            Feature::getDouble,
+            (name, value) -> Create.doubleFeature(name, (Double) value),
+            Object::toString, Double::parseDouble),
 
         BIGINTEGER(9, VARIABLE_LENGTH,
-                Feature::getBigInteger,
-                (name, value) -> Create.bigIntegerFeature(name, (BigInteger) value),
-                Object::toString, BigInteger::new),
+            Feature::getBigInteger,
+            (name, value) -> Create.bigIntegerFeature(name, (BigInteger) value),
+            Object::toString, BigInteger::new),
         BIGDECIMAL(10, VARIABLE_LENGTH,
-                Feature::getBigDecimal,
-                (name, value) -> Create.bigDecimalFeature(name, (BigDecimal) value),
-                Object::toString, BigDecimal::new),
+            Feature::getBigDecimal,
+            (name, value) -> Create.bigDecimalFeature(name, (BigDecimal) value),
+            Object::toString, BigDecimal::new),
 
         DATE(11, Long.BYTES,
-                Feature::getDate,
-                (name, value) -> Create.dateFeature(name, (Date) value),
-                Feature::dateFormat, Feature::dateParse);
+            Feature::getDate,
+            (name, value) -> Create.dateFeature(name, (Date) value),
+            Feature::dateFormat, Feature::dateParse);
 
         final int fixedSize;
         final int serialized;
@@ -279,6 +279,21 @@ public class Feature {
             this.unstringer = unstringer;
             this.factory = factory;
         }
+    }
+
+    static String[] splitString(String s) {
+        final var nameEnd = s.indexOf(":");
+        if (nameEnd == -1) {
+            throw new IllegalArgumentException("Feature string representation needs ':' after the name");
+        }
+        final var typeEnd = s.indexOf("=", nameEnd + 1);
+        if (typeEnd == -1) {
+            throw new IllegalArgumentException("Feature string representation needs '=' after the type");
+        }
+        final var name = s.substring(0, nameEnd).trim();
+        final var typeString = s.substring(nameEnd + 1, typeEnd).trim();
+        final var valueString = s.substring(typeEnd + 1);
+        return new String[]{name, typeString, valueString};
     }
 
     public static class Create {
@@ -341,9 +356,9 @@ public class Feature {
             notNull(value);
             byte[] b = value.unscaledValue().toByteArray();
             return new Feature(name, Type.BIGDECIMAL, ByteBuffer.allocate(Integer.BYTES + b.length)
-                    .put(b)
-                    .putInt(value.scale())
-                    .array());
+                .put(b)
+                .putInt(value.scale())
+                .array());
         }
 
         public static Feature dateFeature(String name, Date value) {
@@ -352,26 +367,14 @@ public class Feature {
         }
 
         public static Feature from(String s) {
-            final var nameEnd = s.indexOf(":");
-            if (nameEnd == -1) {
-                throw new IllegalArgumentException("Feature string representation needs ':' after the name");
-            }
-            final var typeEnd = s.indexOf("=", nameEnd + 1);
-            if (typeEnd == -1) {
-                throw new IllegalArgumentException("Feature string representation needs '=' after the type");
-            }
-            final var name = s.substring(0, nameEnd).trim();
-            final var typeString = s.substring(nameEnd + 1, typeEnd).trim();
-            final var valueString = s.substring(typeEnd + 1);
-            final var type = Type.valueOf(typeString);
-            final var value = type.unstringer.apply(valueString);
-            return type.factory.apply(name, value);
+            final var parts = Feature.splitString(s);
+            return getFeature(parts[0], parts[1], parts[2]);
         }
 
         public static Feature from(byte[] serialized) {
             if (serialized.length < Integer.BYTES * 3) {
                 throw new IllegalArgumentException("Cannot load feature from a byte array that has "
-                        + serialized.length + " bytes which is < " + (3 * Integer.BYTES));
+                    + serialized.length + " bytes which is < " + (3 * Integer.BYTES));
             }
             var bb = ByteBuffer.wrap(serialized);
             var typeSerialized = bb.getInt();
@@ -381,7 +384,7 @@ public class Feature {
             final var expectedLength = Integer.BYTES * 3 + valueLength + nameLength;
             if (serialized.length != expectedLength) {
                 throw new IllegalArgumentException("Cannot load feature from a byte array that has "
-                        + serialized.length + " bytes which is != " + expectedLength);
+                    + serialized.length + " bytes which is != " + expectedLength);
             }
             final var nameBuffer = new byte[nameLength];
             bb.get(nameBuffer);
@@ -401,6 +404,12 @@ public class Feature {
             }
             throw new IllegalArgumentException("The deserialized form has a type value " + typeSerialized + " which is not valid.");
         }
+    }
+
+    static Feature getFeature(String name, String typeString, String valueString) {
+        final var type = Type.valueOf(typeString);
+        final var value = type.unstringer.apply(valueString);
+        return type.factory.apply(name, value);
     }
 }
 
