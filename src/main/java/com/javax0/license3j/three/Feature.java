@@ -32,7 +32,7 @@ import java.util.function.Function;
  * and the same value.
  */
 public class Feature {
-    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
+    private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
     private static final int VARIABLE_LENGTH = -1;
     private final String name;
     private final Type type;
@@ -215,7 +215,7 @@ public class Feature {
         BYTE(3, Byte.BYTES,
                 Feature::getByte,
                 (name, value) -> Create.byteFeature(name,(Byte) value),
-                b -> String.format("0x%02X", b), NumericParser.Byte::parse),
+                b -> String.format("0x%02X", (byte)(Byte)b), NumericParser.Byte::parse),
         SHORT(4, Short.BYTES,
                 Feature::getShort,
                 (name, value) -> Create.shortFeature(name,(Short)value),
@@ -355,9 +355,6 @@ final BiFunction<String, Object, Feature> factory;
             final var typeString = s.substring(nameEnd+1,typeEnd).trim();
             final var valueString = s.substring(typeEnd+1);
             final var type = Type.valueOf(typeString);
-            if( type == null ){
-                throw new IllegalArgumentException("Type '"+typeString+"' is not implemented");
-            }
             final var value = type.unstringer.apply(valueString);
             return type.factory.apply(name,value);
         }
