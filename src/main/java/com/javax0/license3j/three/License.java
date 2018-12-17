@@ -1,5 +1,6 @@
 package com.javax0.license3j.three;
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,5 +21,23 @@ public class License {
         return features.put(name,feature);
     }
 
+    public byte[] serialized(){
+        final var featureNr = features.values().size();
+        byte[][] featuresSerialized = new byte[featureNr][];
+        var i = 0;
+        var size = 0;
+        for(final var feature : features.values()){
+            featuresSerialized[i] = feature.serialized();
+            size += featuresSerialized[i].length;
+            i++;
+        }
+
+        final var buffer = ByteBuffer.allocate(size + Integer.BYTES * featureNr);
+        for( final var featureSerialized :  featuresSerialized ){
+            buffer.putInt(featureSerialized.length);
+            buffer.put(featureSerialized);
+        }
+        return buffer.array();
+    }
 
 }
