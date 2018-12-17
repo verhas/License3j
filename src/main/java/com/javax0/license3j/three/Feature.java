@@ -1,16 +1,23 @@
 package com.javax0.license3j.three;
 
+import com.javax0.license3j.three.parsers.NumericParser;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * A feature is a single feature in a license. It has a name, a type and a value. The type can be one of the
  * types that are defined in the enumeration {@link Type}.
- *
+ * <p>
  * There is a utility class inside this class called {@link Create} that contains public static methods to
  * create features for each type. Invoking one of those methods is the way to create a new feature instance.
  * <p>
@@ -25,6 +32,7 @@ import java.util.Date;
  * and the same value.
  */
 public class Feature {
+    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
     private static final int VARIABLE_LENGTH = -1;
     private final String name;
     private final Type type;
@@ -36,8 +44,24 @@ public class Feature {
         this.value = value;
     }
 
+    private static String dateFormat(Object date) {
+        return new SimpleDateFormat(DATE_FORMAT).format(date);
+    }
+
+    private static Date dateParse(String date) {
+        try {
+            return new SimpleDateFormat(DATE_FORMAT).parse(date);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
     public String name() {
         return name;
+    }
+
+    public String toString() {
+        return name + ":" + type.toString() + "=" + type.stringer.apply(type.objecter.apply(this));
     }
 
     public byte[] serialized() {
@@ -180,29 +204,78 @@ public class Feature {
     }
 
     private enum Type {
-        BINARY(1, VARIABLE_LENGTH),
-        STRING(2, VARIABLE_LENGTH),
-        BYTE(3, Byte.BYTES),
-        SHORT(4, Short.BYTES),
-        INT(5, Integer.BYTES), LONG(6, Long.BYTES),
-        FLOAT(7, Float.BYTES), DOUBLE(8, Double.BYTES),
+        BINARY(1, VARIABLE_LENGTH,
+                Feature::getBinary,
+                (name, value) -> Create.binaryFeature(name,(byte[])value),
+                ba -> Base64.getEncoder().encodeToString((byte[]) ba), enc -> Base64.getDecoder().decode(enc)),
+        STRING(2, VARIABLE_LENGTH,
+                Feature::getString,
+                (name, value) -> Create.stringFeature(name,(String)value),
+                Object::toString, s -> s),
+        BYTE(3, Byte.BYTES,
+                Feature::getByte,
+                (name, value) -> Create.byteFeature(name,(Byte) value),
+                b -> String.format("0x%02X", b), NumericParser.Byte::parse),
+        SHORT(4, Short.BYTES,
+                Feature::getShort,
+                (name, value) -> Create.shortFeature(name,(Short)value),
+                Object::toString, NumericParser.Short::parse),
+        INT(5, Integer.BYTES,
+                Feature::getInt,
+                (name, value) -> Create.intFeature(name,(Integer) value),
+                Object::toString, NumericParser.Int::parse),
+        LONG(6, Long.BYTES,
+                Feature::getLong,
+                (name, value) -> Create.longFeature(name,(Long) value),
+                Object::toString, NumericParser.Long::parse),
+        FLOAT(7, Float.BYTES,
+                Feature::getFloat,
+                (name, value) -> Create.floatFeature(name,(Float) value),
+                Object::toString, Float::parseFloat),
+        DOUBLE(8, Double.BYTES,
+                Feature::getDouble,
+                (name, value) -> Create.doubleFeature(name,(Double) value),
+                Object::toString, Double::parseDouble),
 
-        BIGINTEGER(9, VARIABLE_LENGTH), BIGDECIMAL(10, VARIABLE_LENGTH),
+        BIGINTEGER(9, VARIABLE_LENGTH,
+                Feature::getBigInteger,
+                (name, value) -> Create.bigIntegerFeature(name,(BigInteger) value),
+                Object::toString, BigInteger::new),
+        BIGDECIMAL(10, VARIABLE_LENGTH,
+                Feature::getBigDecimal,
+                (name, value) -> Create.bigDecimalFeature(name,(BigDecimal) value),
+                Object::toString, BigDecimal::new),
 
-        DATE(11, Long.BYTES);
+        DATE(11, Long.BYTES,
+                Feature::getDate,
+                (name, value) -> Create.dateFeature(name,(Date)value),
+                Feature::dateFormat, Feature::dateParse);
 
         final int fixedSize;
         final int serialized;
-
-        Type(int serialized, int fixedSize) {
+        final Function<Object, String> stringer;
+        final Function<Feature, Object> objecter;
+        final Function<String, Object> unstringer;
+final BiFunction<String, Object, Feature> factory;
+        Type(int serialized,
+             int fixedSize,
+             Function<Feature, Object> objecter,
+             BiFunction<String, Object, Feature> factory, Function<Object, String> toStringer,
+             Function<String, Object> unstringer)
+        {
             this.serialized = serialized;
             this.fixedSize = fixedSize;
+            this.stringer = toStringer;
+            this.objecter = objecter;
+            this.unstringer = unstringer;
+            this.factory = factory;
         }
     }
 
     public static class Create {
         private Create() {
         }
+
 
         private static void notNull(Object value) {
             if (value == null) {
@@ -267,6 +340,26 @@ public class Feature {
         public static Feature dateFeature(String name, Date value) {
             notNull(value);
             return new Feature(name, Type.DATE, ByteBuffer.allocate(Long.BYTES).putLong(value.getTime()).array());
+        }
+
+        public static Feature from(String s){
+            final var nameEnd = s.indexOf(":");
+            if( nameEnd == -1 ){
+                throw new IllegalArgumentException("Feature string representation needs ':' after the name");
+            }
+            final var typeEnd = s.indexOf("=",nameEnd+1);
+            if( typeEnd == -1 ){
+                throw new IllegalArgumentException("Feature string representation needs '=' after the type");
+            }
+            final var name = s.substring(0,nameEnd).trim();
+            final var typeString = s.substring(nameEnd+1,typeEnd).trim();
+            final var valueString = s.substring(typeEnd+1);
+            final var type = Type.valueOf(typeString);
+            if( type == null ){
+                throw new IllegalArgumentException("Type '"+typeString+"' is not implemented");
+            }
+            final var value = type.unstringer.apply(valueString);
+            return type.factory.apply(name,value);
         }
 
         public static Feature from(byte[] serialized) {

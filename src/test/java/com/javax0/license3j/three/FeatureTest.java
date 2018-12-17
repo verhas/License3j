@@ -6,7 +6,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -341,6 +344,192 @@ public class FeatureTest {
         Assertions.assertTrue(Modifier.isPrivate(constructorModifiers), "The constructor of Feature has to be private.");
         constructor.setAccessible(true);
         return constructor;
+    }
+
+    @Test
+    @DisplayName("Binary feature is converted to string")
+    public void testBinaryToString() {
+        final var sut = Feature.Create.binaryFeature("name", new byte[]{(byte) 0xfe, (byte) 0x11, (byte) 0xAf});
+        Assertions.assertEquals("name:BINARY=/hGv", sut.toString());
+    }
+
+    @Test
+    @DisplayName("Binary feature is converted from string")
+    public void testBinaryFromString() {
+        final var sut = Feature.Create.from("name:BINARY=/hGv");
+        Assertions.assertEquals("name", sut.name());
+        Assertions.assertTrue(sut.isBinary());
+        byte[] b = sut.getBinary();
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(b[0], (byte) 0xfe),
+                () -> Assertions.assertEquals(b[1], (byte) 0x11),
+                () -> Assertions.assertEquals(b[2], (byte) 0xaf)
+        );
+    }
+
+    @Test
+    @DisplayName("String feature is converted from string")
+    public void testStringFromString() {
+        final var sut = Feature.Create.from("name:STRING=test \"string\\");
+        Assertions.assertEquals("name", sut.name());
+        Assertions.assertTrue(sut.isString());
+        Assertions.assertEquals("test \"string\\", sut.getString());
+    }
+
+    @Test
+    @DisplayName("byte feature is converted from string")
+    public void testByteFromString() {
+        final var sut = Feature.Create.from("name:BYTE=0xFE");
+        Assertions.assertEquals("name", sut.name());
+        Assertions.assertTrue(sut.isByte());
+        Assertions.assertEquals((byte) 0xFE, sut.getByte());
+    }
+
+    @Test
+    @DisplayName("short feature is converted from string")
+    public void testShortFromString() {
+        final var sut = Feature.Create.from("name:SHORT=0xFEFE");
+        Assertions.assertEquals("name", sut.name());
+        Assertions.assertTrue(sut.isShort());
+        Assertions.assertEquals((short) 0xfefe, sut.getShort());
+    }
+
+    @Test
+    @DisplayName("int feature is converted from string")
+    public void testIntFromString() {
+        final var sut = Feature.Create.from("name:INT=65342");
+        Assertions.assertEquals("name", sut.name());
+        Assertions.assertTrue(sut.isInt());
+        Assertions.assertEquals(65342, sut.getInt());
+    }
+
+    @Test
+    @DisplayName("long feature is converted from string")
+    public void testLongFromString() {
+        final var sut = Feature.Create.from("name:LONG=6534232122");
+        Assertions.assertEquals("name", sut.name());
+        Assertions.assertTrue(sut.isLong());
+        Assertions.assertEquals(6534232122L, sut.getLong());
+    }
+
+    @Test
+    @DisplayName("float feature is converted from string")
+    public void testFloatFromString() {
+        final var sut = Feature.Create.from("name:FLOAT=3.14");
+        Assertions.assertEquals("name", sut.name());
+        Assertions.assertTrue(sut.isFloat());
+        Assertions.assertEquals(3.14f, sut.getFloat());
+    }
+
+    @Test
+    @DisplayName("double feature is converted from string")
+    public void testDoubleFromString() {
+        final var sut = Feature.Create.from("name:DOUBLE=3.14d");
+        Assertions.assertEquals("name", sut.name());
+        Assertions.assertTrue(sut.isDouble());
+        Assertions.assertEquals(3.14, sut.getDouble());
+    }
+
+    @Test
+    @DisplayName("bigInteger feature is converted from string")
+    public void testBigIntegerFromString() {
+        final var sut = Feature.Create.from("name:BIGINTEGER=123456789012345678901234567890");
+        Assertions.assertEquals("name", sut.name());
+        Assertions.assertTrue(sut.isBigInteger());
+        Assertions.assertEquals(new BigInteger("123456789012345678901234567890"), sut.getBigInteger());
+    }
+
+    @Test
+    @DisplayName("bigDecimal feature is converted from string")
+    public void testBigDecimalFromString() {
+        final var sut = Feature.Create.from(
+                "name:BIGDECIMAL=123456789012345678901234567890.123456789012345678901234567890");
+        Assertions.assertEquals("name", sut.name());
+        Assertions.assertTrue(sut.isBigDecimal());
+        Assertions.assertEquals(new BigDecimal("123456789012345678901234567890.123456789012345678901234567890"),
+                sut.getBigDecimal());
+    }
+
+    @Test
+    @DisplayName("date feature is converted from string")
+    public void testDateFromString() {
+        final var sut = Feature.Create.from("name:DATE=2018-12-17 12:55:19.295");
+        Assertions.assertEquals("name", sut.name());
+        Assertions.assertTrue(sut.isDate());
+        Assertions.assertEquals(new Date(1545047719295L), sut.getDate());
+    }
+
+
+    @Test
+    @DisplayName("String feature is converted to string")
+    public void testStringToString() {
+        final var sut = Feature.Create.stringFeature("name", "test \"string\\ ");
+        Assertions.assertEquals("name:STRING=test \"string\\ ", sut.toString());
+    }
+
+    @Test
+    @DisplayName("Byte feature is converted to string")
+    public void testByteToString() {
+        final var sut = Feature.Create.byteFeature("name", (byte) 0xfe);
+        Assertions.assertEquals("name:BYTE=0xFE", sut.toString());
+    }
+
+    @Test
+    @DisplayName("Short feature is converted to string")
+    public void testShortToString() {
+        final var sut = Feature.Create.shortFeature("name", (short) 11);
+        Assertions.assertEquals("name:SHORT=11", sut.toString());
+    }
+
+    @Test
+    @DisplayName("Int feature is converted to string")
+    public void testIntToString() {
+        final var sut = Feature.Create.intFeature("name", 6000);
+        Assertions.assertEquals("name:INT=6000", sut.toString());
+    }
+
+    @Test
+    @DisplayName("Long feature is converted to string")
+    public void testLongToString() {
+        final var sut = Feature.Create.longFeature("name", 6000000000L);
+        Assertions.assertEquals("name:LONG=6000000000", sut.toString());
+    }
+
+    @Test
+    @DisplayName("Float feature is converted to string")
+    public void testFloatToString() {
+        final var sut = Feature.Create.floatFeature("name", 3.1415926f);
+        Assertions.assertEquals("name:FLOAT=3.1415925", sut.toString());
+    }
+
+    @Test
+    @DisplayName("Double feature is converted to string")
+    public void testDoubleToString() {
+        final var sut = Feature.Create.doubleFeature("name", 3.1415926d);
+        Assertions.assertEquals("name:DOUBLE=3.1415926", sut.toString());
+    }
+
+    @Test
+    @DisplayName("Biginteger feature is converted to string")
+    public void testBigintegerToString() {
+        final var sut = Feature.Create.bigIntegerFeature("name",
+                new BigInteger("123456789012345678901234567890123456789012345678901234567890123456789"));
+        Assertions.assertEquals("name:BIGINTEGER=123456789012345678901234567890123456789012345678901234567890123456789", sut.toString());
+    }
+
+    @Test
+    @DisplayName("Bigdecimal feature is converted to string")
+    public void testBigdecimalToString() {
+        final var sut = Feature.Create.bigDecimalFeature("name",
+                new BigDecimal("789012345678901234567890123456789.0123456789012345678901234567890123456789"));
+        Assertions.assertEquals("name:BIGDECIMAL=789012345678901234567890123456789.0123456789012345678901234567890123456789", sut.toString());
+    }
+
+    @Test
+    @DisplayName("Date feature is converted to string")
+    public void testDateToString() {
+        final var sut = Feature.Create.dateFeature("now", new Date(1545047719295L));
+        Assertions.assertEquals("now:DATE=2018-12-17 12:55:19.295", sut.toString());
     }
 }
 
