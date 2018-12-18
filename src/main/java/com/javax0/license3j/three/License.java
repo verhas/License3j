@@ -15,6 +15,11 @@ public class License {
     private static final int MAGIC = 0x21CE_4E_5E; // LICE(N=4E)SE
     final private Map<String, Feature> features = new HashMap<>();
 
+    public License(){
+            }
+    protected License(License license){
+        features.putAll(license.features);
+    }
     public Feature get(String name) {
         return features.get(name);
     }
@@ -57,8 +62,7 @@ public class License {
     @Override
     public String toString() {
         final var sb = new StringBuilder();
-        Feature[] features = this.features.values().toArray(new Feature[0]);
-        Arrays.sort(features, Comparator.comparing(Feature::name));
+        Feature[] features = featuresSorted();
         for (Feature feature : features) {
             final var valueString = feature.valueString();
             final String value =
@@ -67,6 +71,12 @@ public class License {
             sb.append(feature.toStringWith(value)).append("\n");
         }
         return sb.toString();
+    }
+
+    private Feature[] featuresSorted() {
+        Feature[] features = this.features.values().toArray(new Feature[0]);
+        Arrays.sort(features, Comparator.comparing(Feature::name));
+        return features;
     }
 
 
@@ -96,7 +106,7 @@ public class License {
         byte[][] featuresSerialized = new byte[featureNr][];
         var i = 0;
         var size = 0;
-        for (final var feature : features.values()) {
+        for (final var feature : featuresSorted()) {
             featuresSerialized[i] = feature.serialized();
             size += featuresSerialized[i].length;
             i++;

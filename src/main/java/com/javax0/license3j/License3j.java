@@ -23,7 +23,7 @@ public class License3j {
     private static CommandLineProcessor commandLine;
 
     private static void printUsage(String[] args) {
-        errorOutput.print("Usage: " + commandLineString + " decode options\n"
+        errorOutput.print("Usage: " + commandLineString + " command options\n"
                 + " mandatory options are: \n"
                 + "--license-file, --keyring-file, [ --output ] [--charset]\n");
         errorOutput
@@ -50,7 +50,7 @@ public class License3j {
             }
         }
         errorOutput.println("Current working directory "
-                + System.getProperties().get("user.dir"));
+                + new File(".").getAbsolutePath());
     }
 
 
@@ -79,11 +79,18 @@ public class License3j {
             printUsage(args);
             return;
         }
-        var command = commandLine.getFiles().get(0);
+        for (int i = 0; i < commandLine.getFiles().size(); i++) {
+            final var command = commandLine.getFiles().get(i);
 
+        }
+        switch (command) {
+            case "sign":
+                new License3j().encode();
+                break;
+            case
+        }
         if ("encode".equals(command)) {
             // encode a license file
-            new License3j().encode();
         }
         if ("decode".equals(command)) {
             new License3j().decode();
