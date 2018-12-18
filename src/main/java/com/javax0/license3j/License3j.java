@@ -24,16 +24,16 @@ public class License3j {
 
     private static void printUsage(String[] args) {
         errorOutput.print("Usage: " + commandLineString + " command options\n"
-                + " mandatory options are: \n"
-                + "--license-file, --keyring-file, [ --output ] [--charset]\n");
+            + " mandatory options are: \n"
+            + "--license-file, --keyring-file, [ --output ] [--charset]\n");
         errorOutput
-                .println("Usage: "
-                        + commandLineString
-                        + " command options\n"
-                        + "commands available: \n"
-                        + "      * encode\n"
-                        + "      * decode\n"
-                        + "arguments to the different commands type the command w/o args");
+            .println("Usage: "
+                + commandLineString
+                + " command options\n"
+                + "commands available: \n"
+                + "      * encode\n"
+                + "      * decode\n"
+                + "arguments to the different commands type the command w/o args");
         if (args != null) {
             errorOutput.println("Arguments on the command line:");
             var i = 1;
@@ -45,12 +45,12 @@ public class License3j {
             i = 1;
             for (final var opt : commandLine.getOptions().keySet()) {
                 errorOutput.println(i + ". option[" + opt + "]="
-                        + commandLine.option(opt));
+                    + commandLine.option(opt));
                 i++;
             }
         }
         errorOutput.println("Current working directory "
-                + new File(".").getAbsolutePath());
+            + new File(".").getAbsolutePath());
     }
 
 
@@ -68,115 +68,13 @@ public class License3j {
      * @throws Exception when something goes wrong
      */
     public static void main(String[] args) throws Exception {
-        commandLine = new CommandLineProcessor();
         if (args == null || args.length == 0) {
             printUsage(args);
             return;
         }
 
-        commandLine.process(args);
-        if (commandLine.getFiles().size() < 1) {
-            printUsage(args);
-            return;
-        }
-        for (int i = 0; i < commandLine.getFiles().size(); i++) {
-            final var command = commandLine.getFiles().get(i);
-
-        }
-        switch (command) {
-            case "sign":
-                new License3j().encode();
-                break;
-            case
-        }
-        if ("encode".equals(command)) {
-            // encode a license file
-        }
-        if ("decode".equals(command)) {
-            new License3j().decode();
-        }
-
+        final var app = new CommandLineApp(args);
+        app.execute();
     }
 
-    private void encode() throws Exception {
-        try {
-            final var os = new FileOutputStream(commandLine.option("output"));
-            os.write((new License().setLicense(
-                    new File(commandLine.option("license-file")), "utf-8").loadKey(
-                    commandLine.option("keyring-file"),
-                    commandLine.option("key")).encodeLicense(commandLine
-                    .option("password"))).getBytes("utf-8"));
-            os.close();
-        } catch (Exception e) {
-            errorOutput
-                    .print("Usage: "
-                            + commandLineString
-                            + " encode options\n"
-                            + " mandatory options are: \n"
-                            + "--license-file, --keyring-file, --key, --password, --output\n");
-            throw e;
-        }
-    }
-
-    private void decode() throws Exception {
-        try {
-            final var license = new License();
-            if (license.loadKeyRing(commandLine.option("keyring-file"), null)
-                    .setLicenseEncodedFromFile(
-                            commandLine.option("license-file"), "utf-8").isVerified()) {
-                try (final var os = getOutput(); final Writer w = getOutputWriter(os);) {
-                    w.write("---LICENSE STRING PLAIN TEXT START\n");
-                    w.flush();
-                    license.dumpLicense(os);
-                    w.write("---LICENSE STRING PLAIN TEXT END\n");
-                    w.write("Encoding license key id=" + license.getDecodeKeyId() + "L\n");
-                    w.write("---KEY RING DIGEST START\n");
-                    w.write(license.dumpPublicKeyRingDigest());
-                    w.write("---KEY RING DIGEST END\n");
-                }
-            } else {
-                errorOutput.println("The license can not be verified.");
-            }
-        } catch (Exception e) {
-            printUsage(null);
-            e.printStackTrace(errorOutput);
-            throw e;
-        }
-    }
-
-    /**
-     * Get the output writer from the previously identified output stream.
-     * The writer simply wraps the output stream using the default charset or
-     * the charset specified on the command line using the option {@code charset}.
-     *
-     * @param os the output stream
-     * @return the created writer object
-     * @throws UnsupportedEncodingException if the specified encoding
-     *                                      is not supported by the environment
-     */
-    private Writer getOutputWriter(OutputStream os) throws UnsupportedEncodingException {
-        if (commandLine.optionExists("charset")) {
-            return new OutputStreamWriter(os, commandLine.option("charset"));
-        } else {
-            // default charset and not UTF-8 because the aim is not system independence but
-            // rather readability when the characters are sent to the system console
-            return new OutputStreamWriter(os);
-        }
-    }
-
-    /**
-     * Get the output for the program. If nothing is configured then this is
-     * {@code System.out}. If the command line contains the option {@code output}
-     * then the file named in the option will be the output.
-     *
-     * @return the output to be used by the program to write text to
-     * @throws FileNotFoundException if the comnmand line specified file is not found
-     */
-    private OutputStream getOutput() throws FileNotFoundException {
-        if (commandLine.optionExists("output")) {
-            return new FileOutputStream(commandLine.option("output"));
-        } else {
-            return System.out;
-        }
-    }
 }

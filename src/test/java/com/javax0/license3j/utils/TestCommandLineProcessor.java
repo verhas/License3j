@@ -10,7 +10,7 @@ public class TestCommandLineProcessor {
 			"--arg2=value2", "-arg3", "value3", "fileNameParameter",
 			"---dashFile", "--arg4", "-arg5" };
 
-	private static final CommandLineProcessor processor = new CommandLineProcessor();
+	private static final CommandLineProcessor processor = new CommandLineProcessor(commands, optiona);
 
 	@BeforeAll
 	public static void processCommandLine() {
@@ -19,13 +19,13 @@ public class TestCommandLineProcessor {
 
 	@Test
 	public void doesNotThrowExceptionWithNoArg() {
-		CommandLineProcessor processorEmptyLine = new CommandLineProcessor();
+		CommandLineProcessor processorEmptyLine = new CommandLineProcessor(commands, optiona);
 		processorEmptyLine.process(new String[] {});
 	}
 
 	@Test
 	public void doesNotThrowExceptionWithNullArg() {
-		CommandLineProcessor processorNullLine = new CommandLineProcessor();
+		CommandLineProcessor processorNullLine = new CommandLineProcessor(commands, optiona);
 		processorNullLine.process(null);
 	}
 
@@ -38,12 +38,12 @@ public class TestCommandLineProcessor {
 
 	@Test
 	public void processesProperlyFormattedFileNameParameters() {
-		Assertions.assertEquals("fileNameParameter", processor.getFiles().get(0));
+		Assertions.assertEquals("fileNameParameter", processor.getCommands().get(0));
 	}
 
 	@Test
 	public void processesFileNameParametersStartingWithDash() {
-		Assertions.assertEquals("-dashFile", processor.getFiles().get(1));
+		Assertions.assertEquals("-dashFile", processor.getCommands().get(1));
 	}
 
 	@Test
@@ -61,7 +61,7 @@ public class TestCommandLineProcessor {
 
 	@Test
 	public void nonExistingOptionsAreReportedAsNonExisting() {
-		CommandLineProcessor processor = new CommandLineProcessor();
+		CommandLineProcessor processor = new CommandLineProcessor(commands, optiona);
 		Assertions.assertFalse(processor.optionExists("arg0"));
 	}
 }
