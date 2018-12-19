@@ -8,6 +8,13 @@ public class CommandLineProcessor {
     private final Map<String, Optional<String>> options = new HashMap<>();
     private final List<String> commands = new ArrayList<>();
 
+    public String[] allCommands(){
+        return commanda;
+    }
+    public String[] allOptions(){
+        return optiona;
+    }
+
     /**
      * Create a new command line processor object.
      *
@@ -51,7 +58,7 @@ public class CommandLineProcessor {
      * @return the value of the option
      */
     public Optional<String> option(String name) {
-        return getOptions().get(name);
+        return getOptions().containsKey(name) ? getOptions().get(name) : Optional.empty();
     }
 
     /**
@@ -119,9 +126,9 @@ public class CommandLineProcessor {
     private String findIt(String s, String[] strings) {
         final var matches = Arrays.stream(strings).filter(command -> command.startsWith(s)).count();
         if (matches > 1) {
-            throw new IllegalArgumentException("Command " + s + " is ambiguous");
+            throw new IllegalArgumentException("Command/option " + s + " is ambiguous");
         }
         return Arrays.stream(strings).filter(command -> command.startsWith(s)).findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("Command " + s + " does not exist."));
+            .orElseThrow(() -> new IllegalArgumentException("Command/option " + s + " does not exist."));
     }
 }

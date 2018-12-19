@@ -1,8 +1,14 @@
 package com.javax0.license3j.three;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.security.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A license describes the rights that a certain user has. The rights are represented by {@link Feature}s.
@@ -13,18 +19,51 @@ import java.util.*;
  */
 public class License {
     private static final int MAGIC = 0x21CE_4E_5E; // LICE(N=4E)SE
+    private static final String SIGNATURE_KEY = "licenseSignature";
+    private static final String DIGEST_KEY = "signatureDigest";
     final private Map<String, Feature> features = new HashMap<>();
 
-    public License(){
-            }
-    protected License(License license){
+    public License() {
+    }
+
+    protected License(License license) {
         features.putAll(license.features);
     }
+
     public Feature get(String name) {
         return features.get(name);
     }
 
+    public void sign(PrivateKey key, String digest) throws NoSuchAlgorithmException, NoSuchPaddingException,
+            InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+        add(Feature.Create.stringFeature(DIGEST_KEY, digest));
+        final var digester = MessageDigest.getInstance(digest);
+        final var ser = unsigned();
+        final var digestValue = digester.digest(ser);
+        final var cipher = Cipher.getInstance(key.getAlgorithm());
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        final var signature = cipher.doFinal(digestValue);
+        add(signature);
+    }
+
+    public boolean isOK(PublicKey key) {
+        try {
+            final var digester = MessageDigest.getInstance(get(DIGEST_KEY).getString());
+            final var ser = unsigned();
+            final var digestValue = digester.digest(ser);
+            final var cipher = Cipher.getInstance(key.getAlgorithm());
+            cipher.init(Cipher.DECRYPT_MODE, key);
+            final var sigDigest = cipher.doFinal(getSignature());
+            return Arrays.equals(digestValue, sigDigest);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public Feature add(Feature feature) {
+        if (feature.name().equals(SIGNATURE_KEY) && !feature.isBinary()) {
+            throw new IllegalArgumentException("Signature of a license has to be binary.");
+        }
         return features.put(feature.name(), feature);
     }
 
@@ -36,7 +75,7 @@ public class License {
      * <pre>
      *     name:TYPE=value
      * </pre>
-     *
+     * <p>
      * when the value is multiline then it is converted to be multiline. Multiline strings are represented as usually
      * in unix, whith the HERE_STRING. The value in this case starts right after the {@code =} character with {@code <<}
      * characters and a string to the end of the line that does not appear as a single line inside the string value.
@@ -44,16 +83,16 @@ public class License {
      * For example:
      *
      * <pre>
-     *     feature name : STRING =<<END
+     *     feature name : STRING =&lt;&lt;END
      *   this is
      *     a multi-line
      *       string
      * END
      * </pre>
-     *
+     * <p>
      * In this example the string {@code END} singals the end of the string and the lines between are part of the
      * strings. A feature string is also converted to multi-line representation if it happens to start with the
-     * characters {@code <<}.
+     * characters {@code &lt;&lt;}.
      * <p>
      * The generated string can be used as argument to {@link Create#from(String)}.
      *
@@ -62,20 +101,20 @@ public class License {
     @Override
     public String toString() {
         final var sb = new StringBuilder();
-        Feature[] features = featuresSorted();
+        Feature[] features = featuresSorted(Set.of());
         for (Feature feature : features) {
             final var valueString = feature.valueString();
             final String value =
-                valueString.contains("\n") || valueString.startsWith("<<")
-                    ? multilineValueString(valueString) : valueString;
+                    valueString.contains("\n") || valueString.startsWith("<<")
+                            ? multilineValueString(valueString) : valueString;
             sb.append(feature.toStringWith(value)).append("\n");
         }
         return sb.toString();
     }
 
-    private Feature[] featuresSorted() {
-        Feature[] features = this.features.values().toArray(new Feature[0]);
-        Arrays.sort(features, Comparator.comparing(Feature::name));
+    private Feature[] featuresSorted(Set<String> excluded) {
+        Feature[] features = this.features.values().stream().filter(f -> !excluded.contains(f.name()))
+                .sorted(Comparator.comparing(Feature::name)).collect(Collectors.toList()).toArray(new Feature[0]);
         return features;
     }
 
@@ -102,11 +141,28 @@ public class License {
     }
 
     public byte[] serialized() {
-        final var featureNr = features.values().size();
+        return serialized(Set.of());
+    }
+
+    public byte[] unsigned() {
+        return serialized(Set.of(SIGNATURE_KEY));
+    }
+
+    public void add(byte[] signature) {
+        add(Feature.Create.binaryFeature(SIGNATURE_KEY, signature));
+    }
+
+    public byte[] getSignature() {
+        return get(SIGNATURE_KEY).getBinary();
+    }
+
+    private byte[] serialized(Set<String> excluded) {
+        Feature[] includedFeatures = featuresSorted(excluded);
+        final var featureNr = includedFeatures.length;
         byte[][] featuresSerialized = new byte[featureNr][];
         var i = 0;
         var size = 0;
-        for (final var feature : featuresSorted()) {
+        for (final var feature : includedFeatures) {
             featuresSerialized[i] = feature.serialized();
             size += featuresSerialized[i].length;
             i++;
@@ -188,5 +244,4 @@ public class License {
             return license;
         }
     }
-
 }

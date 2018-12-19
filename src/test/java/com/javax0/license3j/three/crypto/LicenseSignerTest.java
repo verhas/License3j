@@ -18,10 +18,9 @@ public class LicenseSignerTest {
         final var keyPair = LicenseKeyPair.Create.from("RSA", 2048);
         final var license = new License();
         license.add(Feature.Create.stringFeature("owner","Peter Verhas"));
-        final var signer = new LicenseSigner(keyPair.getPair().getPrivate(),license);
-        final var signedLicense = signer.sign();
-        Assertions.assertTrue(signedLicense.isOK(keyPair.getPair().getPublic()));
-        signedLicense.getSignature()[0] = 0;
-        Assertions.assertFalse(signedLicense.isOK(keyPair.getPair().getPublic()));
+        license.sign(keyPair.getPair().getPrivate(),"SHA-512");
+        Assertions.assertTrue(license.isOK(keyPair.getPair().getPublic()));
+        license.getSignature()[0] = 0;
+        Assertions.assertFalse(license.isOK(keyPair.getPair().getPublic()));
     }
 }
