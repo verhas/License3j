@@ -22,9 +22,9 @@ public class CommandLineApp {
     public static final String ALGORITHM = "algorithm";
     public static final String SIZE = "size";
     public static final String FORMAT = "format";
-    public static final String TEXT = "text";
-    public static final String BINARY = "binary";
-    public static final String BASE_64 = "base64";
+    public static final String TEXT = "TEXT";
+    public static final String BINARY = "BINARY";
+    public static final String BASE_64 = "BASE64";
     private List<String> errors = new ArrayList<>();
     private List<String> messages = new ArrayList<>();
     private License license;
@@ -33,16 +33,16 @@ public class CommandLineApp {
     private String line;
     private CommandDefinition[] commandDefinitions = {
             command("feature", ".+", this::feature, "name:TYPE=value"),
-            command("loadLicense", "(?:format=(text|binary|base64)\\s+)(.+)|([^=]+)",
-                    this::loadLicense, "[format=text*|binary|base64] fileName"),
-            command("saveLicense", "(?:format=(text|binary|base64)\\s+)(.+)|([^=]+)",
-                    this::saveLicense, "[format=text*|binary|base64] fileName"),
-            command("loadPrivateKey", ".+", this::loadPrivateKey, "[format=binary|base64] keyFile=xxx"),
-            command("loadPublicKey", ".+", this::loadPublicKey, "[format=binary|base64] keyFile=xxx"),
+            command("loadLicense", "(?:format=(TEXT|BINARY|BASE64)\\s+)(.+)|([^=]+)",
+                    this::loadLicense, "[format=TEXT*|BIINARY|BASE64] fileName"),
+            command("saveLicense", "(?:format=(TEXT|BINARY|BASE64)\\s+)(.+)|([^=]+)",
+                    this::saveLicense, "[format=TEXT*|BINARY|BASE64] fileName"),
+            command("loadPrivateKey", ".+", this::loadPrivateKey, "[format=BINARY|BASE64] keyFile=xxx"),
+            command("loadPublicKey", ".+", this::loadPublicKey, "[format=BINARY|BASE64] keyFile=xxx"),
             command("sign", "(?:digest=(.*))?", this::sign, "[digest=SHA-512]"),
             command("verify", "^$", this::verify, ">>no argument<<"),
             command("generateKeys", ".+",
-                    this::generate, "[algorithm=RSA] [size=2048] [format=text] public=xxx private=xxx"),
+                    this::generate, "[algorithm=RSA] [size=2048] [format=BINARY|BASE64] public=xxx private=xxx"),
             command("newLicense", "^$", this::newLicense, ">>no argument<<")
     };
     private String keyword;
@@ -143,7 +143,7 @@ public class CommandLineApp {
                 PUBLIC_KEY_FILE, PRIVATE_KEY_FILE));
         final var algorithm = pars.getOrDefault(ALGORITHM, "RSA");
         final var sizeString = pars.getOrDefault(SIZE, "2048");
-        final var format = pars.getOrDefault(FORMAT, BINARY);
+        final var format = IOFormat.valueOf(pars.getOrDefault(FORMAT, BINARY));
         final var publicKeyFile = pars.get(PUBLIC_KEY_FILE);
         final var privateKeyFile = pars.get(PRIVATE_KEY_FILE);
         if (publicKeyFile == null || privateKeyFile == null) {

@@ -22,13 +22,13 @@ public class KeyPairWriter implements Closeable {
         this(new File(priv), new File(publ));
     }
 
-    public void write(LicenseKeyPair pair, String format) throws IOException {
+    public void write(LicenseKeyPair pair, IOFormat format) throws IOException {
         switch (format) {
-            case "binary":
+            case BINARY:
                 osPrivate.write(pair.getPrivate());
                 osPublic.write(pair.getPublic());
                 return;
-            case "base64":
+            case BASE64:
                 osPrivate.write(Base64.getEncoder().encode(pair.getPrivate()));
                 osPublic.write(Base64.getEncoder().encode(pair.getPublic()));
                 return;
