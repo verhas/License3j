@@ -464,7 +464,7 @@ public class FeatureTest {
     @DisplayName("String feature is converted to string")
     public void testStringToString() {
         final var sut = Feature.Create.stringFeature("name", "test \"string\\ ");
-        Assertions.assertEquals("name:STRING=test \"string\\ ", sut.toString());
+        Assertions.assertEquals("name=test \"string\\ ", sut.toString());
     }
 
     @Test

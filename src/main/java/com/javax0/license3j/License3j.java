@@ -6,12 +6,12 @@ import com.javax0.license3j.utils.CommandLineProcessor;
 import java.io.*;
 
 /**
- * A sample command line tool application that
+ * A sample keyword line tool application that
  * demonstrate the use of license3j
  * and also a nice tool to help development.
  * –
  * Simple class containing public static main to encode and decode licenses from
- * the command line.
+ * the keyword line.
  *
  * @author Peter Verhas
  */
@@ -23,19 +23,19 @@ public class License3j {
     private static CommandLineProcessor commandLine;
 
     private static void printUsage(String[] args) {
-        errorOutput.print("Usage: " + commandLineString + " command options\n"
+        errorOutput.print("Usage: " + commandLineString + " keyword options\n"
             + " mandatory options are: \n"
             + "--license-file, --keyring-file, [ --output ] [--charset]\n");
         errorOutput
             .println("Usage: "
                 + commandLineString
-                + " command options\n"
+                + " keyword options\n"
                 + "commands available: \n"
                 + "      * encode\n"
                 + "      * decode\n"
-                + "arguments to the different commands type the command w/o args");
+                + "arguments to the different commands type the keyword w/o args");
         if (args != null) {
-            errorOutput.println("Arguments on the command line:");
+            errorOutput.println("Arguments on the keyword line:");
             var i = 1;
             for (final var arg : args) {
                 errorOutput.println(i + ". " + arg);
@@ -55,16 +55,16 @@ public class License3j {
 
 
     /**
-     * Call this method from the command line.
+     * Call this method from the keyword line.
      * <pre>
-     *  java -cp license3j.jar com.javax0.license3j.License3j command options
+     *  java -cp license3j.jar com.javax0.license3j.License3j keyword options
      *   commands available:
      *       encode
      *       decode
-     * to get arguments to the different commands type the command w/o args
+     * to get arguments to the different commands type the keyword w/o args
      * </pre>
      *
-     * @param args command line arguments
+     * @param args keyword line arguments
      * @throws Exception when something goes wrong
      */
     public static void main(String[] args) throws Exception {
@@ -73,8 +73,8 @@ public class License3j {
             return;
         }
 
-        final var app = new CommandLineApp(args);
-        app.execute();
+        final var app = new CommandLineApp();
+        app.execute(String.join(" ",args));
     }
 
 }

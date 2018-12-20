@@ -3,7 +3,7 @@
 Table of content
 
 * [this file:](https://github.com/verhas/License3j/wiki/Home) is what you are reading
-* [tutorial:](https://github.com/verhas/License3j/wiki/tuto) how to manage keys and encode license from the command line
+* [tutorial:](https://github.com/verhas/License3j/wiki/tuto) how to manage keys and encode license from the keyword line
 * [sample:](https://github.com/verhas/License3j/wiki/sample) how to load and check encoded license in your program
 * [mac address binding:](https://github.com/verhas/License3j/wiki/macaddr-binding) how to bind license to Ethernet addresses
 
@@ -73,7 +73,7 @@ However we provided a little [document](https://github.com/verhas/License3j/wiki
 to help your first steps to create your licenses. This document tells you how to
 create your key ring files, add keys to it and how to encode a license under
 Windows using the bat file `license3j.bat` Encoding under Unix is
-similar using Java command line.
+similar using Java keyword line.
 
 ## Download and Installation
 

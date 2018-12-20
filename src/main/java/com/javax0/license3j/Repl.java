@@ -20,26 +20,25 @@ public class Repl {
         } else {
             console = new ConsoleConsole();
         }
-        final var app = new CommandLineApp(args);
-        app.execute();
+        final var app = new CommandLineApp();
         for (; ; ) {
             final var line = console.readLine("L3j> $ ");
             if (line == null) {
                 return;
             }
-            if (line.trim().equalsIgnoreCase("")) {
+            final var lineT = line.trim();
+            if (lineT.equalsIgnoreCase("")) {
                 continue;
             }
-            if (line.trim().trim().equals("exit")) {
+            if (lineT.trim().equals("exit")) {
                 return;
             }
-            if (line.trim().startsWith("!")) {
-                shell(line.trim().substring(1));
+            if (lineT.startsWith("!")) {
+                shell(lineT.substring(1));
                 continue;
             }
-            String[] params = line.trim().split("\\s+");
             try {
-                app.execute(params);
+                app.execute(lineT);
             } catch (Exception e) {
                 say("[EXCEPTION] " + e);
                 say("[INFO] %s", app.usage());

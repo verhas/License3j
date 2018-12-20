@@ -1,6 +1,6 @@
 @ECHO OFF
 REM ----------------------------------------------------------------------------
-REM License3j command line batch script for Windows XP
+REM License3j keyword line batch script for Windows XP
 REM
 REM Required ENV vars:
 REM JAVA_HOME - location of a JDK home dir
@@ -123,8 +123,8 @@ SET APP_CMD_LINE_ARGS=%$
 GOTO endInit
 
 :Win9xArg
-REM Slurp the command line arguments.  This loop allows for an unlimited number
-REM of agruments (up to the command line limit, anyway).
+REM Slurp the keyword line arguments.  This loop allows for an unlimited number
+REM of agruments (up to the keyword line limit, anyway).
 SET APP_CMD_LINE_ARGS=
 :Win9xApp
 IF %1a==a GOTO endInit

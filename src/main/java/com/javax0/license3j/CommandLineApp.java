@@ -3,77 +3,151 @@ package com.javax0.license3j;
 import com.javax0.license3j.three.Feature;
 import com.javax0.license3j.three.License;
 import com.javax0.license3j.three.crypto.LicenseKeyPair;
-import com.javax0.license3j.three.io.IOFormat;
-import com.javax0.license3j.three.io.KeyPairWriter;
-import com.javax0.license3j.three.io.LicenseReader;
-import com.javax0.license3j.three.io.LicenseWriter;
-import com.javax0.license3j.utils.CommandLineProcessor;
+import com.javax0.license3j.three.io.*;
+import com.javax0.license3j.utils.ParameterParser;
 
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CommandLineApp {
-    private CommandLineProcessor commandLine;
+    public static final String PUBLIC_KEY_FILE = "publicKeyFile";
+    public static final String PRIVATE_KEY_FILE = "privateKeyFile";
+    public static final String KEY_FILE = "keyFile";
+    public static final String ALGORITHM = "algorithm";
+    public static final String SIZE = "size";
+    public static final String FORMAT = "format";
+    public static final String TEXT = "text";
+    public static final String BINARY = "binary";
+    public static final String BASE_64 = "base64";
     private List<String> errors = new ArrayList<>();
     private List<String> messages = new ArrayList<>();
     private License license;
     private LicenseKeyPair keyPair;
+    private Matcher matcher;
+    private String line;
+    private CommandDefinition[] commandDefinitions = {
+            command("feature", ".+", this::feature, "name:TYPE=value"),
+            command("loadLicense", "(?:format=(text|binary|base64)\\s+)(.+)|([^=]+)",
+                    this::loadLicense, "[format=text*|binary|base64] fileName"),
+            command("saveLicense", "(?:format=(text|binary|base64)\\s+)(.+)|([^=]+)",
+                    this::saveLicense, "[format=text*|binary|base64] fileName"),
+            command("loadPrivateKey", ".+", this::loadPrivateKey, "[format=binary|base64] keyFile=xxx"),
+            command("loadPublicKey", ".+", this::loadPublicKey, "[format=binary|base64] keyFile=xxx"),
+            command("sign", "(?:digest=(.*))?", this::sign, "[digest=SHA-512]"),
+            command("verify", "^$", this::verify, ">>no argument<<"),
+            command("generateKeys", ".+",
+                    this::generate, "[algorithm=RSA] [size=2048] [format=text] public=xxx private=xxx"),
+            command("newLicense", "^$", this::newLicense, ">>no argument<<")
+    };
+    private String keyword;
 
-    public CommandLineApp(String[] args) {
-        reset();
-        commandLine.process(args);
+    private static CommandDefinition command(String command, String regex, Runnable executor, String usage) {
+        return new CommandDefinition(command, regex, executor, usage);
     }
 
-    public static void saveLicense(CommandLineApp it) {
-        if (it.license == null) {
-            it.error("There is no license to save.");
-            return;
-        }
-        final var outputFile = it.commandLine.option("licenseFile");
-        if (!outputFile.isPresent()) {
-            it.error(Commands.SAVE_LICENSE.text() + " needs output file specified using the option 'licenseFile'");
+    public void saveLicense() {
+        if (license == null) {
+            error("There is no license to save.");
             return;
         }
         try {
-            final var reader = new LicenseWriter(outputFile.get());
-            final var format = it.commandLine.option("outputFormat").orElse("text");
+            final var reader = new LicenseWriter(getLicenseFileName());
+            final var format = getLicenseFormat();
             switch (format) {
-                case "text":
-                    reader.write(it.license, IOFormat.STRING);
+                case TEXT:
+                    reader.write(license, IOFormat.STRING);
                     break;
-                case "binary":
-                    reader.write(it.license, IOFormat.BINARY);
+                case BINARY:
+                    reader.write(license, IOFormat.BINARY);
                     break;
-                case "base64":
-                    reader.write(it.license, IOFormat.BASE64);
+                case BASE_64:
+                    reader.write(license, IOFormat.BASE64);
                     break;
                 default:
-                    it.error("Invalid format to write the license: " + format);
+                    error("Invalid format to write the license: " + format);
                     return;
             }
-            it.message("License was saved into the file " + new File(outputFile.get()).getAbsolutePath());
+            message("License was saved into the file " + new File(line).getAbsolutePath());
         } catch (IOException e) {
-            it.error("Error writing license file " + e);
+            error("Error writing license file " + e);
         }
     }
 
-    public static void generate(CommandLineApp it) {
-        if (it.keyPair != null) {
-            it.error("Cannot generate key pair when there are already keys.");
+    public void loadPrivateKey() {
+        if (keyPair != null && keyPair.getPair() != null && keyPair.getPair().getPrivate() != null) {
+            message("Overriding old key from file");
+        }
+        final var pars = ParameterParser.parse(line, Set.of(FORMAT, KEY_FILE));
+        final var keyFile = pars.get(KEY_FILE);
+        if (keyFile == null) {
+            messages = new ArrayList<>();
+            error("keyFile has to be specified from where the key is loaded");
+        }
+        final var format = IOFormat.valueOf(pars.getOrDefault(FORMAT, BINARY).toUpperCase());
+        try (final var reader = new KeyPairReader(keyFile)) {
+            keyPair = merge(keyPair, reader.readPrivate(format));
+            final var keyPath = new File(keyFile).getAbsolutePath();
+            message("Private key loaded from" + keyPath);
+        } catch (Exception e) {
+            error("An exception occurred loading the key: " + e);
+            e.printStackTrace();
+        }
+    }
+
+    public void loadPublicKey() {
+        if (keyPair != null && keyPair.getPair() != null && keyPair.getPair().getPrivate() != null) {
+            message("Overriding old key from file");
+        }
+        final var pars = ParameterParser.parse(line, Set.of(FORMAT, KEY_FILE));
+        final var keyFile = pars.get(KEY_FILE);
+        if (keyFile == null) {
+            messages = new ArrayList<>();
+            error("keyFile has to be specified from where the key is loaded");
+        }
+        final var format = IOFormat.valueOf(pars.getOrDefault(FORMAT, BINARY).toUpperCase());
+        try (final var reader = new KeyPairReader(keyFile)) {
+            keyPair = merge(keyPair, reader.readPublic(format));
+            final var keyPath = new File(keyFile).getAbsolutePath();
+            message("Public key loaded from" + keyPath);
+        } catch (Exception e) {
+            error("An exception occurred loading the keys: " + e);
+            e.printStackTrace();
+        }
+    }
+
+    private LicenseKeyPair merge(LicenseKeyPair oldKp, LicenseKeyPair newKp) {
+        if (oldKp == null) {
+            return newKp;
+        }
+        if (newKp.getPair().getPublic() != null) {
+            return LicenseKeyPair.Create.from(newKp.getPair().getPublic(), oldKp.getPair().getPrivate());
+        }
+        if (newKp.getPair().getPrivate() != null) {
+            return LicenseKeyPair.Create.from(oldKp.getPair().getPublic(), newKp.getPair().getPrivate());
+        }
+        return oldKp;
+    }
+
+    public void generate() {
+        if (keyPair != null) {
+            error("Cannot generate key pair when there are already keys.");
             return;
         }
-        final var algorithm = it.commandLine.option("algorithm").orElse("RSA");
-        final var sizeString = it.commandLine.option("size").orElse("2048");
-        final var format = it.commandLine.option("format").orElse("binary");
-        final var publicKeyFile = it.commandLine.option("publicKeyFile");
-        final var privateKeyFile = it.commandLine.option("privateKeyFile");
-        if (!publicKeyFile.isPresent() || !privateKeyFile.isPresent()) {
-            it.error("Keypair generation needs output files specified where keys are to be saved. " +
+        final var pars = ParameterParser.parse(line, Set.of(ALGORITHM, SIZE, FORMAT,
+                PUBLIC_KEY_FILE, PRIVATE_KEY_FILE));
+        final var algorithm = pars.getOrDefault(ALGORITHM, "RSA");
+        final var sizeString = pars.getOrDefault(SIZE, "2048");
+        final var format = pars.getOrDefault(FORMAT, BINARY);
+        final var publicKeyFile = pars.get(PUBLIC_KEY_FILE);
+        final var privateKeyFile = pars.get(PRIVATE_KEY_FILE);
+        if (publicKeyFile == null || privateKeyFile == null) {
+            error("Keypair generation needs output files specified where keys are to be saved. " +
                     "Use options 'publicKeyFile' and 'privateKeyFile'");
             return;
         }
@@ -81,79 +155,78 @@ public class CommandLineApp {
         try {
             size = Integer.parseInt(sizeString);
         } catch (NumberFormatException e) {
-            it.error("Option size has to be a positive decimal integer value. " +
+            error("Option size has to be a positive decimal integer value. " +
                     sizeString + " does not qualify as such.");
             return;
         }
-        it.generateKeys(algorithm, size);
-        try (final var writer = new KeyPairWriter(privateKeyFile.get(), publicKeyFile.get())) {
-            writer.write(it.keyPair, format);
-            final var privateKeyPath = new File(privateKeyFile.get()).getAbsolutePath();
-            it.message("Private key saved to " + privateKeyPath);
-            it.message("Public key saved to " + new File(publicKeyFile.get()).getAbsolutePath());
+        generateKeys(algorithm, size);
+        try (final var writer = new KeyPairWriter(privateKeyFile, publicKeyFile)) {
+            writer.write(keyPair, format);
+            final var privateKeyPath = new File(privateKeyFile).getAbsolutePath();
+            message("Private key saved to " + privateKeyPath);
+            message("Public key saved to " + new File(publicKeyFile).getAbsolutePath());
         } catch (IOException e) {
-            it.error("An exception occured saving the keys: " + e);
+            error("An exception occurred saving the keys: " + e);
         }
     }
 
-    public static void verify(CommandLineApp it) {
-        if( it.license.isOK(it.keyPair.getPair().getPublic())){
-            it.message("License is properly signed.");
-        }else{
-            it.error("License is not signed properly.");
+    public void verify() {
+        if (license.isOK(keyPair.getPair().getPublic())) {
+            message("License is properly signed.");
+        } else {
+            error("License is not signed properly.");
         }
     }
 
-    public static void sign(CommandLineApp it) {
+    public void sign() {
         try {
-            it.license.sign(it.keyPair.getPair().getPrivate(), "SHA-512");
-        }catch(Exception e){
+            final var digest = matcher.group(1) == null ? "SHA-512" : matcher.group(1);
+            license.sign(keyPair.getPair().getPrivate(), digest);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static void feature(CommandLineApp it) {
-        if (it.license == null) {
-            it.error("Feature can not be added when there is no license loaded. Use 'loadLicense' or 'newLicense'");
+    public void feature() {
+        if (license == null) {
+            error("Feature can not be added when there is no license loaded. Use 'loadLicense' or 'newLicense'");
             return;
         }
-        final var value = it.commandLine.option("value");
-        if (!value.isPresent()) {
-            it.error("to add a feature you have to specify the value of it. Use the option 'value'");
-            return;
-        }
-        it.license.add(Feature.Create.from(value.get()));
+        license.add(Feature.Create.from(line));
     }
 
-    public static void newLicense(CommandLineApp it) {
-        it.license = new License();
+    public void newLicense() {
+        license = new License();
     }
 
-    public static void loadLicense(CommandLineApp it) {
-        final var inputFile = it.commandLine.option("input");
-        if (!inputFile.isPresent()) {
-            it.error(Commands.LOAD_LICENSE.text() + " needs input file specified using the option 'input'");
-            return;
-        }
+    public void loadLicense() {
         try {
-            final var reader = new LicenseReader(inputFile.get());
-            final var format = it.commandLine.option("inputFormat").orElse("text");
+            final LicenseReader reader = new LicenseReader(getLicenseFileName());
+            final String format = getLicenseFormat();
             switch (format) {
-                case "text":
-                    it.license = reader.read(IOFormat.STRING);
+                case TEXT:
+                    license = reader.read(IOFormat.STRING);
                     break;
-                case "binary":
-                    it.license = reader.read(IOFormat.BINARY);
+                case BINARY:
+                    license = reader.read(IOFormat.BINARY);
                     break;
-                case "base64":
-                    it.license = reader.read(IOFormat.BASE64);
+                case BASE_64:
+                    license = reader.read(IOFormat.BASE64);
                     break;
                 default:
-                    it.error("Invalid format to read the license: " + format);
+                    error("Invalid format to read the license: " + format);
             }
         } catch (IOException e) {
-            it.error("Error reading license file " + e);
+            error("Error reading license file " + e);
         }
+    }
+
+    private String getLicenseFormat() {
+        return matcher.group(1) == null ? TEXT : matcher.group(1);
+    }
+
+    private String getLicenseFileName() {
+        return matcher.group(matcher.group(1) == null ? 3 : 2);
     }
 
     private void generateKeys(String algorithm, int size) {
@@ -180,43 +253,49 @@ public class CommandLineApp {
         messages.add(s);
     }
 
-    private void reset() {
-        commandLine =
-                new CommandLineProcessor(
-                        Arrays.stream(Commands.values()).map(Commands::text).toArray(String[]::new),
-                        new String[]{
-                                "input",
-                                "licenseFile",
-                                "inputFormat",
-                                "outputFormat",
-                                "privateKeyFile",
-                                "publicKeyFile",
-                                "size",
-                                "algorithm",
-                                "value"
-                        });
-        errors = new ArrayList<>();
-        messages = new ArrayList<>();
-    }
 
     public String usage() {
         final var sb = new StringBuilder();
-        sb.append("Usage: command options command options ... \n");
+        sb.append("Usage: keyword options keyword options ... \n");
         sb.append("Commands implemented:\n");
-        for (var command : commandLine.allCommands()) {
-            sb.append("    " + command + "\n");
-        }
-        sb.append("Options implemented:\n");
-        for (var option : commandLine.allOptions()) {
-            sb.append("    " + option + "\n");
+        for (var command : commandDefinitions) {
+            sb.append("    " + command.keyword + " " + command.usage + "\n");
         }
         return sb.toString();
     }
 
-    public void execute(String[] args) {
-        reset();
-        commandLine.process(args);
-        execute();
+    public void execute(String line) {
+        errors = new ArrayList<>();
+        messages = new ArrayList<>();
+        final var trimmedLine = line.trim();
+        final var words = trimmedLine.split("\\s+");
+        if (words.length == 0) {
+            return;
+        }
+        keyword = words[0];
+        this.line = trimmedLine.substring(keyword.length()).trim();
+        CommandDefinition cd = null;
+        for (final var command : commandDefinitions) {
+            if (command.keyword.startsWith(keyword)) {
+                if (cd == null) {
+                    cd = command;
+                } else {
+                    error("command '" + keyword + "' is ambiguous");
+                    return;
+                }
+            }
+        }
+        if (cd == null) {
+            error("command '" + keyword + "' is not defined");
+            return;
+        }
+        matcher = cd.regex.matcher(this.line);
+        if (!matcher.matches()) {
+            error("command '" + line + "' syntax is erroneous");
+            error("usage: " + cd.keyword + " " + cd.usage);
+            return;
+        }
+        cd.executor.run();
         printApplicationState();
     }
 
@@ -245,37 +324,18 @@ public class CommandLineApp {
         }
     }
 
-    public void execute() {
-        for (int i = 0; i < commandLine.getCommands().size(); i++) {
-            final var commandString = commandLine.getCommands().get(i);
-            for (final var command : Commands.values()) {
-                if (command.text().equals(commandString)) {
-                    command.command.accept(this);
-                }
-            }
+    private static final class CommandDefinition {
+        final String keyword;
+        final Pattern regex;
+        final Runnable executor;
+        final String usage;
+
+        private CommandDefinition(String keyword, String regex, Runnable executor, String usage) {
+            this.keyword = keyword;
+            this.regex = Pattern.compile(regex);
+            this.executor = executor;
+            this.usage = usage;
         }
     }
-
-    private enum Commands {
-        LOAD_LICENSE("loadLicense", CommandLineApp::loadLicense),
-        SIGN("sign", CommandLineApp::sign),
-        VERIFY("verify", CommandLineApp::verify),
-        GENERATE("generate", CommandLineApp::generate),
-        SAVE_LICENSE("saveLicense", CommandLineApp::saveLicense),
-        FEATURE("feature", CommandLineApp::feature),
-        NEW_LICENSE("newLicense", CommandLineApp::newLicense);
-        private final String text;
-        private final Consumer<CommandLineApp> command;
-
-        Commands(String text, Consumer<CommandLineApp> command) {
-            this.text = text;
-            this.command = command;
-        }
-
-        String text() {
-            return text;
-        }
-    }
-
 
 }
