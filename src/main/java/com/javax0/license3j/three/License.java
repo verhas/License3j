@@ -4,6 +4,9 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.security.*;
@@ -215,33 +218,36 @@ public class License {
          */
         public static License from(final String text) {
             final var license = new License();
-            String[] lines = text.split("\n");
-            int i = 0;
-            String line = lines[i++];
-            while (i < lines.length) {
-                final var parts = Feature.splitString(line);
-                final var name = parts[0];
-                final var typeString = parts[1];
-                var valueString = parts[2];
-                if (valueString.startsWith("<<")) {
-                    final var endLine = valueString.substring(2).trim();
-                    final var sb = new StringBuilder();
-                    while (i < lines.length) {
-                        final var valueNextLine = lines[i++];
-                        if (valueNextLine.trim().equals(endLine)) {
-                            break;
-                        } else {
-                            sb.append(valueNextLine);
-                        }
-                    }
-                    valueString = sb.toString();
+            try( var reader = new BufferedReader(new StringReader(text))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    final var parts = Feature.splitString(line);
+                    final var name = parts[0];
+                    final var typeString = parts[1];
+                    final var valueString = getValueString(reader, parts[2]);
+                    license.add(Feature.getFeature(name, typeString, valueString));
                 }
-                license.add(Feature.getFeature(name, typeString, valueString));
-                if (i < lines.length) {
-                    line = lines[i++];
-                }
+                return license;
+            }catch(IOException e){
+                throw new IllegalArgumentException(e);
             }
-            return license;
+        }
+
+        private static String getValueString(BufferedReader reader, String valueString) throws IOException {
+            if (valueString.startsWith("<<")) {
+                final var endLine = valueString.substring(2).trim();
+                final var sb = new StringBuilder();
+                String valueNextLine;
+                while ((valueNextLine=reader.readLine()) != null ) {
+                    if (valueNextLine.trim().equals(endLine)) {
+                        break;
+                    } else {
+                        sb.append(valueNextLine);
+                    }
+                }
+                valueString = sb.toString();
+            }
+            return valueString;
         }
     }
 }
