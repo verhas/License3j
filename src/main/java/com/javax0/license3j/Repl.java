@@ -11,6 +11,10 @@ public class Repl {
     }
 
     public static void main(String[] args) {
+        if (args.length > 0) {
+            execFile(args[0], new CommandLineApp());
+            return;
+        }
         say("License3j REPL");
         say("CDW is %s", new File(".").getAbsolutePath());
         final LocalConsole console;
@@ -21,6 +25,11 @@ public class Repl {
             console = new ConsoleConsole();
         }
         final var app = new CommandLineApp();
+        final var startupFile = new File(".license3j");
+        if (startupFile.exists()) {
+            say("Executing startup file %s", startupFile.getAbsolutePath());
+            execFile(startupFile.getAbsolutePath(), app);
+        }
         for (; ; ) {
             final var line = console.readLine("L3j> $ ");
             if (line == null) {
@@ -33,28 +42,56 @@ public class Repl {
             if (lineT.trim().equals("exit")) {
                 return;
             }
+            if (lineT.trim().startsWith(".")) {
+                execFile(lineT.trim().substring(1).stripLeading(), app);
+                continue;
+            }
             if (lineT.startsWith("!")) {
                 shell(lineT.substring(1));
                 continue;
             }
             try {
                 app.execute(lineT);
+                app.printApplicationState();
             } catch (Exception e) {
                 say("[EXCEPTION] " + e);
                 say("[INFO] %s", app.usage());
             }
-            final var errors = app.getErrors();
-            if (!errors.isEmpty()) {
-                for (String error : errors) {
-                    say("[ERROR] " + error);
+            displayErrorsAndMessages(app);
+        }
+    }
+
+    static void displayErrorsAndMessages(CommandLineApp app) {
+        final var errors = app.getErrors();
+        if (!errors.isEmpty()) {
+            for (String error : errors) {
+                say("[ERROR] " + error);
+            }
+        }
+        final var messages = app.getMessages();
+        if (!messages.isEmpty()) {
+            for (String message : messages) {
+                say("[INFO] " + message);
+            }
+        }
+    }
+
+    private static void execFile(String fileName, CommandLineApp app) {
+        say("[INFO] Executing '%s'", fileName);
+        try (final var reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().length() > 0) {
+                    try {
+                        app.execute(line);
+                    } catch (Exception e) {
+                        say("[EXCEPTION] " + e);
+                    }
+                    displayErrorsAndMessages(app);
                 }
             }
-            final var messages = app.getMessages();
-            if (!messages.isEmpty()) {
-                for (String message : messages) {
-                    say("[INFO] " + message);
-                }
-            }
+        } catch (Exception e) {
+            say("[EXCEPTION] " + e);
         }
     }
 
@@ -67,10 +104,10 @@ public class Repl {
             final Process process;
             if (isWindows) {
                 process = Runtime.getRuntime()
-                        .exec(String.format("cmd.exe /c %s", s));
+                    .exec(String.format("cmd.exe /c %s", s));
             } else {
                 process = Runtime.getRuntime()
-                        .exec(String.format("sh -c %s", s));
+                    .exec(String.format("sh -c %s", s));
             }
             final var sb = new StringBuilder();
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -98,7 +135,7 @@ public class Repl {
 
     private static class BufferedReaderConsole implements LocalConsole {
         private final BufferedReader reader =
-                new BufferedReader(new InputStreamReader(System.in));
+            new BufferedReader(new InputStreamReader(System.in));
 
         public String readLine(String msg) {
             try {

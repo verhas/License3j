@@ -34,7 +34,7 @@ public class ParameterParser {
             }
         }
         if( found == null ){
-            throw new IllegalArgumentException(prefix + "is not an allowed parameter");
+            throw new IllegalArgumentException(prefix + " is not an allowed parameter");
         }
         return found;
     }

@@ -6,8 +6,11 @@ import com.javax0.license3j.three.crypto.LicenseKeyPair;
 import com.javax0.license3j.three.io.*;
 import com.javax0.license3j.utils.ParameterParser;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,23 +35,42 @@ public class CommandLineApp {
     private Matcher matcher;
     private String line;
     private CommandDefinition[] commandDefinitions = {
-            command("feature", ".+", this::feature, "name:TYPE=value"),
-            command("loadLicense", "(?:format=(TEXT|BINARY|BASE64)\\s+)(.+)|([^=]+)",
-                    this::loadLicense, "[format=TEXT*|BIINARY|BASE64] fileName"),
-            command("saveLicense", "(?:format=(TEXT|BINARY|BASE64)\\s+)(.+)|([^=]+)",
-                    this::saveLicense, "[format=TEXT*|BINARY|BASE64] fileName"),
-            command("loadPrivateKey", ".+", this::loadPrivateKey, "[format=BINARY|BASE64] keyFile=xxx"),
-            command("loadPublicKey", ".+", this::loadPublicKey, "[format=BINARY|BASE64] keyFile=xxx"),
-            command("sign", "(?:digest=(.*))?", this::sign, "[digest=SHA-512]"),
-            command("verify", "^$", this::verify, ">>no argument<<"),
-            command("generateKeys", ".+",
-                    this::generate, "[algorithm=RSA] [size=2048] [format=BINARY|BASE64] public=xxx private=xxx"),
-            command("newLicense", "^$", this::newLicense, ">>no argument<<")
+        command("feature", ".+", this::feature, "name:TYPE=value"),
+        command("licenseLoad", "(?:format=(TEXT|BINARY|BASE64)\\s+)(.+)|([^=]+)",
+            this::loadLicense, "[format=TEXT*|BIINARY|BASE64] fileName"),
+        command("saveLicense", "(?:format=(TEXT|BINARY|BASE64)\\s+)(.+)|([^=]+)",
+            this::saveLicense, "[format=TEXT*|BINARY|BASE64] fileName"),
+        command("loadPrivateKey", ".+", this::loadPrivateKey, "[format=BINARY|BASE64] keyFile=xxx"),
+        command("loadPublicKey", ".+", this::loadPublicKey, "[format=BINARY|BASE64] keyFile=xxx"),
+        command("sign", "(?:digest=(.*))?", this::sign, "[digest=SHA-512]"),
+        command("verify", "^$", this::verify, ">>no argument<<"),
+        command("generateKeys", ".+",
+            this::generate, "[algorithm=RSA] [size=2048] [format=BINARY|BASE64] public=xxx private=xxx"),
+        command("newLicense", "^$", this::newLicense, ">>no argument<<"),
+        command("dump", "^$", this::dumpLicense, ">>no argument<<"),
+        command("digestPublicKey", "^$", this::digestPublicKey, ">>no argument<<")
+
     };
     private String keyword;
 
     private static CommandDefinition command(String command, String regex, Runnable executor, String usage) {
         return new CommandDefinition(command, regex, executor, usage);
+    }
+
+    public void dumpLicense() {
+        if (license == null) {
+            error("There is no license to show.");
+            return;
+        }
+        try {
+            final var baos = new ByteArrayOutputStream();
+            final var reader = new LicenseWriter(baos);
+            reader.write(license, IOFormat.STRING);
+            message("License:\n" + new String(baos.toByteArray(), StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            error("Error writing license file " + e);
+        }
+
     }
 
     public void saveLicense() {
@@ -134,13 +156,38 @@ public class CommandLineApp {
         return oldKp;
     }
 
+    public void digestPublicKey() {
+        try {
+            if (keyPair == null) {
+                error("There is no public key loaded");
+                return;
+            }
+            final var key = keyPair.getPair().getPublic().getEncoded();
+            final var md = MessageDigest.getInstance("SHA-512");
+            final var calculatedDigest = md.digest(key);
+            final var javaCode = new StringBuilder("--KEY RING DIGEST START\nbyte [] digest = new byte[] {\n");
+            for (int i = 0; i < calculatedDigest.length; i++) {
+                int intVal = ((int) calculatedDigest[i]) & 0xff;
+                javaCode.append(String.format("(byte)0x%02X, ", intVal));
+                if (i % 8 == 0) {
+                    javaCode.append("\n");
+                }
+            }
+            javaCode.append("\n};\n---KEY RING DIGEST END\n");
+            message("\n" + javaCode.toString());
+        } catch (NoSuchAlgorithmException e) {
+            error("" + e);
+            return;
+        }
+    }
+
     public void generate() {
         if (keyPair != null) {
             error("Cannot generate key pair when there are already keys.");
             return;
         }
         final var pars = ParameterParser.parse(line, Set.of(ALGORITHM, SIZE, FORMAT,
-                PUBLIC_KEY_FILE, PRIVATE_KEY_FILE));
+            PUBLIC_KEY_FILE, PRIVATE_KEY_FILE));
         final var algorithm = pars.getOrDefault(ALGORITHM, "RSA");
         final var sizeString = pars.getOrDefault(SIZE, "2048");
         final var format = IOFormat.valueOf(pars.getOrDefault(FORMAT, BINARY));
@@ -148,7 +195,7 @@ public class CommandLineApp {
         final var privateKeyFile = pars.get(PRIVATE_KEY_FILE);
         if (publicKeyFile == null || privateKeyFile == null) {
             error("Keypair generation needs output files specified where keys are to be saved. " +
-                    "Use options 'publicKeyFile' and 'privateKeyFile'");
+                "Use options 'publicKeyFile' and 'privateKeyFile'");
             return;
         }
         final int size;
@@ -156,7 +203,7 @@ public class CommandLineApp {
             size = Integer.parseInt(sizeString);
         } catch (NumberFormatException e) {
             error("Option size has to be a positive decimal integer value. " +
-                    sizeString + " does not qualify as such.");
+                sizeString + " does not qualify as such.");
             return;
         }
         generateKeys(algorithm, size);
@@ -296,10 +343,9 @@ public class CommandLineApp {
             return;
         }
         cd.executor.run();
-        printApplicationState();
     }
 
-    private void printApplicationState() {
+    public void printApplicationState() {
         if (license == null) {
             Repl.say("License is not loaded.");
         } else {
