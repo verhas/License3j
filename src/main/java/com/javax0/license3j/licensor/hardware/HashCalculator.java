@@ -1,51 +1,48 @@
 package com.javax0.license3j.licensor.hardware;
 
-import org.bouncycastle.crypto.digests.MD5Digest;
 
-import java.io.UnsupportedEncodingException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.Comparator;
 import java.util.List;
 
 class HashCalculator {
-    private final InterfaceSelector selector;
+    private final Network.Interface.Selector selector;
 
-    HashCalculator(InterfaceSelector selector) {
+    HashCalculator(Network.Interface.Selector selector) {
         this.selector = selector;
     }
 
-    private void updateWithNetworkData(final MD5Digest md5,
-                                       final List<NetworkInterfaceData> networkInterfaces)
-            throws UnsupportedEncodingException {
-        for (final NetworkInterfaceData ni : networkInterfaces) {
-            md5.update(ni.name.getBytes("utf-8"), 0,
-                    ni.name.getBytes("utf-8").length);
+    private void updateWithNetworkData(final MessageDigest md5,
+                                       final List<Network.Interface.Data> interfaces) {
+        for (final var ni : interfaces) {
+            md5.update(ni.name.getBytes(StandardCharsets.UTF_8));
             if (ni.hwAddress != null) {
-                md5.update(ni.hwAddress, 0, ni.hwAddress.length);
+                md5.update(ni.hwAddress);
             }
         }
     }
 
-    void updateWithNetworkData(final MD5Digest md5)
-            throws UnsupportedEncodingException, SocketException {
-        final List<NetworkInterfaceData> networkInterfaces = NetworkInterfaceData.gatherUsing(selector);
+    void updateWithNetworkData(final MessageDigest md5)
+        throws SocketException {
+        final List<Network.Interface.Data> networkInterfaces = Network.Interface.Data.gatherUsing(selector);
         networkInterfaces.sort(Comparator.comparing(a -> a.name));
         updateWithNetworkData(md5, networkInterfaces);
     }
 
-    void updateWithHostName(final MD5Digest md5)
-            throws UnknownHostException, UnsupportedEncodingException {
+    void updateWithHostName(final MessageDigest md5)
+        throws UnknownHostException {
         final String hostName = java.net.InetAddress.getLocalHost()
-                .getHostName();
-        md5.update(hostName.getBytes("utf-8"), 0,
-                hostName.getBytes("utf-8").length);
+            .getHostName();
+        md5.update(hostName.getBytes(StandardCharsets.UTF_8), 0,
+            hostName.getBytes(StandardCharsets.UTF_8).length);
     }
 
-    void updateWithArchitecture(final MD5Digest md5)
-            throws UnsupportedEncodingException {
+    void updateWithArchitecture(final MessageDigest md5) {
         final String architectureString = System.getProperty("os.arch");
-        md5.update(architectureString.getBytes("utf-8"), 0,
-                architectureString.getBytes("utf-8").length);
+        md5.update(architectureString.getBytes(StandardCharsets.UTF_8), 0,
+            architectureString.getBytes(StandardCharsets.UTF_8).length);
     }
 }

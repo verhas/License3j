@@ -26,9 +26,9 @@ public class NumericParserTest {
 
     @Test
     public void testIntParser() {
-        Assertions.assertEquals((int) 0xFEFEFEFE, NumericParser.Int.parse("0xfefefefe"));
-        Assertions.assertEquals((int) -2147483648, NumericParser.Int.parse("2147483648"));
-        Assertions.assertEquals((int) -1, NumericParser.Int.parse("4294967295"));
+        Assertions.assertEquals(0xFEFEFEFE, NumericParser.Int.parse("0xfefefefe"));
+        Assertions.assertEquals(-2147483648, NumericParser.Int.parse("2147483648"));
+        Assertions.assertEquals(-1, NumericParser.Int.parse("4294967295"));
         Assertions.assertThrows(NumberFormatException.class, () -> NumericParser.Int.parse("4294967296"));
         Assertions.assertThrows(NumberFormatException.class, () -> NumericParser.Int.parse("-2147483649"));
         Assertions.assertThrows(NumberFormatException.class, () -> NumericParser.Int.parse("0x100000000"));

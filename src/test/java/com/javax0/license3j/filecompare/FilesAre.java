@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 
 import java.util.List;
 
@@ -51,8 +50,8 @@ public class FilesAre {
         }
         Collections.sort(linesA);
         Collections.sort(linesB);
-        var itA = linesA.<SourceLine>iterator();
-        var itB = linesB.<SourceLine>iterator();
+        var itA = linesA.iterator();
+        var itB = linesB.iterator();
         while (itA.hasNext()) {
             final var a = itA.next();
             final var b = itB.next();

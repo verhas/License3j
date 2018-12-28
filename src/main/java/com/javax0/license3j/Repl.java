@@ -113,7 +113,7 @@ public class Repl {
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String line;
             while ((line = reader.readLine()) != null) {
-                sb.append(line + "\n");
+                sb.append(line).append("\n");
             }
             say("[SHELL OUTPUT]\n%s[END SHELL OUTPUT]", sb.toString());
         } catch (IOException e) {

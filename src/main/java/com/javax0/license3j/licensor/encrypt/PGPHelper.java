@@ -12,6 +12,7 @@ import org.bouncycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBu
 import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -79,7 +80,7 @@ public class PGPHelper {
                 outputStream, PGPLiteralData.BINARY, "licenseFileName-Ignored",
                 new Date(), new byte[1024]);
         final InputStream fIn = new ByteArrayInputStream(
-                licensePlain.getBytes("utf-8"));
+                licensePlain.getBytes(StandardCharsets.UTF_8));
         int ch;
         while ((ch = fIn.read()) >= 0) {
             literalDataStream.write(ch);

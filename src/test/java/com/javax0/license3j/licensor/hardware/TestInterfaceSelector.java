@@ -1,6 +1,5 @@
 package com.javax0.license3j.licensor.hardware;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -17,14 +16,13 @@ public class TestInterfaceSelector {
     private static final boolean USABLE = true;
     private static final boolean EXCLUDED = false;
 
-    private static InterfaceSelector newSut() {
+    private static Network.Interface.Selector newSut() {
 
-        final var sut = new InterfaceSelector() {
-            boolean isSpecial(NetworkInterface netIf) throws SocketException {
+        return new Network.Interface.Selector() {
+            boolean isSpecial(NetworkInterface netIf) {
                 return false;
             }
         };
-        return sut;
     }
 
     private static IfTest test(final String ifName) throws NoSuchFieldException, InstantiationException, IllegalAccessException, InvocationTargetException {
@@ -89,7 +87,7 @@ public class TestInterfaceSelector {
 
     private static class IfTest {
         NetworkInterface ni;
-        InterfaceSelector sut;
+        Network.Interface.Selector sut;
 
         IfTest(String name) throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException {
             ni = mockInterface(name);

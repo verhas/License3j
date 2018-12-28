@@ -8,6 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
@@ -135,9 +136,7 @@ public class TestLicenseClass {
         final byte[] myDigest = new byte[digest.length];
         System.arraycopy(digest, 0, myDigest, 0, digest.length);
         myDigest[myDigest.length - 1] = (byte) (myDigest[myDigest.length - 1] ^ 8);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            lic.loadKeyRingFromResource("pubring.gpg", myDigest);
-        });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> lic.loadKeyRingFromResource("pubring.gpg", myDigest));
     }
 
     @Test
@@ -190,7 +189,7 @@ public class TestLicenseClass {
                 "Peter Verhas (licensor test key) <peter@verhas.com>");
         final var encoded = license.encodeLicense("alma");
         try (final var os = new FileOutputStream(licenseOutputTextFileName)) {
-            os.write(encoded.getBytes("utf-8"));
+            os.write(encoded.getBytes(StandardCharsets.UTF_8));
         }
     }
 
@@ -237,7 +236,7 @@ public class TestLicenseClass {
                     "Name that does not exist <peter@verhas.com>");
             final var encoded = license.encodeLicense("alma");
             try (final var os = new FileOutputStream(licenseOutputTextFileName)) {
-                os.write(encoded.getBytes("utf-8"));
+                os.write(encoded.getBytes(StandardCharsets.UTF_8));
             }
         });
     }
@@ -253,7 +252,7 @@ public class TestLicenseClass {
                     "Peter Verhas (licensor test key) <peter@verhas.com>");
             final var encoded = license.encodeLicense("bad password");
             try (final var os = new FileOutputStream(licenseOutputTextFileName)) {
-                os.write(encoded.getBytes("utf-8"));
+                os.write(encoded.getBytes(StandardCharsets.UTF_8));
             }
         });
     }
@@ -289,7 +288,7 @@ public class TestLicenseClass {
                 "Peter Verhas (licensor test key) <peter@verhas.com>");
         final var encoded = license.encodeLicense("alma");
         try (final var os = new FileOutputStream(licenseOutputTextFileName)) {
-            os.write(encoded.getBytes("utf-8"));
+            os.write(encoded.getBytes(StandardCharsets.UTF_8));
         }
 
         final var lic = new License();

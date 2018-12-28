@@ -1,11 +1,11 @@
 package com.javax0.license3j.licensor;
 
-import com.javax0.license3j.licensor.hardware.InterfaceSelector;
+import com.javax0.license3j.licensor.hardware.Network;
 import com.javax0.license3j.licensor.hardware.UUIDCalculator;
 
-import java.io.UnsupportedEncodingException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 /**
@@ -27,7 +27,7 @@ import java.util.UUID;
  */
 public class HardwareBinder {
 
-    private final InterfaceSelector selector = new InterfaceSelector();
+    private final Network.Interface.Selector selector = new Network.Interface.Selector();
     private final UUIDCalculator calculator = new UUIDCalculator(selector);
 
     private boolean useHostName = true;
@@ -42,13 +42,13 @@ public class HardwareBinder {
      * calculating the hardware UUID.
      *
      * @param args not used in this version
-     * @throws UnknownHostException in case some error happens
-     * @throws SocketException in case some error happens
-     * @throws UnsupportedEncodingException in case some error happens
+     * @throws UnknownHostException     in case some error happens
+     * @throws SocketException          in case some error happens
+     * @throws NoSuchAlgorithmException in case some error happens
      */
     public static void main(final String[] args)
-            throws UnsupportedEncodingException, SocketException,
-            UnknownHostException {
+        throws NoSuchAlgorithmException, SocketException,
+        UnknownHostException {
         final var hb = new HardwareBinder();
         System.out.print(hb.getMachineIdString());
     }
@@ -159,12 +159,12 @@ public class HardwareBinder {
      *
      * @return the UUID of the machine or null if the uuid can not be
      * calculated.
-     * @throws SocketException in case some error
-     * @throws UnsupportedEncodingException in case some error
-     * @throws UnknownHostException in case some error
+     * @throws SocketException          in case some error
+     * @throws NoSuchAlgorithmException in case some error
+     * @throws UnknownHostException     in case some error
      */
-    public UUID getMachineId() throws UnsupportedEncodingException,
-            SocketException, UnknownHostException {
+    public UUID getMachineId() throws NoSuchAlgorithmException,
+        SocketException, UnknownHostException {
         return calculator.getMachineId(useNetwork, useHostName, useArchitecture);
     }
 
@@ -172,12 +172,12 @@ public class HardwareBinder {
      * Get the machine id as an UUID string.
      *
      * @return the UUID as a string
-     * @throws UnknownHostException in case some error
-     * @throws SocketException in case some error
-     * @throws UnsupportedEncodingException in case some error
+     * @throws UnknownHostException     in case some error
+     * @throws SocketException          in case some error
+     * @throws NoSuchAlgorithmException in case some error
      */
-    public String getMachineIdString() throws UnsupportedEncodingException,
-            SocketException, UnknownHostException {
+    public String getMachineIdString() throws NoSuchAlgorithmException,
+        SocketException, UnknownHostException {
         return calculator.getMachineIdString(useNetwork, useHostName, useArchitecture);
     }
 
@@ -186,13 +186,13 @@ public class HardwareBinder {
      *
      * @param uuid expected
      * @return true if the argument passed is the uuid of the current machine.
-     * @throws UnknownHostException in case some error
-     * @throws SocketException in case some error
-     * @throws UnsupportedEncodingException in case some error
+     * @throws UnknownHostException     in case some error
+     * @throws SocketException          in case some error
+     * @throws NoSuchAlgorithmException in case some error
      */
     public boolean assertUUID(final UUID uuid)
-            throws UnsupportedEncodingException, SocketException,
-            UnknownHostException {
+        throws NoSuchAlgorithmException, SocketException,
+        UnknownHostException {
         return calculator.assertUUID(uuid, useNetwork, useHostName, useArchitecture);
     }
 

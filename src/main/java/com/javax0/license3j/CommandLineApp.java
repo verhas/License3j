@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CommandLineApp {
+class CommandLineApp {
     public static final String PUBLIC_KEY_FILE = "publicKeyFile";
     public static final String PRIVATE_KEY_FILE = "privateKeyFile";
     public static final String KEY_FILE = "keyFile";
@@ -51,7 +51,6 @@ public class CommandLineApp {
         command("digestPublicKey", "^$", this::digestPublicKey, ">>no argument<<")
 
     };
-    private String keyword;
 
     private static CommandDefinition command(String command, String regex, Runnable executor, String usage) {
         return new CommandDefinition(command, regex, executor, usage);
@@ -110,6 +109,7 @@ public class CommandLineApp {
         if (keyFile == null) {
             messages = new ArrayList<>();
             error("keyFile has to be specified from where the key is loaded");
+            return;
         }
         final var format = IOFormat.valueOf(pars.getOrDefault(FORMAT, BINARY).toUpperCase());
         try (final var reader = new KeyPairReader(keyFile)) {
@@ -131,6 +131,7 @@ public class CommandLineApp {
         if (keyFile == null) {
             messages = new ArrayList<>();
             error("keyFile has to be specified from where the key is loaded");
+            return;
         }
         final var format = IOFormat.valueOf(pars.getOrDefault(FORMAT, BINARY).toUpperCase());
         try (final var reader = new KeyPairReader(keyFile)) {
@@ -177,7 +178,6 @@ public class CommandLineApp {
             message("\n" + javaCode.toString());
         } catch (NoSuchAlgorithmException e) {
             error("" + e);
-            return;
         }
     }
 
@@ -306,7 +306,7 @@ public class CommandLineApp {
         sb.append("Usage: keyword options keyword options ... \n");
         sb.append("Commands implemented:\n");
         for (var command : commandDefinitions) {
-            sb.append("    " + command.keyword + " " + command.usage + "\n");
+            sb.append("    ").append(command.keyword).append(" ").append(command.usage).append("\n");
         }
         return sb.toString();
     }
@@ -319,7 +319,7 @@ public class CommandLineApp {
         if (words.length == 0) {
             return;
         }
-        keyword = words[0];
+        final var keyword = words[0];
         this.line = trimmedLine.substring(keyword.length()).trim();
         CommandDefinition cd = null;
         for (final var command : commandDefinitions) {

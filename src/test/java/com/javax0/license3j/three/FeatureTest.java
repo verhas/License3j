@@ -327,9 +327,8 @@ public class FeatureTest {
                 final var modifiers = getMethod.getModifiers();
                 Assertions.assertTrue(Modifier.isPublic(modifiers),
                         "Method " + getMethod.getName() + " is supposed to be public.");
-                Assertions.assertTrue((boolean) getMethod.invoke(sut) == (testType == type),
-                        "method " + getMethod.getName() +
-                                " does not test properly a Feature that is of type " + testType);
+                Assertions.assertEquals((boolean) getMethod.invoke(sut), (testType == type), "method " + getMethod.getName() +
+                    " does not test properly a Feature that is of type " + testType);
             }
         }
     }
@@ -453,10 +452,20 @@ public class FeatureTest {
     @Test
     @DisplayName("date feature is converted from string")
     public void testDateFromString() {
-        final var sut = Feature.Create.from("name:DATE=2018-12-17 12:55:19.295");
-        Assertions.assertEquals("name", sut.name());
-        Assertions.assertTrue(sut.isDate());
-        Assertions.assertEquals(new Date(1545047719295L), sut.getDate());
+        final var sut1 = Feature.Create.from("name:DATE=2018-12-17 12:55:19.295");
+        Assertions.assertEquals("name", sut1.name());
+        Assertions.assertTrue(sut1.isDate());
+        Assertions.assertEquals(new Date(1545047719295L), sut1.getDate());
+
+        final var sut2 = Feature.Create.from("name:DATE=2018-12-17 12:55:19");
+        Assertions.assertEquals("name", sut2.name());
+        Assertions.assertTrue(sut2.isDate());
+        Assertions.assertEquals(new Date(1545047719000L), sut2.getDate());
+
+        final var sut3 = Feature.Create.from("name:DATE=2018-12-17 12:55");
+        Assertions.assertEquals("name", sut3.name());
+        Assertions.assertTrue(sut3.isDate());
+        Assertions.assertEquals(new Date(1545047700000L), sut3.getDate());
     }
 
 
