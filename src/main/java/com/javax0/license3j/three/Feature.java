@@ -11,7 +11,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
-import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -169,6 +168,10 @@ public class Feature {
         return type == Type.DATE;
     }
 
+    public boolean isUUID() {
+        return type == Type.UUID;
+    }
+
     public byte[] getBinary() {
         if (type != Type.BINARY) {
             throw new IllegalArgumentException("Feature is not BINARY");
@@ -242,14 +245,14 @@ public class Feature {
         return new BigDecimal(new BigInteger(Arrays.copyOf(value, value.length - Integer.BYTES)), scale);
     }
 
-    public UUID getUUID(){
-        if( type != Type.UUId){
+    public java.util.UUID getUUID() {
+        if (type != Type.UUID) {
             throw new IllegalArgumentException("Feature is not UUID");
         }
         var bb = ByteBuffer.wrap(value);
         final var ls = bb.getLong();
         final var ms = bb.getLong();
-        return new UUID(ms,ls);
+        return new java.util.UUID(ms, ls);
     }
 
     public Date getDate() {
@@ -307,10 +310,10 @@ public class Feature {
             (name, value) -> Create.dateFeature(name, (Date) value),
             Feature::dateFormat, Feature::dateParse),
 
-        UUId(12, 2 * Long.BYTES,
+        UUID(12, 2 * Long.BYTES,
             Feature::getUUID,
-            (name, value) -> Create.uuidFeature(name, (UUID) value),
-            Object::toString,UUID::fromString);
+            (name, value) -> Create.uuidFeature(name, (java.util.UUID) value),
+            Object::toString, java.util.UUID::fromString);
 
         final int fixedSize;
         final int serialized;
@@ -399,9 +402,9 @@ public class Feature {
                 .array());
         }
 
-        public static Feature uuidFeature(String name, UUID value){
+        public static Feature uuidFeature(String name, java.util.UUID value) {
             notNull(value);
-            return new Feature(name, Type.UUId, ByteBuffer.allocate(2*Long.BYTES)
+            return new Feature(name, Type.UUID, ByteBuffer.allocate(2 * Long.BYTES)
                 .putLong(value.getLeastSignificantBits())
                 .putLong(value.getMostSignificantBits())
                 .array());

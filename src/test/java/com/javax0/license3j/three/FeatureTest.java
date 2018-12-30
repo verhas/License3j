@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.UUID;
 
 public class FeatureTest {
 
@@ -46,6 +47,21 @@ public class FeatureTest {
         Assertions.assertEquals((byte) 0xFE, res.getBinary()[0]);
     }
 
+    @Test
+    @DisplayName("UUID feature, serialize and restore")
+    public void testUUID() {
+        var sut = Create.uuidFeature("feature name", new UUID(1L,2L));
+        byte[] b = sut.serialized();
+        var res = Create.from(b);
+        Assertions.assertEquals(new UUID(1L,2L), res.getUUID());
+    }
+    @Test
+    @DisplayName("UUID created from string")
+    public void testUUIDFromString() {
+        var sut = Create.from("feature name:UUID="+ new UUID(1L,2L));
+        Assertions.assertTrue(sut.isUUID());
+        Assertions.assertEquals(new UUID(1L,2L), sut.getUUID());
+    }
     @Test
     @DisplayName("binary feature, serialize and restore")
     public void testBinary() {

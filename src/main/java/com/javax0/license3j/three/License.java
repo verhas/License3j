@@ -24,8 +24,10 @@ import java.util.*;
  */
 public class License {
     private static final int MAGIC = 0x21CE_4E_5E; // LICE(N=4E)SE
+    final private static String LICENSE_ID = "licenseId";
     private static final String SIGNATURE_KEY = "licenseSignature";
     private static final String DIGEST_KEY = "signatureDigest";
+    final private static String EXPIRATION_DATE = "expiryDate";
     final private Map<String, Feature> features = new HashMap<>();
 
     public License() {
@@ -46,6 +48,33 @@ public class License {
         return features.get(name);
     }
 
+
+    /**
+     * Checks the expiration date of the license and returns {@code true} if the license has expired.
+     * <p>
+     * The expiration date is stored in the license feature {@code expiryDate}. A license is expired
+     * if the current date is after the specified {@code expiryDate}. At the given date (ms precision) the
+     * license is still valid.
+     * <p>
+     * The method does not check that the license is properly signed or not. That has to be checked using a
+     * separate call to the underlying license.
+     *
+     * @return {@code true} if the license has expired.
+     */
+    public boolean isExpired() {
+        final var expiryDate = get(EXPIRATION_DATE).getDate();
+        final var today = new Date();
+        return today.getTime() > expiryDate.getTime();
+    }
+
+    /**
+     * Set the expiration date of the license.
+     *
+     * @param expiryDate the date when the license expires
+     */
+    public void setExpiry(final Date expiryDate) {
+        add(Feature.Create.dateFeature(EXPIRATION_DATE, expiryDate));
+    }
     /**
      * Sign the license.
      * <p>
@@ -223,6 +252,83 @@ public class License {
     }
 
     /**
+     * Generates a new license id.
+     * <p>
+     * This ID is also stored in the license thus there is no need to create a feature and add it to the license.
+     * <p>
+     * Generating UUID can be handy when you want to identify each license individually. For example you want to store
+     * revocation information about each license. The url to check the revocation may contain the
+     * {@code $&#123;licenseId&#125;} place holder that will be replaced by the actual uuid stored in the license.
+     *
+     * @return the generated identifier.
+     */
+    public UUID setLicenseId() {
+        final var uuid = UUID.randomUUID();
+        setLicenseId(uuid);
+        return uuid;
+    }
+
+    /**
+     * Get the license identifier. The identifier of the license is a random UUID (128 bit random value) that can
+     * optionally be set and can be used to identify the license. This Id can be used as a reference to the license
+     * in databases, URLs. An example use it to upload a simple file to a publicly reachable server with the name
+     * of the license UUID and that it can be retrieved via a URL containing the UUID. The licensed program downloads
+     * the file (presumably zero length) and in case the response code is 200 OK then it assumes that the license is OK.
+     * If the server is not reachable or for some other reason it cannot reach the file it may assume that this is a
+     * technical glitch and go on working for a while, however if the response is a definitive 404 it means that the file
+     * was removes that means the license was revoked.
+     *
+     * @return the UUID former identifier of the license or null in case the license does not contain an ID.
+     */
+    public UUID getLicenseId() {
+        try {
+            return get(LICENSE_ID).getUUID();
+        } catch (final Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Get the fingerprint of a license. The fingerprint is a 128bit value calculated from the license itself using the
+     * MD5 algorithm. The fingerprint is represented as a UUID. The fingerprint is never stored in the license as a
+     * feature. If the fingerprint is stored in the license as a feature then the fingerprint of the license changes
+     * so the stored fingerprint will not be the fingerprint of the license any more.
+     * <p>
+     * The calculation of the fingerprint ignores the signature of the license as well as the feature that stores the
+     * name of the signature digest algorithm (usually "SHA-512"). This is to ensure that even if you change the
+     * signature on the license using a different digest algorithm: fingerprint will not change. The fingerprint is
+     * relevant to the core content of the license.
+     * <p>
+     * Since the fingerprint is calculated from the binary representation of the license using the MD5 algorithm
+     * it is likely that each license will have different fingerprint. This fingerprint can be used to identify
+     * licenses similarly like the license id (see {@link #setLicenseId(UUID)},{@link #getLicenseId()}). The
+     * fingerprint can be used even when the license does not have random ID stored in the license.
+     *
+     * @return the calculated fingerprint of the license
+     */
+    public UUID fingerprint() {
+        try {
+            final var bb = ByteBuffer.wrap(MessageDigest.getInstance("MD5").digest(
+                serialized(Set.of(SIGNATURE_KEY, DIGEST_KEY))));
+            final var ms = bb.getLong();
+            final var ls = bb.getLong();
+            return new UUID(ms, ls);
+        } catch (final Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Set the UUID of a license. Note that this UUID can be generated calling the method {@link #setLicenseId()},
+     * which method automatically calls this method setting the generated UUID to be the identifier of the license.
+     *
+     * @param licenseId the uuid that was generated somewhere.
+     */
+    public void setLicenseId(final UUID licenseId) {
+        add(Feature.Create.uuidFeature(LICENSE_ID, licenseId));
+    }
+
+    /**
      * Get the license serialized (not standard Java serialized!!!) as a byte array. This method is used to save the
      * license in {@code BINARY} format but not to sign the license. The returned byte array contains all the features
      * including the signature of the license.
@@ -301,6 +407,7 @@ public class License {
     public static class Create {
         /**
          * Create a license from the binary byte array representation.
+         *
          * @param array the binary byte array representation of the license
          * @return the license object
          */
@@ -366,8 +473,8 @@ public class License {
          * buffered reader {@code reader} till the {@code HERE_STRING} is found and the lines concatenated together
          * is returned as value string.
          *
-         * @param reader that supplies the consecutive lines from the text representation of the license that contains
-         *               the feature
+         * @param reader      that supplies the consecutive lines from the text representation of the license that contains
+         *                    the feature
          * @param valueString the value string that was on the first line of the feature definition.
          * @return the valueString compiled from the current line and presumably from subsequent lines.
          * @throws IOException

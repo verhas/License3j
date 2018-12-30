@@ -15,7 +15,7 @@ public class UUIDCalculator {
 
     public UUID getMachineId(boolean useNetwork, boolean useHostName, boolean useArchitecture) throws
         SocketException, UnknownHostException, NoSuchAlgorithmException {
-        final MessageDigest md5 = MessageDigest.getInstance("MD5");
+        final var md5 = MessageDigest.getInstance("MD5");
         md5.reset();
         if (useNetwork) {
             calculator.updateWithNetworkData(md5);

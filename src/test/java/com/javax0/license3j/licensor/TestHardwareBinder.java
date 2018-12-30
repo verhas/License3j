@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.UnsupportedEncodingException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 public class TestHardwareBinder {
@@ -15,15 +15,15 @@ public class TestHardwareBinder {
 
     @Test
     @DisplayName("calling hardwarebinder main() does not throw up")
-    public void testMain() throws UnsupportedEncodingException,
-            SocketException, UnknownHostException {
+    public void testMain() throws NoSuchAlgorithmException,
+        SocketException, UnknownHostException, NoSuchAlgorithmException {
         HardwareBinder.main(null);
     }
 
     @Test
     @DisplayName("hardware binder should accept the machine UUID it just calculated on the test machine")
-    public void machineHasUuid() throws UnsupportedEncodingException,
-            SocketException, UnknownHostException {
+    public void machineHasUuid() throws NoSuchAlgorithmException,
+        SocketException, UnknownHostException, NoSuchAlgorithmException {
         for (final boolean ignoreNetwork : falseTrue) {
             for (final boolean ignoreArchitecture : falseTrue) {
                 for (final boolean ignoreHostName : falseTrue) {
@@ -43,8 +43,8 @@ public class TestHardwareBinder {
 
     @Test
     @DisplayName("hardware binder should accept the machine UUID string format it just calculated on the test machine")
-    public void machineHasUuidString() throws UnsupportedEncodingException,
-            SocketException, UnknownHostException {
+    public void machineHasUuidString() throws NoSuchAlgorithmException,
+        SocketException, UnknownHostException {
         for (final boolean ignoreNetwork : falseTrue) {
             for (final boolean ignoreArchitecture : falseTrue) {
                 for (final boolean ignoreHostName : falseTrue) {
@@ -65,8 +65,8 @@ public class TestHardwareBinder {
     @Test
     @DisplayName("if the UUID string is too long UUID assertion returns false")
     public void tooLongUuidStringAssertsFalse()
-            throws UnsupportedEncodingException, SocketException,
-            UnknownHostException {
+        throws NoSuchAlgorithmException, SocketException,
+        UnknownHostException {
         for (final boolean ignoreNetwork : falseTrue) {
             for (final boolean ignoreArchitecture : falseTrue) {
                 for (final boolean ignoreHostName : falseTrue) {
@@ -99,8 +99,8 @@ public class TestHardwareBinder {
     @Test
     @DisplayName("if the UUID string is properly formatted but contains a wrong value then UUID assertion returns false")
     public void wrongUuidStringAssertsFalse()
-            throws UnsupportedEncodingException, SocketException,
-            UnknownHostException {
+        throws NoSuchAlgorithmException, SocketException,
+        UnknownHostException {
         for (final boolean ignoreNetwork : falseTrue) {
             for (final boolean ignoreArchitecture : falseTrue) {
                 for (final boolean ignoreHostName : falseTrue) {
