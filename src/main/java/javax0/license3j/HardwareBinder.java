@@ -1,7 +1,7 @@
-package javax0.license3j.licensor;
+package javax0.license3j;
 
-import javax0.license3j.licensor.hardware.Network;
-import javax0.license3j.licensor.hardware.UUIDCalculator;
+import javax0.license3j.hardware.Network;
+import javax0.license3j.hardware.UUIDCalculator;
 
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -79,7 +79,7 @@ public class HardwareBinder {
      * @param regex the regular expression string
      * @return the HardwareBinder object so method calls can be chained
      */
-    public HardwareBinder interfaceAllowed(String regex) {
+    public HardwareBinder allowed(String regex) {
         selector.interfaceAllowed(regex);
         return this;
     }
@@ -92,54 +92,59 @@ public class HardwareBinder {
      * machine id.
      * <p>
      * See also the documentation of the method
-     * {@link #interfaceAllowed(String)}.
+     * {@link #allowed(String)}.
      *
      * @param regex the regular expression string
      * @return the HardwareBinder object so method calls can be chained
      */
-    public HardwareBinder interfaceDenied(String regex) {
+    public HardwareBinder denied(String regex) {
         selector.interfaceDenied(regex);
         return this;
     }
 
-    /**
-     * When calculating the machine UUID the host name is also taken into
-     * account by default. If you want the method to ignore the machine name
-     * then call this method before calling any UUID calculation method.
-     *
-     * @return the hardware binder object so method calls can be chained
-     */
-    public HardwareBinder ignoreHostName() {
-        useHostName = false;
-        return this;
+
+    public class Ignore {
+        /**
+         * When calculating the machine UUID the host name is also taken into
+         * account by default. If you want the method to ignore the machine name
+         * then call this method before calling any UUID calculation method.
+         *
+         * @return the hardware binder object so method calls can be chained
+         */
+        public HardwareBinder hostName() {
+            useHostName = false;
+            return HardwareBinder.this;
+        }
+
+        /**
+         * When calculating the uuid of a machine the network interfaces are
+         * enumerated and their parameters are taken into account. The names and the
+         * hardware addresses are used.
+         * <p>
+         * If you want to ignore the network when generating the uuid then call this
+         * method before any uuid calculating methods.
+         *
+         * @return the hardware binder object so method calls can be chained
+         */
+        public HardwareBinder network() {
+            useNetwork = false;
+            return HardwareBinder.this;
+        }
+
+        /**
+         * The UUID generation uses the architecture string as returned by
+         * {@code System.getProperty("os.arch")}. In some rare cases you want to
+         * have a UUID that is independent of the architecture.
+         *
+         * @return the hardware binder object so method calls can be chained
+         */
+        public HardwareBinder architecture() {
+            useArchitecture = false;
+            return HardwareBinder.this;
+        }
     }
 
-    /**
-     * When calculating the uuid of a machine the network interfaces are
-     * enumerated and their parameters are taken into account. The names and the
-     * hardware addresses are used.
-     * <p>
-     * If you want to ignore the network when generating the uuid then call this
-     * method before any uuid calculating methods.
-     *
-     * @return the hardware binder object so method calls can be chained
-     */
-    public HardwareBinder ignoreNetwork() {
-        useNetwork = false;
-        return this;
-    }
-
-    /**
-     * The UUID generation uses the architecture string as returned by
-     * {@code System.getProperty("os.arch")}. In some rare cases you want to
-     * have a UUID that is independent of the architecture.
-     *
-     * @return the hardware binder object so method calls can be chained
-     */
-    public HardwareBinder ignoreArchitecture() {
-        useArchitecture = false;
-        return this;
-    }
+    public final Ignore ignore = new Ignore();
 
     /**
      * Calculate the UUID for the machine this code is running on. To do this

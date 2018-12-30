@@ -1,4 +1,4 @@
-package javax0.license3j.licensor.hardware;
+package javax0.license3j.hardware;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package javax0.license3j.licensor;
+package javax0.license3j;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -15,25 +15,25 @@ public class TestHardwareBinder {
 
     @Test
     @DisplayName("calling hardwarebinder main() does not throw up")
-    public void testMain() throws NoSuchAlgorithmException,
+    public void testMain() throws
         SocketException, UnknownHostException, NoSuchAlgorithmException {
         HardwareBinder.main(null);
     }
 
     @Test
     @DisplayName("hardware binder should accept the machine UUID it just calculated on the test machine")
-    public void machineHasUuid() throws NoSuchAlgorithmException,
+    public void machineHasUuid() throws
         SocketException, UnknownHostException, NoSuchAlgorithmException {
         for (final boolean ignoreNetwork : falseTrue) {
             for (final boolean ignoreArchitecture : falseTrue) {
                 for (final boolean ignoreHostName : falseTrue) {
                     final var hb = new HardwareBinder();
                     if (ignoreNetwork)
-                        hb.ignoreNetwork();
+                        hb.ignore.network();
                     if (ignoreArchitecture)
-                        hb.ignoreArchitecture();
+                        hb.ignore.architecture();
                     if (ignoreHostName)
-                        hb.ignoreHostName();
+                        hb.ignore.hostName();
                     final UUID uuid = hb.getMachineId();
                     Assertions.assertTrue(hb.assertUUID(uuid));
                 }
@@ -50,11 +50,11 @@ public class TestHardwareBinder {
                 for (final boolean ignoreHostName : falseTrue) {
                     final HardwareBinder hb = new HardwareBinder();
                     if (ignoreNetwork)
-                        hb.ignoreNetwork();
+                        hb.ignore.network();
                     if (ignoreArchitecture)
-                        hb.ignoreArchitecture();
+                        hb.ignore.architecture();
                     if (ignoreHostName)
-                        hb.ignoreHostName();
+                        hb.ignore.hostName();
                     final String uuidS = hb.getMachineIdString();
                     Assertions.assertTrue(hb.assertUUID(uuidS));
                 }
@@ -72,11 +72,11 @@ public class TestHardwareBinder {
                 for (final boolean ignoreHostName : falseTrue) {
                     final HardwareBinder hb = new HardwareBinder();
                     if (ignoreNetwork)
-                        hb.ignoreNetwork();
+                        hb.ignore.network();
                     if (ignoreArchitecture)
-                        hb.ignoreArchitecture();
+                        hb.ignore.architecture();
                     if (ignoreHostName)
-                        hb.ignoreHostName();
+                        hb.ignore.hostName();
                     final String uuid = hb.getMachineIdString();
                     final String buuid = uuid + "*";
                     Assertions.assertFalse(hb.assertUUID(buuid));
@@ -106,11 +106,11 @@ public class TestHardwareBinder {
                 for (final boolean ignoreHostName : falseTrue) {
                     final HardwareBinder hb = new HardwareBinder();
                     if (ignoreNetwork)
-                        hb.ignoreNetwork();
+                        hb.ignore.network();
                     if (ignoreArchitecture)
-                        hb.ignoreArchitecture();
+                        hb.ignore.architecture();
                     if (ignoreHostName)
-                        hb.ignoreHostName();
+                        hb.ignore.hostName();
                     final String uuid = alterLastHexaChar(hb.getMachineIdString());
                     Assertions.assertFalse(hb.assertUUID(uuid));
                 }
