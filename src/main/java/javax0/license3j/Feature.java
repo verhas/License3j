@@ -1,6 +1,6 @@
-package javax0.license3j.three;
+package javax0.license3j;
 
-import javax0.license3j.three.parsers.NumericParser;
+import javax0.license3j.parsers.NumericParser;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

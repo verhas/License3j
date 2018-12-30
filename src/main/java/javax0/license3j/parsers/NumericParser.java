@@ -1,4 +1,4 @@
-package javax0.license3j.three.parsers;
+package javax0.license3j.parsers;
 
 public class NumericParser {
 

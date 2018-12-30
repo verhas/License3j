@@ -1,4 +1,4 @@
-package javax0.license3j.three.parsers;
+package javax0.license3j.parsers;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

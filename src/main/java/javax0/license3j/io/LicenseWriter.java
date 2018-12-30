@@ -1,6 +1,6 @@
-package javax0.license3j.three.io;
+package javax0.license3j.io;
 
-import javax0.license3j.three.License;
+import javax0.license3j.License;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

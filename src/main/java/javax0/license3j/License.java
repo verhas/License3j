@@ -1,6 +1,6 @@
-package javax0.license3j.three;
+package javax0.license3j;
 
-import javax0.license3j.three.crypto.LicenseKeyPair;
+import javax0.license3j.crypto.LicenseKeyPair;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;

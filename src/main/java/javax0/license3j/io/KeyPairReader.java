@@ -1,6 +1,6 @@
-package javax0.license3j.three.io;
+package javax0.license3j.io;
 
-import javax0.license3j.three.crypto.LicenseKeyPair;
+import javax0.license3j.crypto.LicenseKeyPair;
 
 import java.io.*;
 import java.lang.reflect.Modifier;

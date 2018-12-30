@@ -1,6 +1,5 @@
 package javax0.license3j;
 
-import javax0.license3j.three.License;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,9 +1,7 @@
 package javax0.license3j;
 
-import javax0.license3j.three.Feature;
-import javax0.license3j.three.License;
-import javax0.license3j.three.crypto.LicenseKeyPair;
-import javax0.license3j.three.io.*;
+import javax0.license3j.crypto.LicenseKeyPair;
+import javax0.license3j.io.*;
 import javax0.license3j.utils.ParameterParser;
 
 import java.io.ByteArrayOutputStream;

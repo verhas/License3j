@@ -1,6 +1,8 @@
-package javax0.license3j.three;
+package javax0.license3j;
 
-import javax0.license3j.three.crypto.LicenseKeyPair;
+import javax0.license3j.Feature;
+import javax0.license3j.License;
+import javax0.license3j.crypto.LicenseKeyPair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

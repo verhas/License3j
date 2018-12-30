@@ -1,4 +1,4 @@
-package javax0.license3j.three.crypto;
+package javax0.license3j.crypto;
 
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;

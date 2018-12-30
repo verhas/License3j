@@ -1,4 +1,4 @@
-package javax0.license3j.three.io;
+package javax0.license3j.io;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

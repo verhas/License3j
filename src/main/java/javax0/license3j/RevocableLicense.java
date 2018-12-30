@@ -1,8 +1,5 @@
 package javax0.license3j;
 
-import javax0.license3j.three.Feature;
-import javax0.license3j.three.License;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
