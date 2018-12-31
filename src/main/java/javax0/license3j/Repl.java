@@ -17,6 +17,7 @@ public class Repl {
         }
         say("License3j REPL");
         say("CDW is %s", new File(".").getAbsolutePath());
+        say("help for help");
         final LocalConsole console;
         if (System.console() == null) {
             say("[WARN] No console in the system");
@@ -126,7 +127,7 @@ public class Repl {
     }
 
     private static class ConsoleConsole implements LocalConsole {
-        Console console = System.console();
+        final Console console = System.console();
 
         public String readLine(String msg) {
             return console.readLine(msg);

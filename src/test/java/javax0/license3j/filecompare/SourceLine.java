@@ -17,6 +17,9 @@ class SourceLine implements Comparable<SourceLine> {
 
     @Override
     public boolean equals(Object other) {
+        if (other.getClass() != this.getClass()) {
+            return false;
+        }
         return (line == null && ((SourceLine) other).line == null)
             || (line != null && line.equals(((SourceLine) other).line));
     }

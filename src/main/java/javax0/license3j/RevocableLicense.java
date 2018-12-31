@@ -41,7 +41,7 @@ public class RevocableLicense {
         if (revocationURLTemplate != null) {
             final var id = Optional.ofNullable(license.getLicenseId()).orElse(license.fingerprint());
             if (id != null) {
-                return new URL(revocationURLTemplate.replaceAll("\\$\\{licenseId\\}", id.toString()));
+                return new URL(revocationURLTemplate.replaceAll("\\$\\{licenseId}", id.toString()));
             } else {
                 return new URL(revocationURLTemplate);
             }

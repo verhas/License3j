@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class TestHardwareBinder {
 
-    private static final boolean falseTrue[] = new boolean[]{false, true};
+    private static final boolean[] falseTrue = new boolean[]{false, true};
 
     @Test
     @DisplayName("calling hardwarebinder main() does not throw up")

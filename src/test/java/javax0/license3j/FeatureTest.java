@@ -1,6 +1,5 @@
 package javax0.license3j;
 
-import javax0.license3j.Feature;
 import javax0.license3j.Feature.Create;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -51,18 +50,20 @@ public class FeatureTest {
     @Test
     @DisplayName("UUID feature, serialize and restore")
     public void testUUID() {
-        var sut = Create.uuidFeature("feature name", new UUID(1L,2L));
+        var sut = Create.uuidFeature("feature name", new UUID(1L, 2L));
         byte[] b = sut.serialized();
         var res = Create.from(b);
-        Assertions.assertEquals(new UUID(1L,2L), res.getUUID());
+        Assertions.assertEquals(new UUID(1L, 2L), res.getUUID());
     }
+
     @Test
     @DisplayName("UUID created from string")
     public void testUUIDFromString() {
-        var sut = Create.from("feature name:UUID="+ new UUID(1L,2L));
+        var sut = Create.from("feature name:UUID=" + new UUID(1L, 2L));
         Assertions.assertTrue(sut.isUUID());
-        Assertions.assertEquals(new UUID(1L,2L), sut.getUUID());
+        Assertions.assertEquals(new UUID(1L, 2L), sut.getUUID());
     }
+
     @Test
     @DisplayName("binary feature, serialize and restore")
     public void testBinary() {
@@ -159,9 +160,9 @@ public class FeatureTest {
     @DisplayName("BigDecimal feature, serialize and restore")
     public void testBigDecimal() {
         var bd = new BigDecimal("3.141592653589793238462643383279502884197169399375105820974"
-                + "944592307816406286208998628034825342117067982148086513282306647093844609550582"
-                + "231725359408128481117450284102701938521105559644622948954930381964428810975665"
-                + "93344612847564823378678316527120190914564856692346034861045432664");
+            + "944592307816406286208998628034825342117067982148086513282306647093844609550582"
+            + "231725359408128481117450284102701938521105559644622948954930381964428810975665"
+            + "93344612847564823378678316527120190914564856692346034861045432664");
         var sut = Create.bigDecimalFeature("feature name", bd);
         byte[] b = sut.serialized();
         var res = Create.from(b);
@@ -185,7 +186,7 @@ public class FeatureTest {
         var b = sut.serialized();
         b[3] = 0;
         Assertions.assertThrows(IllegalArgumentException.class, () ->
-                Create.from(b));
+            Create.from(b));
     }
 
     @Test
@@ -193,7 +194,7 @@ public class FeatureTest {
     public void testShortDeserialization() {
         var b = new byte[4];
         Assertions.assertThrows(IllegalArgumentException.class, () ->
-                Create.from(b));
+            Create.from(b));
     }
 
     @Test
@@ -203,7 +204,7 @@ public class FeatureTest {
         var b = sut.serialized();
         var c = Arrays.copyOf(b, b.length - 1);
         Assertions.assertThrows(IllegalArgumentException.class, () ->
-                Create.from(c));
+            Create.from(c));
     }
 
     @Test
@@ -213,7 +214,7 @@ public class FeatureTest {
         var b = sut.serialized();
         var c = Arrays.copyOf(b, b.length + 1);
         Assertions.assertThrows(IllegalArgumentException.class, () ->
-                Create.from(c));
+            Create.from(c));
     }
 
     @Test
@@ -222,13 +223,13 @@ public class FeatureTest {
         for (var method : Create.class.getMethods()) {
             if (Modifier.isStatic(method.getModifiers()) && method.getName().endsWith("Feature")) {
                 Assertions.assertThrows(IllegalArgumentException.class,
-                        () -> {
-                            try {
-                                method.invoke(null, "", null);
-                            } catch (InvocationTargetException e) {
-                                throw e.getCause();
-                            }
-                        });
+                    () -> {
+                        try {
+                            method.invoke(null, "", null);
+                        } catch (InvocationTargetException e) {
+                            throw e.getCause();
+                        }
+                    });
             }
         }
     }
@@ -240,22 +241,23 @@ public class FeatureTest {
         for (final var type : getTypeValues()) {
             final var methodName = type.toString() + "Feature";
             var method = findMethod(methodName, methods, Feature.Create.class);
+            Assertions.assertNotNull(method);
             var modifiers = method.getModifiers();
             Assertions.assertTrue(Modifier.isStatic(modifiers), "Method "
-                    + methodName + " is not static.");
+                + methodName + " is not static.");
             Assertions.assertTrue(Modifier.isPublic(modifiers), "Method "
-                    + methodName + " is not public.");
+                + methodName + " is not public.");
             var argtypes = method.getParameterTypes();
             Assertions.assertEquals(2, argtypes.length, "Factory method "
-                    + methodName + " should have exactly two arguments.");
+                + methodName + " should have exactly two arguments.");
             Assertions.assertEquals(String.class, argtypes[0], "Factory method "
-                    + methodName + " first argument has to be String.");
+                + methodName + " first argument has to be String.");
             if (argtypes[1].isArray()) {
                 var constField = Feature.class.getDeclaredField("VARIABLE_LENGTH");
                 constField.setAccessible(true);
                 final int VARIABLE_LENGTH = (int) constField.get(null);
                 Assertions.assertEquals(VARIABLE_LENGTH, getFixedSize(type), "array accepting factory "
-                        + methodName + " size has to be VARIABLE_LENGTH");
+                    + methodName + " size has to be VARIABLE_LENGTH");
             }
         }
     }
@@ -292,6 +294,7 @@ public class FeatureTest {
         for (final var type : getTypeValues()) {
             final var methodName = "test" + type.toString();
             var method = findMethod(methodName, methods, this.getClass());
+            Assertions.assertNotNull(method);
             var modifiers = method.getModifiers();
             Assertions.assertTrue(!Modifier.isStatic(modifiers), "Method " + methodName + " is static.");
             Assertions.assertTrue(Modifier.isPublic(modifiers), "Method " + methodName + " is not public.");
@@ -311,6 +314,7 @@ public class FeatureTest {
                 if (type != wrongType) {
                     final var methodName = "get" + wrongType.toString();
                     final var getMethod = findMethod(methodName, methods, Feature.class);
+                    Assertions.assertNotNull(getMethod);
                     final var modifiers = getMethod.getModifiers();
                     Assertions.assertTrue(Modifier.isPublic(modifiers), "Method " + getMethod.getName() + " is supposed to be public.");
                     Assertions.assertThrows(IllegalArgumentException.class, () -> {
@@ -326,7 +330,7 @@ public class FeatureTest {
     }
 
     private Object createFeatureSut(Constructor<?> constructor, Object type)
-            throws InstantiationException, IllegalAccessException, InvocationTargetException {
+        throws InstantiationException, IllegalAccessException, InvocationTargetException {
         return constructor.newInstance("name", type, new byte[]{0x00});
     }
 
@@ -341,10 +345,11 @@ public class FeatureTest {
             for (final var testType : getTypeValues()) {
                 final var methodName = "is" + testType.toString();
                 final var getMethod = findMethod(methodName, methods, Feature.class);
+                Assertions.assertNotNull(getMethod);
                 final var modifiers = getMethod.getModifiers();
                 Assertions.assertTrue(Modifier.isPublic(modifiers),
-                        "Method " + getMethod.getName() + " is supposed to be public.");
-                Assertions.assertEquals((boolean) getMethod.invoke(sut), (testType == type), "method " + getMethod.getName() +
+                    "Method " + getMethod.getName() + " is supposed to be public.");
+                Assertions.assertEquals(getMethod.invoke(sut), (testType == type), "method " + getMethod.getName() +
                     " does not test properly a Feature that is of type " + testType);
             }
         }
@@ -353,9 +358,9 @@ public class FeatureTest {
     private Constructor<?> getFeatureConstructor() {
         final var constructors = Feature.class.getDeclaredConstructors();
         final var constructor = Arrays.stream(constructors)
-                .filter(c -> c.getParameterCount() == 3)
-                .findAny()
-                .orElseThrow(() -> new AssertionFailedError("There is no appropriate constructor in the class Feature"));
+            .filter(c -> c.getParameterCount() == 3)
+            .findAny()
+            .orElseThrow(() -> new AssertionFailedError("There is no appropriate constructor in the class Feature"));
         final var constructorModifiers = constructor.getModifiers();
         Assertions.assertTrue(Modifier.isPrivate(constructorModifiers), "The constructor of Feature has to be private.");
         constructor.setAccessible(true);
@@ -377,9 +382,9 @@ public class FeatureTest {
         Assertions.assertTrue(sut.isBinary());
         byte[] b = sut.getBinary();
         Assertions.assertAll(
-                () -> Assertions.assertEquals(b[0], (byte) 0xfe),
-                () -> Assertions.assertEquals(b[1], (byte) 0x11),
-                () -> Assertions.assertEquals(b[2], (byte) 0xaf)
+            () -> Assertions.assertEquals(b[0], (byte) 0xfe),
+            () -> Assertions.assertEquals(b[1], (byte) 0x11),
+            () -> Assertions.assertEquals(b[2], (byte) 0xaf)
         );
     }
 
@@ -459,11 +464,11 @@ public class FeatureTest {
     @DisplayName("bigDecimal feature is converted from string")
     public void testBigDecimalFromString() {
         final var sut = Feature.Create.from(
-                "name:BIGDECIMAL=123456789012345678901234567890.123456789012345678901234567890");
+            "name:BIGDECIMAL=123456789012345678901234567890.123456789012345678901234567890");
         Assertions.assertEquals("name", sut.name());
         Assertions.assertTrue(sut.isBigDecimal());
         Assertions.assertEquals(new BigDecimal("123456789012345678901234567890.123456789012345678901234567890"),
-                sut.getBigDecimal());
+            sut.getBigDecimal());
     }
 
     @Test
@@ -539,7 +544,7 @@ public class FeatureTest {
     @DisplayName("Biginteger feature is converted to string")
     public void testBigintegerToString() {
         final var sut = Feature.Create.bigIntegerFeature("name",
-                new BigInteger("123456789012345678901234567890123456789012345678901234567890123456789"));
+            new BigInteger("123456789012345678901234567890123456789012345678901234567890123456789"));
         Assertions.assertEquals("name:BIGINTEGER=123456789012345678901234567890123456789012345678901234567890123456789", sut.toString());
     }
 
@@ -547,7 +552,7 @@ public class FeatureTest {
     @DisplayName("Bigdecimal feature is converted to string")
     public void testBigdecimalToString() {
         final var sut = Feature.Create.bigDecimalFeature("name",
-                new BigDecimal("789012345678901234567890123456789.0123456789012345678901234567890123456789"));
+            new BigDecimal("789012345678901234567890123456789.0123456789012345678901234567890123456789"));
         Assertions.assertEquals("name:BIGDECIMAL=789012345678901234567890123456789.0123456789012345678901234567890123456789", sut.toString());
     }
 

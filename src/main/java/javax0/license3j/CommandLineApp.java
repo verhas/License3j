@@ -2,7 +2,7 @@ package javax0.license3j;
 
 import javax0.license3j.crypto.LicenseKeyPair;
 import javax0.license3j.io.*;
-import javax0.license3j.utils.ParameterParser;
+import javax0.license3j.parsers.ParameterParser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -32,10 +32,11 @@ class CommandLineApp {
     private LicenseKeyPair keyPair;
     private Matcher matcher;
     private String line;
-    private CommandDefinition[] commandDefinitions = {
+    private final CommandDefinition[] commandDefinitions = {
+        command("help", "^$", this::help, ""),
         command("feature", ".+", this::feature, "name:TYPE=value"),
         command("licenseLoad", "(?:format=(TEXT|BINARY|BASE64)\\s+)(.+)|([^=]+)",
-            this::loadLicense, "[format=TEXT*|BIINARY|BASE64] fileName"),
+            this::loadLicense, "[format=TEXT*|BINARY|BASE64] fileName"),
         command("saveLicense", "(?:format=(TEXT|BINARY|BASE64)\\s+)(.+)|([^=]+)",
             this::saveLicense, "[format=TEXT*|BINARY|BASE64] fileName"),
         command("loadPrivateKey", ".+", this::loadPrivateKey, "[format=BINARY|BASE64] keyFile=xxx"),
@@ -52,6 +53,17 @@ class CommandLineApp {
 
     private static CommandDefinition command(String command, String regex, Runnable executor, String usage) {
         return new CommandDefinition(command, regex, executor, usage);
+    }
+
+    public void help() {
+        message("Use ! to execute shell commands");
+        message("!cd has no effect, current working directory cannot be changed");
+        message("exit to exit");
+        message("other commands:");
+        for (final var cd : commandDefinitions) {
+            message("    " + cd.keyword + " " + cd.usage + "");
+        }
+        message("For more information read the documentation");
     }
 
     public void dumpLicense() {
@@ -164,7 +176,7 @@ class CommandLineApp {
             final var key = keyPair.getPair().getPublic().getEncoded();
             final var md = MessageDigest.getInstance("SHA-512");
             final var calculatedDigest = md.digest(key);
-            final var javaCode = new StringBuilder("--KEY RING DIGEST START\nbyte [] digest = new byte[] {\n");
+            final var javaCode = new StringBuilder("--KEY DIGEST START\nbyte [] digest = new byte[] {\n");
             for (int i = 0; i < calculatedDigest.length; i++) {
                 int intVal = ((int) calculatedDigest[i]) & 0xff;
                 javaCode.append(String.format("(byte)0x%02X, ", intVal));
@@ -172,7 +184,18 @@ class CommandLineApp {
                     javaCode.append("\n");
                 }
             }
-            javaCode.append("\n};\n---KEY RING DIGEST END\n");
+            javaCode.append("\n};\n---KEY DIGEST END\n");
+
+            javaCode.append("--KEY START\nbyte [] key = new byte[] {\n");
+            for (int i = 0; i < key.length; i++) {
+                int intVal = ((int) key[i]) & 0xff;
+                javaCode.append(String.format("(byte)0x%02X, ", intVal));
+                if (i % 8 == 0) {
+                    javaCode.append("\n");
+                }
+            }
+            javaCode.append("\n};\n---KEY END\n");
+
             message("\n" + javaCode.toString());
         } catch (NoSuchAlgorithmException e) {
             error("" + e);
@@ -180,12 +203,8 @@ class CommandLineApp {
     }
 
     public void generate() {
-        if (keyPair != null) {
-            error("Cannot generate key pair when there are already keys.");
-            return;
-        }
-        final var pars = ParameterParser.parse(line, Set.of(ALGORITHM, SIZE, FORMAT,
-            PUBLIC_KEY_FILE, PRIVATE_KEY_FILE));
+        final var pars = ParameterParser.parse(line,
+            Set.of(ALGORITHM, SIZE, FORMAT, PUBLIC_KEY_FILE, PRIVATE_KEY_FILE));
         final var algorithm = pars.getOrDefault(ALGORITHM, "RSA");
         final var sizeString = pars.getOrDefault(SIZE, "2048");
         final var format = IOFormat.valueOf(pars.getOrDefault(FORMAT, BINARY));
@@ -245,15 +264,14 @@ class CommandLineApp {
     }
 
     public void loadLicense() {
-        try {
-            final LicenseReader reader = new LicenseReader(getLicenseFileName());
+        try (final var reader = new LicenseReader(getLicenseFileName())) {
             final String format = getLicenseFormat();
             switch (format) {
                 case TEXT:
                     license = reader.read(IOFormat.STRING);
                     break;
                 case BINARY:
-                    license = reader.read(IOFormat.BINARY);
+                    license = reader.read();
                     break;
                 case BASE_64:
                     license = reader.read(IOFormat.BASE64);

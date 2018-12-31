@@ -1,4 +1,4 @@
-package javax0.license3j.utils;
+package javax0.license3j.parsers;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -58,7 +58,7 @@ public class Feature {
         for (var format : DATE_FORMAT) {
             try {
                 return new SimpleDateFormat(format).parse(date);
-            } catch (ParseException e) {
+            } catch (ParseException ignored) {
             }
         }
         throw new IllegalArgumentException("Can not parse " + date);

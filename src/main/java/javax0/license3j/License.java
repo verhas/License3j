@@ -477,7 +477,7 @@ public class License {
          *                    the feature
          * @param valueString the value string that was on the first line of the feature definition.
          * @return the valueString compiled from the current line and presumably from subsequent lines.
-         * @throws IOException
+         * @throws IOException if the reader throws, which should never happen as we read from a String
          */
         private static String getValueString(BufferedReader reader, String valueString) throws IOException {
             if (valueString.startsWith("<<")) {
