@@ -15,14 +15,13 @@ Table of content
 ## Introduction
 
 License3j is a Java library that can be used to create and assert license files. This way Java programs can enforce the
-users to compensate their use of the software in the form of a payment. This is the usual way when closed source
+users to compensate their use of the software in the form of payment. This is the usual way when closed source
 programs are distributed.
 
 License management alone does not guarantee that the program will not be stolen, pirated or used in any illegal way.
-However license management may increase the difficulty to use the program illegal and therefore may drive users to
+However, license management may increase the difficulty to use the program illegal and therefore may drive users to
 become customers. There is another effect of license management which is legal. If there is sufficient license
-management illegal users have less probability to successfully claim their use was based on the lack of or false 
-knowledge of license conditions.
+management illegal users have less probability to successfully claim their use was based on the lack of or false knowledge of license conditions.
 
 License3j is an open source license manager that you can use free of charge for non-profit purposes.
 
@@ -32,11 +31,11 @@ Apache 2.0 license as defined on the web page http://www.apache.org/licenses/LIC
 
 ## What is a license License3j handles
 
-A license for License3j is a collection of features. Each feature has a name, a type and a value. The name can be
+A license for License3j is a collection of features. Each feature has a name, a type, and a value. The name can be
 any string you like, but there are some predefined names that have special meaning for the license management
 library. The type of a feature can be 
 
-* `BINARY` can contain arbitrary binary value that is retrieved by the Java code as a `byte[]` array
+* `BINARY` can contain an arbitrary binary value that is retrieved by the Java code as a `byte[]` array
 * `STRING` can contain any string, will be retrieved as `java.lang.String`
 * `BYTE` contains a single byte value.
 * `SHORT` contains a single short value
@@ -49,15 +48,15 @@ library. The type of a feature can be
 * `DATE` contains a date value 
 * `UUID` contains a UUID value
 
-The value of the different features can be retrieved as the corresponding Java object or primitive value. There is no
-automatic conversion between the different types of the features. 
+The value of the different features can be retrieved as the corresponding Java object or a primitive value. There is no
+automatic conversion between the different types of the features.
 
 When the license is saved to a file it can be saved binary, base64 or text.
 
 * `BINARY` format is suitable to store in a file. This is also the shortest, most compact format of the license. It may
   not be suitable to be sent over the internet inside and eMail and is not directly editable.
 * `BASE64` format is the same as the binary format but it is encoded using the base64 encoding
-* `TEXT` format is human readable format, suitable for editing in a text editor, looking at the actual content of the
+* `TEXT` format is a human readable format, suitable for editing in a text editor, looking at the actual content of the
   license without any special tool. The text format is always encoded UTF-8 character set.
 
 All three formats are suitable to store the license information and when a program is protected using License3j it can
@@ -78,23 +77,23 @@ try (var reader = new LicenseReader('license.bin')) {
     error("Error reading license file " + e);
 }
 ```
- 
-This will read the license from th e file `license.bin` assuming that the license is there in binary format. In case the
-license file is not readable, or has different format either `IOException` or `IllegalArgumentException` will be thrown.
+
+This will read the license from the file `license.bin` assuming that the license is there in binary format. In case the
+license file is not readable or has different format either `IOException` or `IllegalArgumentException` will be thrown.
 If the license is not binary then the code should use the read method with the format argument either
 `reader.read(IOFormat.STRING)` or `reader.read(IOFormat.BASE64)`. 
 
-## Check signature on license
+## Check signature on the license
 
 The license is read from the file even if it is not signed. A license can be signed, unsigned or it may have a
 compromised signature. Reading the license does not check either the existence of the signature nor the validity of
 that. To check the existence and the validity of the signature the application needs the public key. Licenses are
 signed using public key cryptography, where a private key is used to sign the license and the corresponding public key
-is used to check the authenticity of the signature. The public key can be read from a file, or it can be hard coded in
+is used to check the authenticity of the signature. The public key can be read from a file, or it can be hard-coded in
 the application. The latter is recommended.
 
 To embed the public key into the application you have to have a public key at the first place. To create a key pair
-you should start the interactive application built in to the License3j library.
+you should start the interactive application built into the License3j library.
 
 ```
 $ java -cp license3j-3.0.0.jar javax0.license3j.Repl
@@ -141,7 +140,7 @@ byte [] key = new byte[] {
 ---KEY END
 ```
 
-The digets is the SHA-512 digest of the public key. If you want to arrange your code so that it loads the public key
+The digest is the SHA-512 digest of the public key. If you want to arrange your code so that it loads the public key
 from a file or from some external resource you can check the key against the stored digest to ensure that the key
 is really the one to use to check the signature. The recommended way, however, is to copy and paste into your
 application the second array that is the actual public key.
@@ -161,20 +160,20 @@ When the license is verified the features can be retrieved using the names of th
 call `feature.getXxx()` where `Xxx` is the feature type. You can also check the type of a feature calling one of the
 `feature.isXxx()` but, honestly, your code has to know it. You create the license, and you check that the license is
 intact using digital signature before calling any of the `getXxx()` methods, thus it is not likely that you try to
-fetch the wrong type, unless you have a bug in your code.
+fetch the wrong type unless you have a bug in your code.
 
 ## License formats
 
 ### License Binary and Base64
 
 Binary and base64 formats are essentially the same. The Base64 format is the same as the binary, only it is encoded
-using the base64 encoding to ensure that onlyprintable characters are in the license. Neither of the forms is directly
-readable by a human using a simple text editor. You can, hoever read and convert any of the formats using the REPL
+using the base64 encoding to ensure that only printable characters are in the license. Neither of the forms is directly
+readable by a human using a simple text editor. You can however, read and convert any of the formats using the REPL
 application included in the library.
 
 The binary representation of the license starts with the bytes 0xCE, 0x21, 0x5E, 0x4E. This is followed by the features
 in binary format, each feature preceded with the length of the feature 4bytes. The feature starts with the type of the
-feature in four bytes. Since there are a limited amount of types there is plenty room for introducing new types. This is
+feature in four bytes. Since there are a limited amount of types there is plenty of room for introducing new types. This is
 followed by the length of the name also in four bytes. Some of the types have fixed length. If the type is a fixed length
 then the value follows. If the value for the given type can be variable length then the length of the value is followed
 on four bytes. This is followed by the actual bytes that encode the value of the feature.
@@ -189,9 +188,9 @@ by a `:` from the name. The type is written in all capital letters as listed abo
 type is followed by a `=` and then comes the value of the feature. The type along with the separating `:` can be missing
 in case it is `STRING`.
 
-The values are encoded as text in a human readable and editable way. When a value cannot fit on a single line, for
-example a multi line string then the feature value starts with the characters `<<` and it is followed by a string till
-the end of the line which does not appear in the value. The following lines contain the value of the feature till
+The values are encoded as text in a human-readable and editable way. When a value cannot fit on a single line, for
+example, a multi-line string then the feature value starts with the characters `<<` and it is followed by a string till
+the end of the line which does not appear in the value. The following lines contain the value of the feature until
 a line contains the string, which was after the `<<` characters on the start line. This is similar to the "here string"
 syntax of UNIX shell.
 
@@ -223,8 +222,8 @@ License3j versions 1.x.x and 2.0.0 were released for Java 1.5 ... 1.8. The relea
 library. Neither the API not the binary formats are compatible with previous versions. It is also released only
 for Java 11 and later and there is no planned backport release for Java 8 or earlier.
 
-License3j prior to version 3.0.0 has a dependency to Bouncy Castly encryption library. The version 3.0.0 and later
-breaks this dependency and this version is standalone. Also this version can be used to generate the keys, sign licenses
+License3j prior to version 3.0.0 has a dependency to Bouncy Castle encryption library. The version 3.0.0 and later
+breaks this dependency and this version is standalone. Also, this version can be used to generate the keys, sign licenses
 and does not need the external gpg tool. 
 
 ## Name of the game
