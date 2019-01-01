@@ -5,13 +5,6 @@ license management enforcement support. A license file is a special configuratio
 signed. The library can create, sign such license files and can also check the signature and parameters
 of the license file when embedded into the licensed application.
 
-Table of content
-
-* [this file:](https://github.com/verhas/License3j/wiki/Home) is what you are reading
-* [tutorial:](https://github.com/verhas/License3j/wiki/tuto) how to manage keys and encode license from the keyword line
-* [sample:](https://github.com/verhas/License3j/wiki/sample) how to load and check encoded license in your program
-* [mac address binding:](https://github.com/verhas/License3j/wiki/macaddr-binding) how to bind license to Ethernet addresses
-
 ## Introduction
 
 License3j is a Java library that can be used to create and assert license files. This way Java programs can enforce the
