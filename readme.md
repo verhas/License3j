@@ -78,7 +78,7 @@ try (var reader = new LicenseReader('license.bin')) {
     error("Error reading license file " + e);
 }
 ```
-
+ 
 This will read the license from th e file `license.bin` assuming that the license is there in binary format. In case the
 license file is not readable, or has different format either `IOException` or `IllegalArgumentException` will be thrown.
 If the license is not binary then the code should use the read method with the format argument either
