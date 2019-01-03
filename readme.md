@@ -22,7 +22,46 @@ what is the use of a license manager for nonprofit purposes? Nothing. And we did
 no use. Therefore this license manager is free to use for profit purposes as well under the license terms covered by
 Apache 2.0 license as defined on the web page http://www.apache.org/licenses/LICENSE-2.0
 
-## What is a license License3j handles
+## In short
+
+```java
+
+// load the license using a license reader
+try (var reader = new LicenseReader('license.bin')) {
+    License license = reader.read();
+} catch (IOException e) {
+    error("Error reading license file " + e);
+}
+
+// encode the public key into your application
+byte [] key = new byte[] {
+    (byte)0x30, 
+    (byte)0x81, (byte)0x9F, (byte)0x30, (byte)0x0D, (byte)0x06, (byte)0x09, (byte)0x2A, (byte)0x86, 
+    (byte)0x48, (byte)0x86, (byte)0xF7, (byte)0x0D, (byte)0x01, (byte)0x01, (byte)0x01, (byte)0x05, 
+    (byte)0x00, (byte)0x03, (byte)0x81, (byte)0x8D, (byte)0x00, (byte)0x30, (byte)0x81, (byte)0x89, 
+    
+    ... some lines are deleted as actual values are irrelevant ...
+    
+    (byte)0xE3, (byte)0xBB, (byte)0xE3, (byte)0xB1, (byte)0x67, (byte)0xAC, (byte)0x2A, (byte)0x9D, 
+    (byte)0x9D, (byte)0x67, (byte)0xB0, (byte)0x9D, (byte)0x3A, (byte)0xDE, (byte)0x48, (byte)0xA5, 
+    (byte)0x2A, (byte)0xE8, (byte)0xBB, (byte)0xC6, (byte)0xE2, (byte)0x39, (byte)0x0D, (byte)0x41, 
+    (byte)0xDF, (byte)0x76, (byte)0xD0, (byte)0xA7, (byte)0x02, (byte)0x03, (byte)0x01, (byte)0x00, 
+    (byte)0x01, 
+    };
+// check that the license os signed properly
+if( !license.isOK(key) ){
+    // if not signed, stop the application
+    return;
+}
+// get a feature and from the feature type specific data, like date, int, long, String...
+Date birthday = license.get("bd").getDate();
+
+```
+
+Create keys, license and sign license using a text editor and the REPL application (see below).
+
+
+## What is a license in License3j
 
 A license for License3j is a collection of features. Each feature has a name, a type, and a value. The name can be
 any string you like, but there are some predefined names that have special meaning for the license management
@@ -188,6 +227,77 @@ a line contains the string, which was after the `<<` characters on the start lin
 syntax of UNIX shell.
 
 ## License3j REPL application
+
+To start the repl (Read Evaluate Print Loop) using thr Java command:
+```
+$ java -cp license3j-3.0.0.jar javax0.license3j.Repl
+``` 
+
+The actual JAR file that has to be on the classpath is the license3j library jar file. You do not need any other
+library or class on the classpath. The JAR file does not contain a manifest to select a special class as main class.
+You have to specify the class containing the `public static void main()` method on the command line. That is
+`javax0.license3j.Repl`.
+
+The application is interactive and it reads the commands from te console and writes the output to the standard
+output. If the console is not available then it uses the standard input. The prompt it displays is:
+
+```
+License3j REPL
+CDW is /Users/verhasp/Dropbox/github/License3j/.
+help for help
+L3j> $ 
+```
+
+The simplest command you can type in is `help`:
+
+```
+L3j> $ help
+License is not loaded.
+Keys are not loaded
+[INFO] Use ! to execute shell commands
+[INFO] !cd has no effect, current working directory cannot be changed
+[INFO] exit to exit
+[INFO] other commands:
+[INFO]     help 
+[INFO]     feature name:TYPE=value
+[INFO]     licenseLoad [format=TEXT*|BINARY|BASE64] fileName
+[INFO]     saveLicense [format=TEXT*|BINARY|BASE64] fileName
+[INFO]     loadPrivateKey [format=BINARY|BASE64] keyFile=xxx
+[INFO]     loadPublicKey [format=BINARY|BASE64] keyFile=xxx
+[INFO]     sign [digest=SHA-512]
+[INFO]     verify >>no argument<<
+[INFO]     generateKeys [algorithm=RSA] [size=2048] [format=BINARY|BASE64] public=xxx private=xxx
+[INFO]     newLicense >>no argument<<
+[INFO]     dump >>no argument<<
+[INFO]     digestPublicKey >>no argument<<
+[INFO] For more information read the documentation
+```
+
+Note that the actual output of the command `help` may be different for different versions of the program. The
+documentation uses a `3.0.0-SNAPSHOT` version.
+
+You can exit the application using the command `exit`. You can execute external commands using the `!` mark. Any
+string you type on a line that starts with the `!` character will be passed to the underlying operating system
+and it will be exeited. You can, for example , type `!ls` on Linux to see what files are there in the current
+working directory, or you can type `!dir` to do the same under Windows. You cannot change the current working
+directory this way. You can issue the command `cd other_dir` and it actually will change the current working directory
+but only for the new shell, which is executing the command and not for the process that executes the Repl application.
+
+When you execute the Repl you can create a new license, new key pair, you can save them to file or you can load them
+from files. The commands work on the keys and the license that are currently in the memory. The information is also
+printed on the screen about the license and the key. When you start the Repl there is no license or keys loaded.
+
+You can type the commands interactively or you can type a file name as a command following a `.` (dot) character. The
+Repl application will read the file line by line and execute the lines as they were types into the interactive
+prompt.
+
+If there is a file `.license3j` in the current working directory when the Repl is started then it will be read and 
+executed automatically. This can be use to load the default public and private keys that you usually work with.
+
+The commands can be abbreviated. You need to write only so many characters so that the command can uniquely identified.
+The sam eis true for the command parameters that have names. Thus you can type `si` instead of `sign` to sign a license.
+
+
 
 
 

@@ -245,7 +245,12 @@ class CommandLineApp {
     public void sign() {
         try {
             final var digest = matcher.group(1) == null ? "SHA-512" : matcher.group(1);
-            license.sign(keyPair.getPair().getPrivate(), digest);
+            if (license == null) {
+                error("There is no license loaded to be signed");
+                return;
+            } else {
+                license.sign(keyPair.getPair().getPrivate(), digest);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
