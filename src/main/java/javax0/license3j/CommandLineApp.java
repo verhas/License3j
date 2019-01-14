@@ -2,7 +2,7 @@ package javax0.license3j;
 
 import javax0.license3j.crypto.LicenseKeyPair;
 import javax0.license3j.io.*;
-import javax0.license3j.parsers.ParameterParser;
+import javax0.repl.ParameterParser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -10,48 +10,60 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.*;
+import java.util.function.Function;
 
 class CommandLineApp {
     public static final String PUBLIC_KEY_FILE = "publicKeyFile";
     public static final String PRIVATE_KEY_FILE = "privateKeyFile";
     public static final String ALGORITHM = "algorithm";
+    public static final String PRIVATE = "private";
+    public static final String PUBLIC = "public";
+    public static final String DIGEST = "digest";
     public static final String SIZE = "size";
     public static final String FORMAT = "format";
     public static final String TEXT = "TEXT";
     public static final String BINARY = "BINARY";
     public static final String BASE_64 = "BASE64";
+    private static final Set<String> NO_PARAMS = Set.of();
+    private static final Set<String> NO_PARSE = null;
+    private final Map<String, String> aliases = new HashMap<>(Map.of(
+            "ll", "licenseload",
+            "lprk", "loadprivatekey",
+            "lpuk", "loadpublickey",
+            "dpk","dumppublickey",
+            "dl","dumplicense"
+    ));
     private List<String> errors = new ArrayList<>();
     private List<String> messages = new ArrayList<>();
     private License license;
     private LicenseKeyPair keyPair;
-    private Matcher matcher;
+    private ParameterParser parser;
     private String line;
     private final CommandDefinition[] commandDefinitions = {
-        command("help", "^$", this::help, ""),
-        command("feature", ".+", this::feature, "name:TYPE=value"),
-        command("licenseLoad", "(?:format=(TEXT|BINARY|BASE64)\\s+)(.+)|([^=]+)",
-            this::loadLicense, "[format=TEXT*|BINARY|BASE64] fileName"),
-        command("saveLicense", "(?:format=(TEXT|BINARY|BASE64)\\s+)(.+)|([^=]+)",
-            this::saveLicense, "[format=TEXT*|BINARY|BASE64] fileName"),
-        command("loadPrivateKey", ".+", this::loadPrivateKey, "[format=BINARY|BASE64] keyFile"),
-        command("loadPublicKey", ".+", this::loadPublicKey, "[format=BINARY|BASE64] keyFile"),
-        command("sign", "(?:digest=(.*))?", this::sign, "[digest=SHA-512]"),
-        command("verify", "^$", this::verify, ">>no argument<<"),
-        command("generateKeys", ".+",
-            this::generate, "[algorithm=RSA] [size=2048] [format=BINARY|BASE64] public=xxx private=xxx"),
-        command("newLicense", "^$", this::newLicense, ">>no argument<<"),
-        command("dump", "^$", this::dumpLicense, ">>no argument<<"),
-        command("digestPublicKey", "^$", this::digestPublicKey, ">>no argument<<")
-
+            command("help", NO_PARAMS, this::help, ""),
+            command("alias", NO_PARAMS, this::alias, "alias myalias command"),
+            command("feature", NO_PARSE, this::feature, "name:TYPE=value"),
+            command("licenseLoad", Set.of(FORMAT), this::loadLicense, "[format=TEXT*|BINARY|BASE64] fileName"),
+            command("saveLicense", Set.of(FORMAT), this::saveLicense, "[format=TEXT*|BINARY|BASE64] fileName"),
+            command("loadPrivateKey", Set.of(FORMAT), this::loadPrivateKey, "[format=BINARY*|BASE64] keyFile"),
+            command("loadPublicKey", Set.of(FORMAT), this::loadPublicKey, "[format=BINARY*|BASE64] keyFile"),
+            command("sign", Set.of(DIGEST), this::sign, "[digest=SHA-512]"),
+            command("verify", NO_PARAMS, this::verify, ">>no argument<<"),
+            command("generateKeys", Set.of(ALGORITHM, SIZE, FORMAT, PUBLIC, PRIVATE), this::generate, "[algorithm=RSA] [size=2048] [format=BINARY|BASE64] public=xxx private=xxx"),
+            command("newLicense", NO_PARAMS, this::newLicense, ">>no argument<<"),
+            command("dumpLicense", NO_PARAMS, this::dumpLicense, ">>no argument<<"),
+            command("dumpPublicKey", NO_PARAMS, this::digestPublicKey, ">>no argument<<")
     };
 
-    private static CommandDefinition command(String command, String regex, Runnable executor, String usage) {
-        return new CommandDefinition(command, regex, executor, usage);
+    private static CommandDefinition command(String command, Set<String> parameters, Runnable executor, String usage) {
+        return new CommandDefinition(command, parameters, executor, usage);
+    }
+
+    public void alias(){
+        final var alias = parser.get(0);
+        final var command = parser.get(1);
+        aliases.put(alias,command);
     }
 
     public void help() {
@@ -88,7 +100,7 @@ class CommandLineApp {
         }
         try {
             final var reader = new LicenseWriter(getLicenseFileName());
-            final var format = getLicenseFormat();
+            final var format = parser.getOrDefault(FORMAT, TEXT, Set.of(TEXT, BINARY, BASE_64));
             switch (format) {
                 case TEXT:
                     reader.write(license, IOFormat.STRING);
@@ -114,13 +126,13 @@ class CommandLineApp {
             message("Overriding old key from file");
         }
         final var pars = ParameterParser.parse(line, Set.of(FORMAT));
-        final var keyFile = pars.get("1");
+        final var keyFile = pars.get(0);
         if (keyFile == null) {
             messages = new ArrayList<>();
             error("keyFile has to be specified from where the key is loaded");
             return;
         }
-        final var format = IOFormat.valueOf(pars.getOrDefault(FORMAT, BINARY).toUpperCase());
+        final var format = IOFormat.valueOf(pars.getOrDefault(FORMAT, BINARY,Set.of(TEXT,BINARY)));
         try (final var reader = new KeyPairReader(keyFile)) {
             keyPair = merge(keyPair, reader.readPrivate(format));
             final var keyPath = new File(keyFile).getAbsolutePath();
@@ -136,13 +148,13 @@ class CommandLineApp {
             message("Overriding old key from file");
         }
         final var pars = ParameterParser.parse(line, Set.of(FORMAT));
-        final var keyFile = pars.get("1");
+        final var keyFile = pars.get(0);
         if (keyFile == null) {
             messages = new ArrayList<>();
             error("keyFile has to be specified from where the key is loaded");
             return;
         }
-        final var format = IOFormat.valueOf(pars.getOrDefault(FORMAT, BINARY).toUpperCase());
+        final var format = IOFormat.valueOf(pars.getOrDefault(FORMAT, BINARY,Set.of(TEXT,BINARY)).toUpperCase());
         try (final var reader = new KeyPairReader(keyFile)) {
             keyPair = merge(keyPair, reader.readPublic(format));
             final var keyPath = new File(keyFile).getAbsolutePath();
@@ -203,7 +215,7 @@ class CommandLineApp {
 
     public void generate() {
         final var pars = ParameterParser.parse(line,
-            Set.of(ALGORITHM, SIZE, FORMAT, PUBLIC_KEY_FILE, PRIVATE_KEY_FILE));
+                Set.of(ALGORITHM, SIZE, FORMAT, PUBLIC_KEY_FILE, PRIVATE_KEY_FILE));
         final var algorithm = pars.getOrDefault(ALGORITHM, "RSA");
         final var sizeString = pars.getOrDefault(SIZE, "2048");
         final var format = IOFormat.valueOf(pars.getOrDefault(FORMAT, BINARY));
@@ -211,7 +223,7 @@ class CommandLineApp {
         final var privateKeyFile = pars.get(PRIVATE_KEY_FILE);
         if (publicKeyFile == null || privateKeyFile == null) {
             error("Keypair generation needs output files specified where keys are to be saved. " +
-                "Use options 'publicKeyFile' and 'privateKeyFile'");
+                    "Use options 'publicKeyFile' and 'privateKeyFile'");
             return;
         }
         final int size;
@@ -219,7 +231,7 @@ class CommandLineApp {
             size = Integer.parseInt(sizeString);
         } catch (NumberFormatException e) {
             error("Option size has to be a positive decimal integer value. " +
-                sizeString + " does not qualify as such.");
+                    sizeString + " does not qualify as such.");
             return;
         }
         generateKeys(algorithm, size);
@@ -243,7 +255,7 @@ class CommandLineApp {
 
     public void sign() {
         try {
-            final var digest = matcher.group(1) == null ? "SHA-512" : matcher.group(1);
+            final var digest = parser.getOrDefault("digest", "SHA-512");
             if (license == null) {
                 error("There is no license loaded to be signed");
                 return;
@@ -269,7 +281,7 @@ class CommandLineApp {
 
     public void loadLicense() {
         try (final var reader = new LicenseReader(getLicenseFileName())) {
-            final String format = getLicenseFormat();
+            final String format = parser.getOrDefault(FORMAT, TEXT,Set.of(TEXT, BINARY, BASE_64));
             switch (format) {
                 case TEXT:
                     license = reader.read(IOFormat.STRING);
@@ -288,12 +300,8 @@ class CommandLineApp {
         }
     }
 
-    private String getLicenseFormat() {
-        return matcher.group(1) == null ? TEXT : matcher.group(1);
-    }
-
     private String getLicenseFileName() {
-        return matcher.group(matcher.group(1) == null ? 3 : 2);
+        return parser.get(0);
     }
 
     private void generateKeys(String algorithm, int size) {
@@ -331,6 +339,14 @@ class CommandLineApp {
         return sb.toString();
     }
 
+    private String getOrMe(Map<String,String> map, String key){
+        if( map.containsKey(key)){
+            return map.get(key);
+        }else{
+            return key;
+        }
+    }
+
     public void execute(String line) {
         errors = new ArrayList<>();
         messages = new ArrayList<>();
@@ -339,11 +355,11 @@ class CommandLineApp {
         if (words.length == 0) {
             return;
         }
-        final var keyword = words[0];
-        this.line = trimmedLine.substring(keyword.length()).trim();
+        final var keyword = ((Function<String,String>) s -> aliases.containsKey(s) ? aliases.get(s) : s ).apply(words[0]);
+        this.line = trimmedLine.substring(words[0].length()).trim();
         CommandDefinition cd = null;
         for (final var command : commandDefinitions) {
-            if (command.keyword.startsWith(keyword)) {
+            if (command.keyword.toLowerCase().startsWith(keyword)) {
                 if (cd == null) {
                     cd = command;
                 } else {
@@ -356,11 +372,10 @@ class CommandLineApp {
             error("command '" + keyword + "' is not defined");
             return;
         }
-        matcher = cd.regex.matcher(this.line);
-        if (!matcher.matches()) {
-            error("command '" + line + "' syntax is erroneous");
-            error("usage: " + cd.keyword + " " + cd.usage);
-            return;
+        if (cd.parameters != null) {
+            parser = ParameterParser.parse(this.line, cd.parameters);
+        } else {
+            parser = null;
         }
         cd.executor.run();
     }
@@ -392,13 +407,13 @@ class CommandLineApp {
 
     private static final class CommandDefinition {
         final String keyword;
-        final Pattern regex;
+        final Set<String> parameters;
         final Runnable executor;
         final String usage;
 
-        private CommandDefinition(String keyword, String regex, Runnable executor, String usage) {
+        private CommandDefinition(String keyword, Set<String> parameters, Runnable executor, String usage) {
             this.keyword = keyword;
-            this.regex = Pattern.compile(regex);
+            this.parameters = parameters;
             this.executor = executor;
             this.usage = usage;
         }

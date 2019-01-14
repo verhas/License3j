@@ -30,6 +30,8 @@ public class Repl {
         if (startupFile.exists()) {
             say("Executing startup file %s", startupFile.getAbsolutePath());
             execFile(startupFile.getAbsolutePath(), app);
+        }else{
+            say("Startup file .license3j was not found");
         }
         for (; ; ) {
             final var line = console.readLine("L3j> $ ");
