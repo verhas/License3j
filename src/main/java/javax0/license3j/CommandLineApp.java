@@ -19,7 +19,6 @@ import java.util.regex.Pattern;
 class CommandLineApp {
     public static final String PUBLIC_KEY_FILE = "publicKeyFile";
     public static final String PRIVATE_KEY_FILE = "privateKeyFile";
-    public static final String KEY_FILE = "keyFile";
     public static final String ALGORITHM = "algorithm";
     public static final String SIZE = "size";
     public static final String FORMAT = "format";
@@ -39,8 +38,8 @@ class CommandLineApp {
             this::loadLicense, "[format=TEXT*|BINARY|BASE64] fileName"),
         command("saveLicense", "(?:format=(TEXT|BINARY|BASE64)\\s+)(.+)|([^=]+)",
             this::saveLicense, "[format=TEXT*|BINARY|BASE64] fileName"),
-        command("loadPrivateKey", ".+", this::loadPrivateKey, "[format=BINARY|BASE64] keyFile=xxx"),
-        command("loadPublicKey", ".+", this::loadPublicKey, "[format=BINARY|BASE64] keyFile=xxx"),
+        command("loadPrivateKey", ".+", this::loadPrivateKey, "[format=BINARY|BASE64] keyFile"),
+        command("loadPublicKey", ".+", this::loadPublicKey, "[format=BINARY|BASE64] keyFile"),
         command("sign", "(?:digest=(.*))?", this::sign, "[digest=SHA-512]"),
         command("verify", "^$", this::verify, ">>no argument<<"),
         command("generateKeys", ".+",
@@ -114,8 +113,8 @@ class CommandLineApp {
         if (keyPair != null && keyPair.getPair() != null && keyPair.getPair().getPrivate() != null) {
             message("Overriding old key from file");
         }
-        final var pars = ParameterParser.parse(line, Set.of(FORMAT, KEY_FILE));
-        final var keyFile = pars.get(KEY_FILE);
+        final var pars = ParameterParser.parse(line, Set.of(FORMAT));
+        final var keyFile = pars.get("1");
         if (keyFile == null) {
             messages = new ArrayList<>();
             error("keyFile has to be specified from where the key is loaded");
@@ -136,8 +135,8 @@ class CommandLineApp {
         if (keyPair != null && keyPair.getPair() != null && keyPair.getPair().getPrivate() != null) {
             message("Overriding old key from file");
         }
-        final var pars = ParameterParser.parse(line, Set.of(FORMAT, KEY_FILE));
-        final var keyFile = pars.get(KEY_FILE);
+        final var pars = ParameterParser.parse(line, Set.of(FORMAT));
+        final var keyFile = pars.get("1");
         if (keyFile == null) {
             messages = new ArrayList<>();
             error("keyFile has to be specified from where the key is loaded");
