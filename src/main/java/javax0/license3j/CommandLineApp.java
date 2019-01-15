@@ -184,7 +184,7 @@ class CommandLineApp {
                 error("There is no public key loaded");
                 return;
             }
-            final var key = keyPair.getPair().getPublic().getEncoded();
+            final var key = keyPair.getPublic();
             final var md = MessageDigest.getInstance("SHA-512");
             final var calculatedDigest = md.digest(key);
             final var javaCode = new StringBuilder("--KEY DIGEST START\nbyte [] digest = new byte[] {\n");
