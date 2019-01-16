@@ -278,7 +278,7 @@ documentation uses a `3.0.0-SNAPSHOT` version.
 
 You can exit the application using the command `exit`. You can execute external commands using the `!` mark. Any
 string you type on a line that starts with the `!` character will be passed to the underlying operating system
-and it will be exeited. You can, for example , type `!ls` on Linux to see what files are there in the current
+and it will be executed. You can, for example , type `!ls` on Linux to see what files are there in the current
 working directory, or you can type `!dir` to do the same under Windows. You cannot change the current working
 directory this way. You can issue the command `cd other_dir` and it actually will change the current working directory
 but only for the new shell, which is executing the command and not for the process that executes the Repl application.
@@ -295,11 +295,14 @@ If there is a file `.license3j` in the current working directory when the Repl i
 executed automatically. This can be use to load the default public and private keys that you usually work with.
 
 The commands can be abbreviated. You need to write only so many characters so that the command can uniquely identified.
-The sam eis true for the command parameters that have names. Thus you can type `si` instead of `sign` to sign a license.
+The same is true for the command parameters that have names. Thus you can type `si` instead of `sign` to sign a license.
 
-
-
-
+Later versions of License3j will not include the Repl application. The Repl application will be moved to a separate
+library and it will use the `javax0.repl` library as a framework. This solution provides a leaner license3j library
+that you include into your application. Your application will not contain the code of the License3j Repl application.
+Moving the repl framework to a separate library makes it more viable and can be used by other Java applications as
+well. No matter which version you use following 3.0.0 there will be a Repl application available to manage the licenses
+and the keys.
 
 ## Download and Installation
 
