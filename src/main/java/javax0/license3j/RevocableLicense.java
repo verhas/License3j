@@ -15,8 +15,8 @@ import java.util.Optional;
 public class RevocableLicense {
 
     final private static String REVOCATION_URL = "revocationUrl";
-    HttpHandler httpHandler = new HttpHandler();
     private final License license;
+    HttpHandler httpHandler = new HttpHandler();
 
     public RevocableLicense(License license) {
         this.license = license;
@@ -36,8 +36,10 @@ public class RevocableLicense {
      * @throws MalformedURLException when the revocation url is not well formatted
      */
     public URL getRevocationURL() throws MalformedURLException {
-        final var revocationURLTemplate = license.get(REVOCATION_URL).getString();
-        final String revocationURL;
+        final Feature revocationURLFeature = license.get(REVOCATION_URL);
+        final var revocationURLTemplate = revocationURLFeature == null ?
+                null :
+                revocationURLFeature.getString();
         if (revocationURLTemplate != null) {
             final var id = Optional.ofNullable(license.getLicenseId()).orElse(license.fingerprint());
             if (id != null) {
@@ -51,6 +53,17 @@ public class RevocableLicense {
     }
 
     /**
+     * Set the revocation URL. Using this method is discouraged in case the URL
+     * contains the <code>${licenseId}</code> place holder. In that case it is
+     * recommended to use the {@link #setRevocationURL(String)} method instead.
+     *
+     * @param url the revocation url
+     */
+    public void setRevocationURL(final URL url) {
+        setRevocationURL(url.toString());
+    }
+
+    /**
      * Set the revocation URL. This method accepts the url as a string that
      * makes it possible to use a string that contains the
      * <code>${licenseId}</code> place holder.
@@ -60,17 +73,6 @@ public class RevocableLicense {
      */
     public void setRevocationURL(final String url) {
         license.add(Feature.Create.stringFeature(REVOCATION_URL, url));
-    }
-
-    /**
-     * Set the revocation URL. Using this method is discouraged in case the URL
-     * contains the <code>${licenseId}</code> place holder. In that case it is
-     * recommended to use the {@link #setRevocationURL(String)} method instead.
-     *
-     * @param url the revocation url
-     */
-    public void setRevocationURL(final URL url) {
-        setRevocationURL(url.toString());
     }
 
     /**
