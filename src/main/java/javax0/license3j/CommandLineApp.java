@@ -61,8 +61,8 @@ class CommandLineApp {
     }
 
     public void alias(){
-        final var alias = parser.get(0);
-        final var command = parser.get(1);
+        final var alias = parser.get(0).toLowerCase();
+        final var command = parser.get(1).toLowerCase();
         aliases.put(alias,command);
     }
 
@@ -355,6 +355,7 @@ class CommandLineApp {
         if (words.length == 0) {
             return;
         }
+        words[0] = words[0].toLowerCase();
         final var keyword = ((Function<String,String>) s -> aliases.containsKey(s) ? aliases.get(s) : s ).apply(words[0]);
         this.line = trimmedLine.substring(words[0].length()).trim();
         CommandDefinition cd = null;
