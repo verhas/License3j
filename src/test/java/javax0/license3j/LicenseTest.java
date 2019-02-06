@@ -12,6 +12,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 
 class LicenseTest {
@@ -37,7 +39,10 @@ class LicenseTest {
     @DisplayName("Create a license with features serialize and restore then the features are the same")
     void licenseSerializeAndDeserialize() {
         final var sut = new License();
-        final var now = new Date(1545047719295L);
+        final var now = Date.from(LocalDateTime.of(
+                2018,12, 17,
+                12,55,19,295 * 1000000)
+                .toInstant(ZoneOffset.UTC));
         addSampleFeatures(sut, now);
         byte[] buffer = sut.serialized();
         final var restored = License.Create.from(buffer);
@@ -58,7 +63,10 @@ class LicenseTest {
     @DisplayName("Create a license with features convert to string and restore then the features are the same")
     void licenseStringifyAndDestringify() {
         final var sut = new License();
-        final var now = new Date(1545047719295L);
+        final var now = Date.from(LocalDateTime.of(
+                2018,12, 17,
+                12,55,19,295 * 1000000)
+                .toInstant(ZoneOffset.UTC));
         addSampleFeatures(sut, now);
         var string = sut.toString();
         final var restored = License.Create.from(string);

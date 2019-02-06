@@ -12,6 +12,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
@@ -475,19 +477,31 @@ public class FeatureTest {
     @DisplayName("date feature is converted from string")
     public void testDateFromString() {
         final var sut1 = Feature.Create.from("name:DATE=2018-12-17 12:55:19.295");
+        final var now1 = Date.from(LocalDateTime.of(
+                2018,12, 17,
+                12,55,19,295 * 1000000)
+                .toInstant(ZoneOffset.UTC));
         Assertions.assertEquals("name", sut1.name());
         Assertions.assertTrue(sut1.isDate());
-        Assertions.assertEquals(new Date(1545047719295L), sut1.getDate());
+        Assertions.assertEquals(now1, sut1.getDate());
 
         final var sut2 = Feature.Create.from("name:DATE=2018-12-17 12:55:19");
+        final var now2 = Date.from(LocalDateTime.of(
+                2018,12, 17,
+                12,55,19)
+                .toInstant(ZoneOffset.UTC));
         Assertions.assertEquals("name", sut2.name());
         Assertions.assertTrue(sut2.isDate());
-        Assertions.assertEquals(new Date(1545047719000L), sut2.getDate());
+        Assertions.assertEquals(now2, sut2.getDate());
 
         final var sut3 = Feature.Create.from("name:DATE=2018-12-17 12:55");
+        final var now3 = Date.from(LocalDateTime.of(
+                2018,12, 17,
+                12,55)
+                .toInstant(ZoneOffset.UTC));
         Assertions.assertEquals("name", sut3.name());
         Assertions.assertTrue(sut3.isDate());
-        Assertions.assertEquals(new Date(1545047700000L), sut3.getDate());
+        Assertions.assertEquals(now3, sut3.getDate());
     }
 
 
@@ -559,7 +573,11 @@ public class FeatureTest {
     @Test
     @DisplayName("Date feature is converted to string")
     public void testDateToString() {
-        final var sut = Feature.Create.dateFeature("now", new Date(1545047719295L));
+        final var now = Date.from(LocalDateTime.of(
+                2018,12, 17,
+                12,55,19,295 * 1000000)
+                .toInstant(ZoneOffset.UTC));
+        final var sut = Feature.Create.dateFeature("now", now);
         Assertions.assertEquals("now:DATE=2018-12-17 12:55:19.295", sut.toString());
     }
 }
