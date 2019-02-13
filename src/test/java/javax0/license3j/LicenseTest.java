@@ -14,11 +14,11 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
-public class LicenseTest {
+class LicenseTest {
 
     @Test
     @DisplayName("Creates a license and then it can access the features.")
-    public void createLicenseViaAPI() {
+    void createLicenseViaAPI() {
         final var sut = new License();
         final var now = new Date(1545047719295L);
         addSampleFeatures(sut, now);
@@ -35,7 +35,7 @@ public class LicenseTest {
 
     @Test
     @DisplayName("Create a license with features serialize and restore then the features are the same")
-    public void licenseSerializeAndDeserialize() {
+    void licenseSerializeAndDeserialize() {
         final var sut = new License();
         final var now = new Date(1545047719295L);
         addSampleFeatures(sut, now);
@@ -56,7 +56,7 @@ public class LicenseTest {
 
     @Test
     @DisplayName("Create a license with features convert to string and restore then the features are the same")
-    public void licenseStringifyAndDestringify() {
+    void licenseStringifyAndDestringify() {
         final var sut = new License();
         final var now = new Date(1545047719295L);
         addSampleFeatures(sut, now);
@@ -77,7 +77,7 @@ public class LicenseTest {
 
     @Test
     @DisplayName("Test that the fingerprint does not change even if we change the signature algorithm")
-    public void testLicenseFingerprint() throws NoSuchAlgorithmException, IllegalBlockSizeException,
+    void testLicenseFingerprint() throws NoSuchAlgorithmException, IllegalBlockSizeException,
         InvalidKeyException, BadPaddingException, NoSuchPaddingException {
         final var sut = new License();
         final var now = new Date(1545047719295L);
@@ -95,7 +95,7 @@ public class LicenseTest {
 
     @Test
     @DisplayName("A license with an expiry date a day ago has expired")
-    public void pastExpiryTimeReportsExpired() {
+    void pastExpiryTimeReportsExpired() {
         final var license = new License();
         license.setExpiry(new Date(new Date().getTime() - 24 * 60 * 60 * 1000));
         Assertions.assertTrue(license.isExpired());
@@ -103,14 +103,14 @@ public class LicenseTest {
 
     @Test
     @DisplayName("A license with an expiry date a day ahead has not expired")
-    public void futureExpiryTimeReportsNonExpired()  {
+    void futureExpiryTimeReportsNonExpired()  {
         final var lic = new License();
         lic.setExpiry(new Date(new Date().getTime() + 24 * 60 * 60 * 1000));
         Assertions.assertFalse(lic.isExpired());
     }
 
     @Test
-    public void uuidGenerationResultsNonNullUuid() {
+    void uuidGenerationResultsNonNullUuid() {
         final var lic = new License();
         lic.setLicenseId();
         Assertions.assertNotNull(lic.getLicenseId());

@@ -125,7 +125,7 @@ public class License {
     }
 
     /**
-     * Returns true if the license is signed the the authenticity of the signature can be checked successfully
+     * Returns true if the license is signed and the authenticity of the signature can be checked successfully
      * using the key.
      *
      * @param key encryption key to check the authenticity of the license signature

@@ -23,4 +23,15 @@ public class LicenseSignerTest {
         license.getSignature()[0] = (byte) ~license.getSignature()[0];
         Assertions.assertFalse(license.isOK(keyPair.getPair().getPublic()));
     }
+
+    @Test
+    public void testSignatureWithFullCypher() throws NoSuchAlgorithmException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchPaddingException {
+        final var keyPair = LicenseKeyPair.Create.from("RSA/ECB/PKCS1Padding", 2048);
+        final var license = new License();
+        license.add(Feature.Create.stringFeature("owner", "Peter Verhas"));
+        license.sign(keyPair.getPair().getPrivate(), "SHA-512");
+        Assertions.assertTrue(license.isOK(keyPair.getPair().getPublic()));
+        license.getSignature()[0] = (byte) ~license.getSignature()[0];
+        Assertions.assertFalse(license.isOK(keyPair.getPair().getPublic()));
+    }
 }

@@ -15,8 +15,8 @@ import java.util.Optional;
 public class RevocableLicense {
 
     final private static String REVOCATION_URL = "revocationUrl";
-    private final License license;
     HttpHandler httpHandler = new HttpHandler();
+    private final License license;
 
     public RevocableLicense(License license) {
         this.license = license;
@@ -36,10 +36,8 @@ public class RevocableLicense {
      * @throws MalformedURLException when the revocation url is not well formatted
      */
     public URL getRevocationURL() throws MalformedURLException {
-        final Feature revocationURLFeature = license.get(REVOCATION_URL);
-        final var revocationURLTemplate = revocationURLFeature == null ?
-                null :
-                revocationURLFeature.getString();
+        final var revocationURLTemplate = license.get(REVOCATION_URL) == null ? null : license.get(REVOCATION_URL).getString();
+        final String revocationURL;
         if (revocationURLTemplate != null) {
             final var id = Optional.ofNullable(license.getLicenseId()).orElse(license.fingerprint());
             if (id != null) {
