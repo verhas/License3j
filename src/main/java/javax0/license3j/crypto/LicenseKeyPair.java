@@ -12,6 +12,10 @@ public class LicenseKeyPair {
     private final KeyPair pair;
     private final String cypherTransformation;
 
+    public String getCypher(){
+        return cypherTransformation;
+    }
+
     private LicenseKeyPair(KeyPair pair, String cypherTransformation) {
         this.pair = pair;
         this.cypherTransformation = cypherTransformation;

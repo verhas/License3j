@@ -170,10 +170,10 @@ class CommandLineApp {
             return newKp;
         }
         if (newKp.getPair().getPublic() != null) {
-            return LicenseKeyPair.Create.from(newKp.getPair().getPublic(), oldKp.getPair().getPrivate());
+            return LicenseKeyPair.Create.from(newKp.getPair().getPublic(), oldKp.getPair().getPrivate(),oldKp.getCypher());
         }
         if (newKp.getPair().getPrivate() != null) {
-            return LicenseKeyPair.Create.from(oldKp.getPair().getPublic(), newKp.getPair().getPrivate());
+            return LicenseKeyPair.Create.from(oldKp.getPair().getPublic(), newKp.getPair().getPrivate(),oldKp.getCypher());
         }
         return oldKp;
     }
