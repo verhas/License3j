@@ -10,9 +10,11 @@ import java.util.Arrays;
 
 public class LicenseKeyPair {
     private final KeyPair pair;
+    private final String cypherTransformation;
 
-    private LicenseKeyPair(KeyPair pair) {
+    private LicenseKeyPair(KeyPair pair, String cypherTransformation) {
         this.pair = pair;
+        this.cypherTransformation = cypherTransformation;
     }
 
     public KeyPair getPair() {
@@ -26,12 +28,12 @@ public class LicenseKeyPair {
     }
 
     private byte[] getKeyBytes(Key key) {
-        final var algorithm = key.getAlgorithm().getBytes(StandardCharsets.UTF_8);
-        final var len =  algorithm.length + 1 + key.getEncoded().length;
+        final var algorithm = cypherTransformation.getBytes(StandardCharsets.UTF_8);
+        final var len = algorithm.length + 1 + key.getEncoded().length;
         final var buffer = new byte[len];
-        System.arraycopy(algorithm,0,buffer,0,algorithm.length);
+        System.arraycopy(algorithm, 0, buffer, 0, algorithm.length);
         buffer[algorithm.length] = 0x00;
-        System.arraycopy(key.getEncoded(),0,buffer,algorithm.length+1,key.getEncoded().length);
+        System.arraycopy(key.getEncoded(), 0, buffer, algorithm.length + 1, key.getEncoded().length);
         return buffer;
     }
 
@@ -48,29 +50,37 @@ public class LicenseKeyPair {
     }
 
     public static class Create {
-        public static LicenseKeyPair from(final PublicKey publicKey, PrivateKey privateKey) {
-            return new LicenseKeyPair(new KeyPair(publicKey, privateKey));
+        public static LicenseKeyPair from(final PublicKey publicKey, PrivateKey privateKey, final String cypherTransformation) {
+            return new LicenseKeyPair(new KeyPair(publicKey, privateKey), cypherTransformation);
         }
 
-        public static LicenseKeyPair from(final KeyPair keyPair) {
-            return new LicenseKeyPair(keyPair);
+        public static LicenseKeyPair from(final KeyPair keyPair, String cypherTransformation) {
+            return new LicenseKeyPair(keyPair, cypherTransformation);
         }
 
-        public static LicenseKeyPair from(final String algorithm, final int size) throws NoSuchAlgorithmException {
+        public static LicenseKeyPair from(final String cypherTransformation, final int size) throws NoSuchAlgorithmException {
+            final String algorithm;
+            if( cypherTransformation.contains("/")){
+                algorithm = cypherTransformation.substring(0,cypherTransformation.indexOf("/"));
+            }else{
+                algorithm = cypherTransformation;
+            }
             KeyPairGenerator generator = KeyPairGenerator.getInstance(algorithm);
             generator.initialize(size);
-            return new LicenseKeyPair(generator.genKeyPair());
+            return new LicenseKeyPair(generator.genKeyPair(), cypherTransformation);
         }
 
         public static LicenseKeyPair from(byte[] encoded, int type) throws NoSuchAlgorithmException, InvalidKeySpecException {
+            final String cypherTransformation = getAlgorithm(encoded);
             if (type == Modifier.PRIVATE)
-                return from(null, getPrivateEncoded(encoded));
+                return from(null, getPrivateEncoded(encoded),cypherTransformation);
             else
-                return from(getPublicEncoded(encoded), null);
+                return from(getPublicEncoded(encoded), null,cypherTransformation);
         }
 
         public static LicenseKeyPair from(byte[] privateEncoded, byte[] publicEncoded) throws NoSuchAlgorithmException, InvalidKeySpecException {
-            return from(getPublicEncoded(publicEncoded), getPrivateEncoded(privateEncoded));
+            final String cypherTransformation = getAlgorithm(publicEncoded);
+            return from(getPublicEncoded(publicEncoded), getPrivateEncoded(privateEncoded),cypherTransformation);
         }
 
         private static PublicKey getPublicEncoded(byte[] buffer) throws NoSuchAlgorithmException, InvalidKeySpecException {
@@ -85,18 +95,19 @@ public class LicenseKeyPair {
             return factory.generatePrivate(spec);
         }
 
-        private static String getAlgorithm(byte[] buffer){
-            for(int i = 0 ; i < buffer.length ; i ++){
-                if( buffer[i] == 0x00){
-                    return new String(Arrays.copyOf(buffer,i),StandardCharsets.UTF_8);
+        private static String getAlgorithm(byte[] buffer) {
+            for (int i = 0; i < buffer.length; i++) {
+                if (buffer[i] == 0x00) {
+                    return new String(Arrays.copyOf(buffer, i), StandardCharsets.UTF_8);
                 }
             }
             throw new IllegalArgumentException("key does not contain algorithm specification");
         }
-        private static byte[] getEncoded(byte[] buffer){
-            for(int i = 0 ; i < buffer.length ; i ++){
-                if( buffer[i] == 0x00){
-                    return Arrays.copyOfRange(buffer,i+1,buffer.length);
+
+        private static byte[] getEncoded(byte[] buffer) {
+            for (int i = 0; i < buffer.length; i++) {
+                if (buffer[i] == 0x00) {
+                    return Arrays.copyOfRange(buffer, i + 1, buffer.length);
                 }
             }
             throw new IllegalArgumentException("key does not contain algorithm specification");
