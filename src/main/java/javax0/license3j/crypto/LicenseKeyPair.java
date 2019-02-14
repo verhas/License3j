@@ -10,11 +10,15 @@ import java.util.Arrays;
 
 public class LicenseKeyPair {
     private final KeyPair pair;
-    private final String cypherTransformation;
+    private final String cipherTransformation;
 
-    private LicenseKeyPair(KeyPair pair, String cypherTransformation) {
+    public String cipher(){
+        return cipherTransformation;
+    }
+
+    private LicenseKeyPair(KeyPair pair, String cipherTransformation) {
         this.pair = pair;
-        this.cypherTransformation = cypherTransformation;
+        this.cipherTransformation = cipherTransformation;
     }
 
     public KeyPair getPair() {
@@ -27,8 +31,14 @@ public class LicenseKeyPair {
         return getKeyBytes(key);
     }
 
+    public byte[] getPublic() {
+        keyNotNull(pair.getPublic());
+        Key key = pair.getPublic();
+        return getKeyBytes(key);
+    }
+
     private byte[] getKeyBytes(Key key) {
-        final var algorithm = cypherTransformation.getBytes(StandardCharsets.UTF_8);
+        final var algorithm = cipherTransformation.getBytes(StandardCharsets.UTF_8);
         final var len = algorithm.length + 1 + key.getEncoded().length;
         final var buffer = new byte[len];
         System.arraycopy(algorithm, 0, buffer, 0, algorithm.length);
@@ -43,44 +53,39 @@ public class LicenseKeyPair {
         }
     }
 
-    public byte[] getPublic() {
-        keyNotNull(pair.getPublic());
-        Key key = pair.getPublic();
-        return getKeyBytes(key);
-    }
 
     public static class Create {
-        public static LicenseKeyPair from(final PublicKey publicKey, PrivateKey privateKey, final String cypherTransformation) {
-            return new LicenseKeyPair(new KeyPair(publicKey, privateKey), cypherTransformation);
+        public static LicenseKeyPair from(final PublicKey publicKey, PrivateKey privateKey, final String cipherTransformation) {
+            return new LicenseKeyPair(new KeyPair(publicKey, privateKey), cipherTransformation);
         }
 
-        public static LicenseKeyPair from(final KeyPair keyPair, String cypherTransformation) {
-            return new LicenseKeyPair(keyPair, cypherTransformation);
+        public static LicenseKeyPair from(final KeyPair keyPair, String cipherTransformation) {
+            return new LicenseKeyPair(keyPair, cipherTransformation);
         }
 
-        public static LicenseKeyPair from(final String cypherTransformation, final int size) throws NoSuchAlgorithmException {
+        public static LicenseKeyPair from(final String cipherTransformation, final int size) throws NoSuchAlgorithmException {
             final String algorithm;
-            if( cypherTransformation.contains("/")){
-                algorithm = cypherTransformation.substring(0,cypherTransformation.indexOf("/"));
+            if( cipherTransformation.contains("/")){
+                algorithm = cipherTransformation.substring(0,cipherTransformation.indexOf("/"));
             }else{
-                algorithm = cypherTransformation;
+                algorithm = cipherTransformation;
             }
             KeyPairGenerator generator = KeyPairGenerator.getInstance(algorithm);
             generator.initialize(size);
-            return new LicenseKeyPair(generator.genKeyPair(), cypherTransformation);
+            return new LicenseKeyPair(generator.genKeyPair(), cipherTransformation);
         }
 
         public static LicenseKeyPair from(byte[] encoded, int type) throws NoSuchAlgorithmException, InvalidKeySpecException {
-            final String cypherTransformation = getAlgorithm(encoded);
+            final String cipherTransformation = getAlgorithm(encoded);
             if (type == Modifier.PRIVATE)
-                return from(null, getPrivateEncoded(encoded),cypherTransformation);
+                return from(null, getPrivateEncoded(encoded),cipherTransformation);
             else
-                return from(getPublicEncoded(encoded), null,cypherTransformation);
+                return from(getPublicEncoded(encoded), null,cipherTransformation);
         }
 
         public static LicenseKeyPair from(byte[] privateEncoded, byte[] publicEncoded) throws NoSuchAlgorithmException, InvalidKeySpecException {
-            final String cypherTransformation = getAlgorithm(publicEncoded);
-            return from(getPublicEncoded(publicEncoded), getPrivateEncoded(privateEncoded),cypherTransformation);
+            final String cipherTransformation = getAlgorithm(publicEncoded);
+            return from(getPublicEncoded(publicEncoded), getPrivateEncoded(privateEncoded),cipherTransformation);
         }
 
         private static PublicKey getPublicEncoded(byte[] buffer) throws NoSuchAlgorithmException, InvalidKeySpecException {
