@@ -6,6 +6,9 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
+/**
+ * Write the license into the output
+ */
 public class LicenseWriter implements Closeable {
     private final OutputStream os;
 
@@ -21,6 +24,14 @@ public class LicenseWriter implements Closeable {
         this(new File(fileName));
     }
 
+    /**
+     * Write the license into the output.
+     *
+     * @param license the license itself
+     * @param format  the desired format of the license, can be {@link IOFormat#STRING},
+     *                {@link IOFormat#BASE64} or {@link IOFormat#BINARY}
+     * @throws IOException if the output cannot be written
+     */
     public void write(License license, IOFormat format) throws IOException {
         switch (format) {
             case BINARY:
@@ -36,6 +47,11 @@ public class LicenseWriter implements Closeable {
         throw new IllegalArgumentException("License format " + format + " is unknown");
     }
 
+    /**
+     * Write the license to the output in binary format.
+     * @param license
+     * @throws IOException
+     */
     public void write(License license) throws IOException {
         write(license, IOFormat.BINARY);
     }

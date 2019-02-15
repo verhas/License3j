@@ -5,6 +5,14 @@ import javax0.license3j.crypto.LicenseKeyPair;
 import java.io.*;
 import java.util.Base64;
 
+/**
+ * Class to write the key pair into two files. Key are read individually but they are written in pairs right
+ * after they are generated. This class can be used by applications that generate keys and it is used by the
+ * repl application.
+ *
+ * Create an instance of the class using one of the constructors specifying the output files and then invoke the
+ * {@link #write(LicenseKeyPair, IOFormat)} method to save the keys into the files.
+ */
 public class KeyPairWriter implements Closeable {
     private final OutputStream osPrivate;
     private final OutputStream osPublic;
@@ -22,6 +30,14 @@ public class KeyPairWriter implements Closeable {
         this(new File(priv), new File(publ));
     }
 
+    /**
+     * Write the key pair into the output files.
+     *
+     * @param pair the key pair to write.
+     * @param format that can be {@link IOFormat#BINARY} or {@link IOFormat#BASE64}. Using {@link IOFormat#STRING}
+     *               will throw exception as keys, as opposed to licenses, cannot be saved in string format.
+     * @throws IOException when the underlying media cannot be written
+     */
     public void write(LicenseKeyPair pair, IOFormat format) throws IOException {
         switch (format) {
             case BINARY:

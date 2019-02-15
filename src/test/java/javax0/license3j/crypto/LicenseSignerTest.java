@@ -27,8 +27,8 @@ public class LicenseSignerTest {
     }
 
     @Test
-    @DisplayName("License is encoded and verified properly when the keys are generated specifying the full cypher transformation string and not only the algorithm")
-    public void testSignatureWithFullCypher() throws NoSuchAlgorithmException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchPaddingException {
+    @DisplayName("License is encoded and verified properly when the keys are generated specifying the full cipher transformation string and not only the algorithm")
+    public void testSignatureWithFullcipher() throws NoSuchAlgorithmException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchPaddingException {
         final var keyPair = LicenseKeyPair.Create.from("RSA/ECB/PKCS1Padding", 2048);
         final var license = new License();
         license.add(Feature.Create.stringFeature("owner", "Peter Verhas"));
@@ -38,8 +38,8 @@ public class LicenseSignerTest {
         Assertions.assertFalse(license.isOK(keyPair.getPair().getPublic()));
     }
     @Test
-    @DisplayName("The key contain at the start null terminated the full cypher transformation string not only the algorithm")
-    public void testKeyCOntainsFullCypher() throws NoSuchAlgorithmException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchPaddingException {
+    @DisplayName("The key contain at the start null terminated the full cipher transformation string not only the algorithm")
+    public void testKeyContainsFullcipher() throws NoSuchAlgorithmException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchPaddingException {
         final var keyPair = LicenseKeyPair.Create.from("RSA/ECB/PKCS1Padding", 2048);
         final var pubFull = new String(keyPair.getPublic());
         final var pub = pubFull.substring(0,pubFull.indexOf(0));

@@ -4,6 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Simple helper class to read all the bytes from an input stream into a byte array.
+ */
 class ByteArrayReader {
     static byte[] readInput(InputStream is) throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();

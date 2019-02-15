@@ -26,10 +26,25 @@ public class LicenseReader implements Closeable {
     }
 
 
+    /**
+     * Read the license from the input assuming the license is binary formatted.
+     *
+     * @return
+     * @throws IOException
+     */
     public License read() throws IOException {
         return read(IOFormat.BINARY);
     }
 
+    /**
+     * Read the license from the input assuming that the format of the license on the input has the format specified by
+     * the argument.
+     *
+     * @param format the assumed format of the license, can be {@link IOFormat#STRING},
+     *               {@link IOFormat#BASE64} or {@link IOFormat#BINARY}
+     * @return the license
+     * @throws IOException if the input cannot be read
+     */
     public License read(IOFormat format) throws IOException {
         switch (format) {
             case BINARY:
@@ -39,7 +54,7 @@ public class LicenseReader implements Closeable {
             case STRING:
                 return License.Create.from(new String(ByteArrayReader.readInput(is), StandardCharsets.UTF_8));
         }
-        throw new IllegalArgumentException("License format "+format+" is unknown.");
+        throw new IllegalArgumentException("License format " + format + " is unknown.");
     }
 
     @Override

@@ -8,6 +8,13 @@ import java.security.MessageDigest;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Calculator to calculate a more or less unique code for the actual machine. The calculation uses the
+ * network cards, host name and architecture of the machine.
+ * <p>
+ * This class is used by the {@link UUIDCalculator}. You, using License3j as a library, do not call methods in
+ * this class directly.
+ */
 class HashCalculator {
     private final Network.Interface.Selector selector;
 
@@ -26,23 +33,23 @@ class HashCalculator {
     }
 
     void updateWithNetworkData(final MessageDigest md5)
-        throws SocketException {
+            throws SocketException {
         final List<Network.Interface.Data> networkInterfaces = Network.Interface.Data.gatherUsing(selector);
         networkInterfaces.sort(Comparator.comparing(a -> a.name));
         updateWithNetworkData(md5, networkInterfaces);
     }
 
     void updateWithHostName(final MessageDigest md5)
-        throws UnknownHostException {
+            throws UnknownHostException {
         final String hostName = java.net.InetAddress.getLocalHost()
-            .getHostName();
+                .getHostName();
         md5.update(hostName.getBytes(StandardCharsets.UTF_8), 0,
-            hostName.getBytes(StandardCharsets.UTF_8).length);
+                hostName.getBytes(StandardCharsets.UTF_8).length);
     }
 
     void updateWithArchitecture(final MessageDigest md5) {
         final String architectureString = System.getProperty("os.arch");
         md5.update(architectureString.getBytes(StandardCharsets.UTF_8), 0,
-            architectureString.getBytes(StandardCharsets.UTF_8).length);
+                architectureString.getBytes(StandardCharsets.UTF_8).length);
     }
 }

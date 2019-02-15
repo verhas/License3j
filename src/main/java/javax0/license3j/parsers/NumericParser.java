@@ -1,5 +1,10 @@
 package javax0.license3j.parsers;
 
+/**
+ * A simple string parser that can parse decimal and hexa format numbers to be stored in byte, short, int or long.
+ * It also takes care that all values in Java are signed and thus, for example, 0xFF would not be treated as a valid
+ * byte value. Using this parset it will result a proper -1 byte.
+ */
 public class NumericParser {
 
     private static long numberParse(final String s, long minValue, long maxValue) {

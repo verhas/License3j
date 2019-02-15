@@ -8,6 +8,13 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 
+/**
+ * Class to read a key from file. This class can be used in the application to load the public key and it is also
+ * used in the repl application.
+ *
+ * Create an instance of this class using one of the constructors specifying the source of the license key and then
+ * use one of the {@code read...()} methods to read the key into a {@link LicenseKeyPair} object.
+ */
 public class KeyPairReader implements Closeable {
     private final InputStream is;
 
