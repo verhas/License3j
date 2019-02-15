@@ -39,7 +39,7 @@ public class LicenseSignerTest {
     }
     @Test
     @DisplayName("The key contain at the start null terminated the full cipher transformation string not only the algorithm")
-    public void testKeyContainsFullcipher() throws NoSuchAlgorithmException, IllegalBlockSizeException, InvalidKeyException, BadPaddingException, NoSuchPaddingException {
+    public void testKeyContainsFullcipher() throws NoSuchAlgorithmException {
         final var keyPair = LicenseKeyPair.Create.from("RSA/ECB/PKCS1Padding", 2048);
         final var pubFull = new String(keyPair.getPublic());
         final var pub = pubFull.substring(0,pubFull.indexOf(0));

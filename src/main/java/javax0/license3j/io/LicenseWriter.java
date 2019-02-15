@@ -49,8 +49,8 @@ public class LicenseWriter implements Closeable {
 
     /**
      * Write the license to the output in binary format.
-     * @param license
-     * @throws IOException
+     * @param license to write to the file
+     * @throws IOException if the output cannot be written
      */
     public void write(License license) throws IOException {
         write(license, IOFormat.BINARY);

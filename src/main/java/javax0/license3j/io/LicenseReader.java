@@ -29,8 +29,8 @@ public class LicenseReader implements Closeable {
     /**
      * Read the license from the input assuming the license is binary formatted.
      *
-     * @return
-     * @throws IOException
+     * @return the license created from the file
+     * @throws IOException when the file cannot be read
      */
     public License read() throws IOException {
         return read(IOFormat.BINARY);

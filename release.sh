@@ -9,7 +9,7 @@ rm *.sig
 rm *.asc
 for file in *.jar pom.xml
 do
-    gpg -s -b $file
+    gpg -s -b ${file}
     mv ${file}.sig ${file}.asc
 done
 

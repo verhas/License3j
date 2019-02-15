@@ -453,7 +453,7 @@ public class Feature {
          * string representation of the value that is different for each type.
          *
          * @param s the feature as string
-         * @return
+         * @return the new object created from the string
          */
         public static Feature from(String s) {
             final var parts = Feature.splitString(s);
