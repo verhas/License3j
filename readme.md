@@ -22,6 +22,11 @@ what is the use of a license manager for nonprofit purposes? Nothing. And we did
 no use. Therefore this license manager is free to use for profit purposes as well under the license terms covered by
 Apache 2.0 license as defined on the web page http://www.apache.org/licenses/LICENSE-2.0
 
+## JavaDoc
+
+
+https://verhas.github.io/License3j/
+
 ## In short
 
 ```java
