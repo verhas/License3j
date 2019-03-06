@@ -146,7 +146,7 @@ generateKeys algorithm=RSA size=1024 format=BINARY public=public.key private=pri
 
 This will generate the public and the private keys and save them into the files `public.key` and `private.key`. Also
 the keys remain loaded into the REPL application. To embed this key into the application you can execute the
-command `digestPublicKey` that will dump the Java code to the screen, something like:
+command `dumpPublicKey` that will dump the Java code to the screen, something like:
 
 ```java
 --KEY DIGEST START
