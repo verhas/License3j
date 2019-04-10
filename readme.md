@@ -233,7 +233,7 @@ syntax of UNIX shell.
 
 ## License3j REPL application
 
-To start the repl (Read Evaluate Print Loop) using thr Java command:
+To start the repl (Read Evaluate Print Loop) using the Java command:
 ```
 $ java -cp license3j-3.0.0.jar javax0.license3j.Repl
 ``` 
