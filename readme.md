@@ -53,7 +53,7 @@ byte [] key = new byte[] {
     (byte)0xDF, (byte)0x76, (byte)0xD0, (byte)0xA7, (byte)0x02, (byte)0x03, (byte)0x01, (byte)0x00, 
     (byte)0x01, 
     };
-// check that the license os signed properly
+// check that the license is signed properly
 if( !license.isOK(key) ){
     // if not signed, stop the application
     return;
