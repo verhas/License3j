@@ -77,12 +77,15 @@ Create keys, license and sign license using a text editor and the REPL applicati
 
 ## What is a license in License3j
 
-A license for License3j is a collection of features. Each feature has a name, a type, and a value. The name can be
-any string you like, but there are some predefined names that have special meaning for the license management
-library. The type of a feature can be 
+A license for License3j is a collection of features. Each feature has a
+name, a type, and a value. The name can be any string you like, but
+there are some predefined names that have special meaning for the
+license management library. The type of a feature can be
 
-* `BINARY` can contain an arbitrary binary value that is retrieved by the Java code as a `byte[]` array
-* `STRING` can contain any string, will be retrieved as `java.lang.String`
+* `BINARY` can contain an arbitrary binary value that is retrieved by
+  the Java code as a `byte[]` array
+* `STRING` can contain any string, will be retrieved as 
+  `java.lang.String`
 * `BYTE` contains a single byte value.
 * `SHORT` contains a single short value
 * `INT` contains an integer (`int`) value
@@ -170,9 +173,11 @@ To generate a key pair you have to enter the command:
 generateKeys algorithm=RSA size=1024 format=BINARY public=public.key private=private.key
 ```
 
-This will generate the public and the private keys and save them into the files `public.key` and `private.key`. Also
-the keys remain loaded into the REPL application. To embed this key into the application you can execute the
-command `dumpPublicKey` that will dump the Java code to the screen, something like:
+This will generate the public and the private keys and save them into
+the files `public.key` and `private.key`. Also the keys remain loaded
+into the REPL application. To embed this key into the application you
+can execute the command `dumpPublicKey` that will dump the Java code to
+the screen, something like:
 
 ```java
 --KEY DIGEST START
