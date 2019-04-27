@@ -294,7 +294,7 @@ introducing new types.
 
 This is followed by the length of the name also in four bytes.
 
-### Value length
+### Value length 4bytes (optional)
 
 Some of the types have fixed length. If the type is a fixed length then
 the value directly follows and the four bytes of the length, which is
