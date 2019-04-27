@@ -334,17 +334,16 @@ start line. This is similar to the "here string" syntax of UNIX shell.
 
 ## License3j REPL application
 
-To start the repl (Read Evaluate Print Loop) using the Java command:
+The repl application is NOT part of the `license3j.jar` file. It is
+available as a separate JAR from
+https://github.com/verhas/license3jrepl. To start the repl (Read
+Evaluate Print Loop) using the Java command:
+
 ```
-$ java -cp license3j-3.0.0.jar javax0.license3j.Repl
+$ java -jar license3jrepl.jar
 ``` 
 
-The actual JAR file that has to be on the classpath is the license3j
-library jar file. You do not need any other library or class on the
-classpath. The JAR file does not contain a manifest to select a special
-class as main class. You have to specify the class containing the
-`public static void main()` method on the command line. That is
-`javax0.license3j.Repl`.
+You do not need any other library or class on the classpath.
 
 The application is interactive and it reads the commands from te console
 and writes the output to the standard output. If the console is not
@@ -383,8 +382,8 @@ Keys are not loaded
 ```
 
 Note that the actual output of the command `help` may be different for
-different versions of the program. The documentation uses a
-`3.0.0-SNAPSHOT` version.
+different versions of the program and from what you actually can see in
+this documentation.
 
 You can exit the application using the command `exit`. You can execute
 external commands using the `!` mark. Any string you type on a line that
