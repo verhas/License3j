@@ -442,7 +442,7 @@ If you use maven you can insert the lines
 <dependency>
     <groupId>com.javax0.license3j</groupId>
     <artifactId>license3j</artifactId>
-    <version>3.0.0</version>
+    <version>3.1.0</version>
 </dependency>
 ```
 
