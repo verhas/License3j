@@ -42,7 +42,7 @@ public class TestFeatureSerialization {
                 "00000000" + // name length
                 "AF" // value
         ));
-        Assertions.assertEquals(":BINARY=0xAF", sut.toString());
+        Assertions.assertEquals(":BYTE=0xAF", sut.toString());
     }
     @Test
     @DisplayName("Zero length binary is serialized ok")
@@ -136,7 +136,7 @@ public class TestFeatureSerialization {
     @Test
     @DisplayName("Too long name throws exception")
     void testLongNameLengthThrowException() {
-        Assertions.assertThrows(Exception.class, () -> Feature.Create.from(fromHex(
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Feature.Create.from(fromHex(
             "00000001" //type 1 binary
                 + "0000000F"  // name length
                 + "00000001" // value length
@@ -146,7 +146,7 @@ public class TestFeatureSerialization {
     @Test
     @DisplayName("Too long value throws exception")
     void testLongValueLengthThrowException() {
-        Assertions.assertThrows(Exception.class, () -> Feature.Create.from(fromHex(
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Feature.Create.from(fromHex(
             "00000001" //type 1 binary
                 + "00000000"  // name length
                 + "0000000F" // value length

@@ -485,10 +485,16 @@ public class Feature {
             }
             final var nameBuffer = new byte[nameLength];
             if (nameLength > 0) {
+                if (bb.remaining() < nameLength) {
+                    throw new IllegalArgumentException("Feature binary is too short. It is " + (valueLength + nameLength - bb.remaining()) + " bytes shy.");
+                }
                 bb.get(nameBuffer);
             }
             final var value = new byte[valueLength];
             if (valueLength > 0) {
+                if (bb.remaining() < valueLength) {
+                    throw new IllegalArgumentException("Feature binary is too short. It is " + (valueLength - bb.remaining()) + " bytes shy.");
+                }
                 bb.get(value);
             }
             if (bb.remaining() > 0) {
