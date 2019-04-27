@@ -88,7 +88,11 @@ that have special meaning for the license management library. The type
 of a feature can be
 
 <table><tr><td>
-<img src="images/featuretypes.svg" width="350"></td><td>
+
+<img src="images/featuretypes.svg" width="350">
+
+</td><td>
+
 * `BINARY` can contain an arbitrary binary value that is retrieved by
   the Java code as a `byte[]` array
 * `STRING` can contain any string, will be retrieved as
@@ -103,6 +107,7 @@ of a feature can be
 * `BIGDECIMAL` contains a big decimal value
 * `DATE` contains a date value 
 * `UUID` contains a UUID value
+
 </td></tr></table>
 
 The value of the different features can be retrieved as the
