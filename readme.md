@@ -273,7 +273,11 @@ The binary representation of the license starts with the bytes `0xCE`,
 Integer value `0x21CE4E5E` that stands for `21` -> `LI`, `CE` itself,
 `4E` -> `N` (ASCII), `5E` -> `SE` and reads together as `LICENSE`. It is
 a bit lame but gives a bit of joy to the game and prevents accidental
-loading of non-license files. Since the sizes and the types are stored on four bytes
+loading of non-license files. Since the sizes and the types are stored
+on four bytes as Integers very large files could be loaded accidentally.
+
+If the loading of too large files is a concern there are size limiting
+constructors for the class `LicenseReader`.
 
 ### Feature length 4bytes
 
