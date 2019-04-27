@@ -417,15 +417,18 @@ characters so that the command can uniquely identified. The same is true
 for the command parameters that have names. Thus you can type `si`
 instead of `sign` to sign a license.
 
-Later versions of License3j will not include the Repl application. The
-Repl application will be moved to a separate library and it will use the
+Older versions of License3j included the Repl application. The current
+and later versions of License3j will not include the Repl application.
+The Repl application is moved to a separate library and it uses the
 `javax0.repl` library as a framework. This solution provides a leaner
 license3j library that you include into your application. Your
-application will not contain the code of the License3j Repl application.
-Moving the repl framework to a separate library makes it more viable and
-can be used by other Java applications as well. No matter which version
-you use following 3.0.0 there will be a Repl application available to
-manage the licenses and the keys.
+application will not contain the code of the License3j Repl application
+and of the libraries that it uses. Moving the repl framework to a
+separate library makes it more viable and can be used by other Java
+applications as well.
+
+No matter which version you use following 3.0.0 there will be a Repl
+application available to manage the licenses and the keys.
 
 ## Download and Installation
 
@@ -443,12 +446,13 @@ If you use maven you can insert the lines
 </dependency>
 ```
 
-in to your `pom.xml` file.
+in to your `pom.xml` file. Check the central repository for the latest
+version.
 
 ## Note on release history
 
 License3j versions 1.x.x and 2.0.0 were released for Java 1.5 ... 1.8.
-The release 3.0.0 is a total rewrite of the library. Neither the API not
+The release 3.0.0 is a total rewrite of the library. Neither the API nor
 the binary formats are compatible with previous versions. It is also
 released only for Java 11 and later and there is no planned backport
 release for Java 8 or earlier.
@@ -457,7 +461,9 @@ License3j prior to version 3.0.0 has a dependency to Bouncy Castle
 encryption library. The version 3.0.0 and later breaks this dependency
 and this version is standalone. Also, this version can be used to
 generate the keys, sign licenses and does not need the external gpg
-tool.
+tool. (Also note that you cannot use the gpg tool to generate keys for
+this version as the format of the keys are not compatible with older
+versions.)
 
 ## Name of the game
 
