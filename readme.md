@@ -81,7 +81,7 @@ A license for License3j is a collection of features. Each feature has
 * a type, and
 * a value.
 
-![License Structure](images/license1.svg "License Structure")
+<img src="images/license1.svg" width="200">
 
 The name can be any string you like, but there are some predefined names
 that have special meaning for the license management library. The type
