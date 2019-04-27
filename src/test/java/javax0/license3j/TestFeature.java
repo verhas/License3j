@@ -16,7 +16,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
 
-public class FeatureTest {
+public class TestFeature {
 
     private static Method findMethod(final String methodName, Method[] methods, Class klass) {
         for (final var method : methods) {

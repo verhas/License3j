@@ -267,8 +267,13 @@ can however, read and convert any of the formats using the REPL
 application (mentioned above).
 
 ### Magic bytes
+
 The binary representation of the license starts with the bytes `0xCE`,
-`0x21`, `0x5E`, `0x4E`.
+`0x21`, `0x5E`, `0x4E`. This is the serialized format of the Java
+Integer value `0x21CE4E5E` that stands for `21` -> `LI`, `CE` itself,
+`4E` -> `N` (ASCII), `5E` -> `SE` and reads together as `LICENSE`. It is
+a bit lame but gives a bit of joy to the game and prevents accidental
+loading of non-license files. Since the sizes and the types are stored on four bytes
 
 ### Feature length 4bytes
 
