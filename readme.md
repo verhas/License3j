@@ -77,17 +77,17 @@ application (see below).
 
 A license for License3j is a collection of features. Each feature has
 
+<img src="images/license1.svg" width="200" align="right">
+
 * a name,
 * a type, and
 * a value.
-
-<img src="images/license1.svg" width="200" align="right">
 
 The name can be any string you like, but there are some predefined names
 that have special meaning for the license management library. The type
 of a feature can be
 
-![Feature Types](images/featuretypes.svg "Feature Types")
+<img src="images/featuretypes.svg" width="200" align="left">
 
 * `BINARY` can contain an arbitrary binary value that is retrieved by
   the Java code as a `byte[]` array
