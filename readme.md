@@ -75,7 +75,7 @@ application (see below).
 
 ## What is a license in License3j
 
-<img src="images/license1.svg" width="200" align="right">
+<img src="images/license1.svg" width="350" align="right">
 
 A license for License3j is a collection of features. Each feature has
 
