@@ -75,9 +75,9 @@ application (see below).
 
 ## What is a license in License3j
 
-A license for License3j is a collection of features. Each feature has
-
 <img src="images/license1.svg" width="200" align="right">
+
+A license for License3j is a collection of features. Each feature has
 
 * a name,
 * a type, and
@@ -87,8 +87,8 @@ The name can be any string you like, but there are some predefined names
 that have special meaning for the license management library. The type
 of a feature can be
 
-<img src="images/featuretypes.svg" width="200" align="left">
-
+<table><tr><td>
+<img src="images/featuretypes.svg" width="350"></td><td>
 * `BINARY` can contain an arbitrary binary value that is retrieved by
   the Java code as a `byte[]` array
 * `STRING` can contain any string, will be retrieved as
@@ -103,6 +103,7 @@ of a feature can be
 * `BIGDECIMAL` contains a big decimal value
 * `DATE` contains a date value 
 * `UUID` contains a UUID value
+</td></tr></table>
 
 The value of the different features can be retrieved as the
 corresponding Java object or a primitive value. There is no automatic
