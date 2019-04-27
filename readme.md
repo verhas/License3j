@@ -81,11 +81,13 @@ A license for License3j is a collection of features. Each feature has
 * a type, and
 * a value.
 
-![license Structure](images/license1.svg "License Structure")
+![License Structure](images/license1.svg "License Structure")
 
 The name can be any string you like, but there are some predefined names
 that have special meaning for the license management library. The type
 of a feature can be
+
+![Feature Types](images/featuretypes.svg "Feature Types")
 
 * `BINARY` can contain an arbitrary binary value that is retrieved by
   the Java code as a `byte[]` array
