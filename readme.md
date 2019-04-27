@@ -1,29 +1,35 @@
 # License3j Free License management for Java
 
-License3j is a free and open source Java library to manage license files in Java programs that need technical
-license management enforcement support. A license file is a special configuration file, which is electronically
-signed. The library can create, sign such license files and can also check the signature and parameters
-of the license file when embedded into the licensed application.
+License3j is a free and open source Java library to manage license files
+in Java programs that need technical license management enforcement
+support. A license file is a special configuration file, which is
+electronically signed. The library can create, sign such license files
+and can also check the signature and parameters of the license file when
+embedded into the licensed application.
 
 ## Introduction
 
-License3j is a Java library that can be used to create and assert license files. This way Java programs can enforce the
-users to compensate their use of the software in the form of payment. This is the usual way when closed source
-programs are distributed.
+License3j is a Java library that can be used to create and assert
+license files. This way Java programs can enforce the users to
+compensate their use of the software in the form of payment. This is the
+usual way when closed source programs are distributed.
 
-License management alone does not guarantee that the program will not be stolen, pirated or used in any illegal way.
-However, license management may increase the difficulty to use the program illegal and therefore may drive users to
-become customers. There is another effect of license management which is legal. If there is sufficient license
-management illegal users have less probability to successfully claim their use was based on the lack of or false knowledge of license conditions.
+License management alone does not guarantee that the program will not be
+stolen, pirated or used in any illegal way. However, license management
+may increase the difficulty to use the program illegal and therefore may
+drive users to become customers. There is another effect of license
+management which is legal. If there is sufficient license management
+illegal users have less probability to successfully claim their use was
+based on the lack of or on false knowledge of license conditions.
 
-License3j is an open source license manager that you can use free of charge for non-profit purposes.
+License3j is an open source license manager that you can use free of
+charge for non-profit purposes...
 
-what is the use of a license manager for nonprofit purposes? Nothing. And we did not want to make a software that is of
-no use. Therefore this license manager is free to use for profit purposes as well under the license terms covered by
-Apache 2.0 license as defined on the web page http://www.apache.org/licenses/LICENSE-2.0
+as well as for profit purposes as well under the license terms covered
+by Apache 2.0 license as defined on the web page
+http://www.apache.org/licenses/LICENSE-2.0
 
 ## JavaDoc
-
 
 https://verhas.github.io/License3j/
 
@@ -63,17 +69,28 @@ Date birthday = license.get("bd").getDate();
 
 ```
 
-Create keys, license and sign license using a text editor and the REPL application (see below).
+Create keys, license and sign license using a text editor and the REPL
+application (see below).
 
 
 ## What is a license in License3j
 
-A license for License3j is a collection of features. Each feature has a name, a type, and a value. The name can be
-any string you like, but there are some predefined names that have special meaning for the license management
-library. The type of a feature can be 
+A license for License3j is a collection of features. Each feature has
 
-* `BINARY` can contain an arbitrary binary value that is retrieved by the Java code as a `byte[]` array
-* `STRING` can contain any string, will be retrieved as `java.lang.String`
+* a name,
+* a type, and
+* a value.
+
+![license Structure](images/license1.svg "License Structure")
+
+The name can be any string you like, but there are some predefined names
+that have special meaning for the license management library. The type
+of a feature can be
+
+* `BINARY` can contain an arbitrary binary value that is retrieved by
+  the Java code as a `byte[]` array
+* `STRING` can contain any string, will be retrieved as
+  `java.lang.String`
 * `BYTE` contains a single byte value.
 * `SHORT` contains a single short value
 * `INT` contains an integer (`int`) value
@@ -85,16 +102,22 @@ library. The type of a feature can be
 * `DATE` contains a date value 
 * `UUID` contains a UUID value
 
-The value of the different features can be retrieved as the corresponding Java object or a primitive value. There is no
-automatic conversion between the different types of the features.
+The value of the different features can be retrieved as the
+corresponding Java object or a primitive value. There is no automatic
+conversion between the different types of the features.
 
-When the license is saved to a file it can be saved binary, base64 or text.
+When the license is saved to a file it can be saved binary, base64 or
+text.
 
-* `BINARY` format is suitable to store in a file. This is also the shortest, most compact format of the license. It may
-  not be suitable to be sent over the internet inside and eMail and is not directly editable.
-* `BASE64` format is the same as the binary format but it is encoded using the base64 encoding
-* `TEXT` format is a human readable format, suitable for editing in a text editor, looking at the actual content of the
-  license without any special tool. The text format is always encoded UTF-8 character set.
+* `BINARY` format is suitable to store in a file. This is also the
+  shortest, most compact format of the license. It may not be suitable
+  to be sent over the internet inside and eMail and is not directly
+  editable.
+* `BASE64` format is the same as the binary format but it is encoded
+  using the base64 encoding
+* `TEXT` format is a human readable format, suitable for editing in a
+  text editor, looking at the actual content of the license without any
+  special tool. The text format is always encoded UTF-8 character set.
 
 All three formats are suitable to store the license information and when a program is protected using License3j it can
 be programmed to read only one, two and all three formats. The license object created in the JVM memory as a result of
