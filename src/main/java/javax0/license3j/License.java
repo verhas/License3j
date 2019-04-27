@@ -371,7 +371,7 @@ public class License {
     }
 
     /**
-     * Create a byte array representation of the license. Inlcude all the features except those whose name is specified
+     * Create a byte array representation of the license. Include all the features except those whose name is specified
      * in the {@code excluded} set.
      *
      * @param excluded set of the feature names that are not to be present in the byte array representation of the

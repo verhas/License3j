@@ -172,10 +172,11 @@ or it can be hard-coded in the application. The latter is recommended.
 
 To embed the public key into the application you have to have a public
 key at the first place. To create a key pair you should start the
-interactive application built into the License3j library.
+interactive application available from a separate project at
+https://github.com/verhas/license3jrepl
 
 ```
-$ java -cp license3j-3.0.0.jar javax0.license3j.Repl
+$ java -jar license3jrepl.jar
 ``` 
 
 This will start with an interactive prompt where you can enter commands.
@@ -243,15 +244,18 @@ configuration.
 
 When the license is verified the features can be retrieved using the
 names of the features. The call to `license.get(name)` will return the
-feature of the name `name`. To get the actual value of the feature you
-can call `feature.getXxx()` where `Xxx` is the feature type. You can
-also check the type of a feature calling one of the `feature.isXxx()`
-but, honestly, your code has to know it. You create the license, and you
-check that the license is intact using digital signature before calling
-any of the `getXxx()` methods, thus it is not likely that you try to
-fetch the wrong type unless you have a bug in your code.
+feature object of the name `name`. To get the actual value of the
+feature you can call `feature.getXxx()` where `Xxx` is the feature type.
+You can also check the type of a feature calling one of the
+`feature.isXxx()` but, honestly, your code has to know it. You create
+the license, and you check that the license is intact using digital
+signature before calling any of the `getXxx()` methods, thus it is not
+likely that you try to fetch the wrong type unless you have a bug in
+your code.
 
 ## License formats
+
+<img src="images/binaryformat.svg">
 
 ### License Binary and Base64
 
@@ -260,17 +264,40 @@ the same as the binary, only it is encoded using the base64 encoding to
 ensure that only printable characters are in the license. Neither of the
 forms is directly readable by a human using a simple text editor. You
 can however, read and convert any of the formats using the REPL
-application included in the library.
+application (mentioned above).
 
+### Magic bytes
 The binary representation of the license starts with the bytes `0xCE`,
-`0x21`, `0x5E`, `0x4E`. This is followed by the features in binary
-format, each feature preceded with the length of the feature 4bytes. The
-feature starts with the type of the feature in four bytes. Since there
-are a limited amount of types there is plenty of room for introducing
-new types. This is followed by the length of the name also in four
-bytes. Some of the types have fixed length. If the type is a fixed
-length then the value follows. If the value for the given type can be
-variable length then the length of the value is followed on four bytes.
+`0x21`, `0x5E`, `0x4E`.
+
+### Feature length 4bytes
+
+This is followed by the features in binary format, each feature preceded
+with the length of the feature 4bytes.
+
+### Feature type 4bytes
+
+The feature starts with the type of the feature in four bytes. Since
+there are a limited amount of types there is plenty of room for
+introducing new types.
+
+### Name length 4bytes
+
+This is followed by the length of the name also in four bytes.
+
+### Value length
+
+Some of the types have fixed length. If the type is a fixed length then
+the value directly follows and the four bytes of the length, which is
+known anyway, is not present in the file. If the value for the given
+type can be variable length then the length of the value is followed on
+four bytes.
+
+`BINARY`, `STRING`, `BIGINTEGER` and `BIGDECIMAL` types have variable
+length.
+
+### Name and value
+
 This is followed by the actual bytes that encode the value of the
 feature.
 
