@@ -33,7 +33,7 @@ public class TestInterfaceSelector {
             IllegalAccessException,
             InvocationTargetException,
             InstantiationException, NoSuchMethodException {
-        Constructor constructor = NetworkInterface.class.getDeclaredConstructor(new Class[0]);
+        Constructor constructor = NetworkInterface.class.getDeclaredConstructor();
         constructor.setAccessible(true);
         NetworkInterface ni = (NetworkInterface) constructor.newInstance();
         Field field = NetworkInterface.class.getDeclaredField("displayName");

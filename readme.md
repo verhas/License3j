@@ -479,3 +479,10 @@ There are many names that contain '2'. In these cases '2' stands for
 
 '3' in license3j stands for 'free' instead of 'three'. Because this is a
 free program.
+
+## Related projects
+
+https://github.com/shevek/gradle-license3j-plugin
+https://github.com/lkollar/license3j-docker
+
+ 
