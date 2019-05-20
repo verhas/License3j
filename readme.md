@@ -324,6 +324,12 @@ The type is written in all capital letters as listed above `BINARY`,
 value of the feature. The type along with the separating `:` can be
 missing in case it is `STRING`.
 
+When a `DATE` feature is converted to and from text then the actual
+value should be interpreted as time zone independent value. (Note that
+there was a bug in 3.X.X releases prior version 3.1.1 that used the
+local time zone to interpret text representation of the date/time
+values.)
+
 The values are encoded as text in a human-readable and editable way.
 When a value cannot fit on a single line, for example, a multi-line
 string then the feature value starts with the characters `<<` and it is

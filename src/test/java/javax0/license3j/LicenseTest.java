@@ -43,7 +43,7 @@ class LicenseTest {
         final var restored = License.Create.from(buffer);
         Assertions.assertEquals("Peter Verhas", restored.get("owner").getString());
         Assertions.assertEquals(now, restored.get("expiry").getDate());
-        Assertions.assertEquals("expiry:DATE=2018-12-17 12:55:19.295\n" +
+        Assertions.assertEquals("expiry:DATE=2018-12-17 11:55:19.295\n" +
                 "owner=Peter Verhas\n" +
                 "template=<<null\n" +
                 "<<special template>>\n" +
@@ -64,7 +64,7 @@ class LicenseTest {
         final var restored = License.Create.from(string);
         Assertions.assertEquals("Peter Verhas", restored.get("owner").getString());
         Assertions.assertEquals(now, restored.get("expiry").getDate());
-        Assertions.assertEquals("expiry:DATE=2018-12-17 12:55:19.295\n" +
+        Assertions.assertEquals("expiry:DATE=2018-12-17 11:55:19.295\n" +
                 "owner=Peter Verhas\n" +
                 "template=<<null\n" +
                 "<<special template>>\n" +

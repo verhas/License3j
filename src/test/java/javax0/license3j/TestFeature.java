@@ -474,17 +474,17 @@ public class TestFeature {
     @Test
     @DisplayName("date feature is converted from string")
     public void testDateFromString() {
-        final var sut1 = Feature.Create.from("name:DATE=2018-12-17 12:55:19.295");
+        final var sut1 = Feature.Create.from("name:DATE=2018-12-17 11:55:19.295");
         Assertions.assertEquals("name", sut1.name());
         Assertions.assertTrue(sut1.isDate());
         Assertions.assertEquals(new Date(1545047719295L), sut1.getDate());
 
-        final var sut2 = Feature.Create.from("name:DATE=2018-12-17 12:55:19");
+        final var sut2 = Feature.Create.from("name:DATE=2018-12-17 11:55:19");
         Assertions.assertEquals("name", sut2.name());
         Assertions.assertTrue(sut2.isDate());
         Assertions.assertEquals(new Date(1545047719000L), sut2.getDate());
 
-        final var sut3 = Feature.Create.from("name:DATE=2018-12-17 12:55");
+        final var sut3 = Feature.Create.from("name:DATE=2018-12-17 11:55");
         Assertions.assertEquals("name", sut3.name());
         Assertions.assertTrue(sut3.isDate());
         Assertions.assertEquals(new Date(1545047700000L), sut3.getDate());
@@ -560,7 +560,7 @@ public class TestFeature {
     @DisplayName("Date feature is converted to string")
     public void testDateToString() {
         final var sut = Feature.Create.dateFeature("now", new Date(1545047719295L));
-        Assertions.assertEquals("now:DATE=2018-12-17 12:55:19.295", sut.toString());
+        Assertions.assertEquals("now:DATE=2018-12-17 11:55:19.295", sut.toString());
     }
 }
 
