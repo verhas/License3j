@@ -12,8 +12,23 @@ import java.io.StringReader;
 import java.lang.reflect.Modifier;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
-import java.security.*;
-import java.util.*;
+import java.security.InvalidKeyException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * A license describes the rights that a certain user has. The rights are represented by {@link Feature}s.
@@ -217,6 +232,31 @@ public class License {
     private Feature[] featuresSorted(Set<String> excluded) {
         return this.features.values().stream().filter(f -> !excluded.contains(f.name()))
             .sorted(Comparator.comparing(Feature::name)).toArray(Feature[]::new);
+    }
+
+
+    /**
+     * <p>Returns the features of the license in a map. The keys of the
+     * map are the name of the feature. The values are the feature
+     * objects (which also contain the name).</p>
+     *
+     * <p>Note that the invocation of this method has its cost as it
+     * recreates the returned map every time. It does not keep track if
+     * the set of features has changed since the last time the method
+     * was called.</p>
+     *
+     * <p>The internal implementation of the map is a linked hash map
+     * that stores the features in their names' alphabetic order.</p>
+     *
+     * @return
+     */
+    public Map<String, Feature> getFeatures() {
+        final var result = new LinkedHashMap<String, Feature>();
+        final var features = featuresSorted(new HashSet<>(Arrays.asList()));
+        for (final var feature : features) {
+            result.put(feature.name(), feature);
+        }
+        return Collections.unmodifiableMap(result);
     }
 
 
