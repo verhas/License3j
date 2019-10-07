@@ -50,6 +50,30 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <profiles>
+        <profile>
+            <id>intellij-idea-only</id>
+            <activation>
+                <property>
+                    <name>idea.maven.embedder.version</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <release>13</release>
+                            <compilerArgs>
+                                <arg>--enable-preview</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     <build>
         <plugins>
             <plugin>
@@ -86,17 +110,28 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>3.8.1</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
-                    <source>1.11</source>
-                    <target>1.11</target>
-                    <release>11</release>
-                    <jdkToolchain>
-                        <version>11</version>
-                    </jdkToolchain>
+                    <release>8</release>
+                    <annotationProcessorPaths>
+                        <annotationProcessorPath>
+                            <groupId>com.github.bsideup.jabel</groupId>
+                            <artifactId>jabel-javac-plugin</artifactId>
+                            <version>0.2.0</version>
+                        </annotationProcessorPath>
+                    </annotationProcessorPaths>
+                    <annotationProcessors>
+                        <annotationProcessor>com.github.bsideup.jabel.JabelJavacProcessor</annotationProcessor>
+                    </annotationProcessors>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 </project>

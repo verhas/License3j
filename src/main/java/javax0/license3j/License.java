@@ -197,7 +197,7 @@ public class License {
     @Override
     public String toString() {
         final var sb = new StringBuilder();
-        Feature[] features = featuresSorted(Set.of());
+        Feature[] features = featuresSorted(Collections.emptySet());
         for (Feature feature : features) {
             final var valueString = feature.valueString();
             final String value =
@@ -231,7 +231,7 @@ public class License {
      * {@code HERE_STRING} line.
      */
     private String multilineValueString(String s) {
-        List<String> lines = new ArrayList<>(List.of(s.split("\n")));
+        List<String> lines = new ArrayList<>(Arrays.asList(s.split("\n")));
         final var sb = new StringBuilder();
         var i = 0;
         for (final var line : lines) {
@@ -309,7 +309,7 @@ public class License {
     public UUID fingerprint() {
         try {
             final var bb = ByteBuffer.wrap(MessageDigest.getInstance("MD5").digest(
-                serialized(Set.of(SIGNATURE_KEY, DIGEST_KEY))));
+                serialized(new HashSet<>(Arrays.asList(SIGNATURE_KEY, DIGEST_KEY)))));
             final var ms = bb.getLong();
             final var ls = bb.getLong();
             return new UUID(ms, ls);
@@ -336,7 +336,7 @@ public class License {
      * @return the license in binary format as a byte array
      */
     public byte[] serialized() {
-        return serialized(Set.of());
+        return serialized(Collections.emptySet());
     }
 
     /**
@@ -347,7 +347,7 @@ public class License {
      * during the signature creation of the license and stored as a feature in the license is also signed.
      */
     public byte[] unsigned() {
-        return serialized(Set.of(SIGNATURE_KEY));
+        return serialized(new HashSet<>(Arrays.asList(SIGNATURE_KEY)));
     }
 
     /**
