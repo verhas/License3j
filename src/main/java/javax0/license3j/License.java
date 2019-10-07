@@ -248,7 +248,7 @@ public class License {
      * <p>The internal implementation of the map is a linked hash map
      * that stores the features in their names' alphabetic order.</p>
      *
-     * @return
+     * @return the collected map
      */
     public Map<String, Feature> getFeatures() {
         final var result = new LinkedHashMap<String, Feature>();
