@@ -28,6 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.UUID;
 
 /**
@@ -237,7 +238,7 @@ public class License {
 
     /**
      * <p>Returns the features of the license in a map. The keys of the
-     * map are the name of the feature. The values are the feature
+     * map are the names of the features. The values are the feature
      * objects (which also contain the name).</p>
      *
      * <p>Note that the invocation of this method has its cost as it
@@ -245,29 +246,21 @@ public class License {
      * the set of features has changed since the last time the method
      * was called.</p>
      *
-     * <p>The internal implementation of the map is a linked hash map
-     * that stores the features in their names' alphabetic order.</p>
-     *
      * @return the collected map
      */
     public Map<String, Feature> getFeatures() {
-        final var result = new LinkedHashMap<String, Feature>();
-        final var features = featuresSorted(new HashSet<>(Arrays.asList()));
-        for (final var feature : features) {
-            result.put(feature.name(), feature);
-        }
-        return Collections.unmodifiableMap(result);
+        return Collections.unmodifiableMap(new TreeMap<>(features));
     }
 
 
     /**
      * Converts a possibly multiline string to a multiline representation of a feature value. For more information on
-     * how multiline strings are stored as values see {@link #toString()}. The HERE_STRING value is calulated so that it
-     * is as short as possible containing the characters {@code A} and {@code B} only so that it never appears in the
+     * how multiline strings are stored as values see {@link #toString()}. The HERE_STRING value is calculated so that
+     * it is as short as possible containing the characters {@code A} and {@code B} only so that it never appears in the
      * actual multi-line string.
      *
      * @param s the multiline string to be converted
-     * @return the converted string with the leading {@code &lt;&lt;HERE_STRING} line and the terminating
+     * @return the converted string with the leading {@code <<HERE_STRING} line and the terminating
      * {@code HERE_STRING} line.
      */
     private String multilineValueString(String s) {
