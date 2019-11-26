@@ -218,7 +218,20 @@ public class Feature {
 
     //</editor-fold>
 
+    /* TEMPLATE
+    public {{rType}} get{{Type}}() {
+        if (type != Type.{{TYPE}}) {
+            throw new IllegalArgumentException("Feature is not {{TYPE}}");
+        }
+        return {{return}};
+    }
 
+    SEP1 ;
+    LOOP Type;return,rType=Binary;value;byte[]
+    LOOP Type;return;rType=String;new String(value, StandardCharsets.UTF_8);String
+     */
+    //<editor-fold id="getters">
+    //</editor-fold>
     public byte[] getBinary() {
         if (type != Type.BINARY) {
             throw new IllegalArgumentException("Feature is not BINARY");
