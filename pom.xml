@@ -49,6 +49,12 @@
             <version>5.3.1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.javax0.geci</groupId>
+            <artifactId>javageci-core</artifactId>
+            <scope>test</scope>
+            <version>1.4.0</version>
+        </dependency>
     </dependencies>
     <profiles>
         <profile>
@@ -64,7 +70,7 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
                         <configuration>
-                            <release>13</release>
+                            <release>11</release>
                             <compilerArgs>
                                 <arg>--enable-preview</arg>
                             </compilerArgs>
@@ -122,8 +128,12 @@
                         </annotationProcessorPath>
                     </annotationProcessorPaths>
                     <annotationProcessors>
-                        <annotationProcessor>com.github.bsideup.jabel.JabelJavacProcessor</annotationProcessor>
+                        <annotationProcessor>
+                            com.github.bsideup.jabel.JabelJavacProcessor
+                        </annotationProcessor>
                     </annotationProcessors>
+                    <source>11</source>
+                    <target>11</target>
                 </configuration>
             </plugin>
         </plugins>

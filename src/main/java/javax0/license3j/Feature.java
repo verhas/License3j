@@ -160,6 +160,14 @@ public class Feature {
         return buffer.array();
     }
 
+    /* TEMPLATE
+    LOOP Type=Binary|String|Byte|Short|Int|Long|Float|Double|BigInteger|BigDecimal|Date|UUID
+    public boolean is{{Type}}() {
+        return type == Type.{{TYPE}};
+    }
+
+     */
+    //<editor-fold id="iterate">
     public boolean isBinary() {
         return type == Type.BINARY;
     }
@@ -207,6 +215,9 @@ public class Feature {
     public boolean isUUID() {
         return type == Type.UUID;
     }
+
+    //</editor-fold>
+
 
     public byte[] getBinary() {
         if (type != Type.BINARY) {
