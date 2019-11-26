@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.javax0.license3j</groupId>
     <artifactId>license3j</artifactId>
-    <version>3.1.3-SNAPSHOT</version>
+    <version>3.1.4-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>License3j</name>
@@ -128,9 +128,7 @@
                         </annotationProcessorPath>
                     </annotationProcessorPaths>
                     <annotationProcessors>
-                        <annotationProcessor>
-                            com.github.bsideup.jabel.JabelJavacProcessor
-                        </annotationProcessor>
+                        <annotationProcessor>com.github.bsideup.jabel.JabelJavacProcessor</annotationProcessor>
                     </annotationProcessors>
                     <source>11</source>
                     <target>11</target>
