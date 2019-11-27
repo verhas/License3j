@@ -254,12 +254,12 @@ public class License {
 
 
     /**
-     * Converts a possibly multiline string to a multiline representation of a feature value. For more information on
-     * how multiline strings are stored as values see {@link #toString()}. The HERE_STRING value is calculated so that
+     * Converts a possibly multi-line string to a multi-line representation of a feature value. For more information on
+     * how multi-line strings are stored as values see {@link #toString()}. The HERE_STRING value is calculated so that
      * it is as short as possible containing the characters {@code A} and {@code B} only so that it never appears in the
      * actual multi-line string.
      *
-     * @param s the multiline string to be converted
+     * @param s the multi-line string to be converted
      * @return the converted string with the leading {@code <<HERE_STRING} line and the terminating
      * {@code HERE_STRING} line.
      */
@@ -500,8 +500,8 @@ public class License {
          * Get the value string from the 'valueString' that is after the '=' character in the feature definition
          * string and from the buffered reader that optionally supply the following lines.
          * <p>
-         * If the {@code valueString} does not start with the characters with {@code &lt;&lt;} the it is simply
-         * returned. If it starts with the {@code &lt;&lt;} characters then the rest of the string is
+         * If the {@code valueString} does not start with the characters with {@code <<} the it is simply
+         * returned. If it starts with the {@code <<} characters then the rest of the string is
          * interpreted as the {@code HERE_STRING} (see {@link #toString()}) and the subsequent lines are read from the
          * buffered reader {@code reader} till the {@code HERE_STRING} is found and the lines concatenated together
          * is returned as value string.

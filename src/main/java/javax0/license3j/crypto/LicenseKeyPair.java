@@ -2,7 +2,13 @@ package javax0.license3j.crypto;
 
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
-import java.security.*;
+import java.security.Key;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -47,9 +53,46 @@ public class LicenseKeyPair {
         return pair;
     }
 
+    /* TEMPLATE
     /**
-     * Get the byte representation of the private key as it is returned by the underlying security library. This is
-     * NOT the byte array that contains the algorithm at the start. This is the key in raw format.
+     * Get the byte representation of the {{type}} key as it is returned
+     * by the underlying security library. This is NOT the byte array
+     * that contains the algorithm at the start. This is the key in raw
+     * format.
+     *
+     * @return the key as bytes
+     ESCAPE
+     */
+    //SKIP
+    /*
+    public byte[] get{{Type}}() {
+        keyNotNull(pair.get{{Type}}());
+        Key key = pair.get{{Type}}();
+        return getKeyBytes(key);
+    }
+
+    LOOP Type=Public|Private
+    */
+    //<editor-fold id="iterate">
+    /**
+     * Get the byte representation of the public key as it is returned
+     * by the underlying security library. This is NOT the byte array
+     * that contains the algorithm at the start. This is the key in raw
+     * format.
+     *
+     * @return the key as bytes
+     */
+    public byte[] getPublic() {
+        keyNotNull(pair.getPublic());
+        Key key = pair.getPublic();
+        return getKeyBytes(key);
+    }
+
+    /**
+     * Get the byte representation of the private key as it is returned
+     * by the underlying security library. This is NOT the byte array
+     * that contains the algorithm at the start. This is the key in raw
+     * format.
      *
      * @return the key as bytes
      */
@@ -59,17 +102,8 @@ public class LicenseKeyPair {
         return getKeyBytes(key);
     }
 
-    /**
-     * Get the byte representation of the public key as it is returned by the underlying security library. This is
-     * NOT the byte array that contains the algorithm at the start. This is the key in raw format.
-     *
-     * @return the key as bytes
-     */
-    public byte[] getPublic() {
-        keyNotNull(pair.getPublic());
-        Key key = pair.getPublic();
-        return getKeyBytes(key);
-    }
+    //</editor-fold>
+
 
     private byte[] getKeyBytes(Key key) {
         final var algorithm = cipherTransformation.getBytes(StandardCharsets.UTF_8);

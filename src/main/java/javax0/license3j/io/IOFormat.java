@@ -5,7 +5,7 @@ package javax0.license3j.io;
  *
  * <ol>
  *     <li>BINARY is as the name suggests binary format</li>
- *     <li>BASE64 is the same as binary but encoded to be ascii using the Base64 ncoding</li>
+ *     <li>BASE64 is the same as binary but encoded to be ascii using the Base64 encoding</li>
  *     <li>STRING is a textual, human readable format that can be edited using text editor</li>
  * </ol>
  *

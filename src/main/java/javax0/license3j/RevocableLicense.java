@@ -8,7 +8,8 @@ import java.net.URLConnection;
 import java.util.Optional;
 
 /**
- * Extended license works with a license object and provides features that are not core license functionalities.
+ * Extended license works with a license object and provides features
+ * that is not core license functionality.
  *
  * @author Peter Verhas
  */
@@ -23,17 +24,21 @@ public class RevocableLicense {
     }
 
     /**
-     * Get the revocation URL of the license. This feature is stored in the
-     * license under the name {@code revocationUrl}. This URL may contain the
-     * string <code>${licenseId}</code> which is replaced by the actual license
-     * ID. Thus there is no need to wire into the revocation URL the license ID.
-     * <p>
-     * If there is no license id defined in the license then the place holder
-     * will be replaced using the fingerprint of the license.
+     * <p>Get the revocation URL of the license. This feature is stored
+     * in the license under the name {@code revocationUrl}. This URL may
+     * contain the string <code>${licenseId}</code> which is replaced by
+     * the actual license ID. Thus there is no need to wire into the
+     * revocation URL the license ID.</p>
      *
-     * @return the revocation URL with the license id place holder filled in, or {@code null} if there is no
-     * revocation URL template defined in the license.
-     * @throws MalformedURLException when the revocation url is not well formatted
+     * <p> If there is no license id defined in the license then the
+     * place holder will be replaced using the fingerprint of the
+     * license.</p>
+     *
+     * @return the revocation URL with the license id place holder
+     * filled in, or {@code null} if there is no revocation URL template
+     * defined in the license.
+     * @throws MalformedURLException when the revocation url is not well
+     *                               formatted
      */
     public URL getRevocationURL() throws MalformedURLException {
         final var revocationURLTemplate = license.get(REVOCATION_URL) == null ? null : license.get(REVOCATION_URL).getString();

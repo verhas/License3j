@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -227,11 +228,18 @@ public class Feature {
     }
 
     SEP1 ;
-    LOOP Type;return,rType=Binary;value;byte[]
+    LOOP Type;return;rType=Binary;value;byte[]
     LOOP Type;return;rType=String;new String(value, StandardCharsets.UTF_8);String
+    LOOP Type;return;rType=Byte;value[0];byte
+    LOOP Type;return;rType=Short;ByteBuffer.wrap(value).getShort();short
+    LOOP Type;return;rType=Int;ByteBuffer.wrap(value).getInt();int
+    LOOP Type;return;rType=Long;ByteBuffer.wrap(value).getLong();long
+    LOOP Type;return;rType=Float;ByteBuffer.wrap(value).getFloat();float
+    LOOP Type;return;rType=Double;ByteBuffer.wrap(value).getDouble();double
+    LOOP Type;return;rType=BigInteger;new BigInteger(value);BigInteger
+    LOOP Type;return;rType=Date;new Date(ByteBuffer.wrap(value).getLong());Date
      */
     //<editor-fold id="getters">
-    //</editor-fold>
     public byte[] getBinary() {
         if (type != Type.BINARY) {
             throw new IllegalArgumentException("Feature is not BINARY");
@@ -295,6 +303,15 @@ public class Feature {
         return new BigInteger(value);
     }
 
+    public Date getDate() {
+        if (type != Type.DATE) {
+            throw new IllegalArgumentException("Feature is not DATE");
+        }
+        return new Date(ByteBuffer.wrap(value).getLong());
+    }
+
+    //</editor-fold>
+
     public BigDecimal getBigDecimal() {
         if (type != Type.BIGDECIMAL) {
             throw new IllegalArgumentException("Feature is not BIGDECIMAL");
@@ -315,12 +332,6 @@ public class Feature {
         return new java.util.UUID(ms, ls);
     }
 
-    public Date getDate() {
-        if (type != Type.DATE) {
-            throw new IllegalArgumentException("Feature is not DATE");
-        }
-        return new Date(ByteBuffer.wrap(value).getLong());
-    }
 
     private enum Type {
         BINARY(1, VARIABLE_LENGTH,
@@ -408,51 +419,162 @@ public class Feature {
             }
         }
 
+        /* TEMPLATE
+        /**
+         * Create a new {{type}} feature.
+         * @param name the name of the new feature
+         * @param value the value for the new feature. {@code null} value will throw an exception
+         * @return the newly created feature object
+        ESCAPE
+         */
+        // SKIP
+        /*
+        public static Feature {{type}}Feature(String name, {{vType}} value) {
+            notNull(value);
+            return new Feature(name, Type.{{TYPE}}, {{value}});
+        }
+        
+        SEP1 ;
+        LOOP Type;vType;value=Binary;byte[];value|String;String;value.getBytes(StandardCharsets.UTF_8)
+        LOOP Type;vType;value=Byte;Byte;new byte[]{value}
+        LOOP Type;vType;value=Short;Short;ByteBuffer.allocate(Short.BYTES).putShort(value).array()
+        LOOP Type;vType;value=Int;Integer;ByteBuffer.allocate(Integer.BYTES).putInt(value).array()
+        LOOP Type;vType;value=Long;Long;ByteBuffer.allocate(Long.BYTES).putLong(value).array()
+        LOOP Type;vType;value=Float;Float;ByteBuffer.allocate(Float.BYTES).putFloat(value).array()
+        LOOP Type;vType;value=Double;Double;ByteBuffer.allocate(Double.BYTES).putDouble(value).array()
+        LOOP Type;vType;value=BigInteger;BigInteger;value.toByteArray()
+        LOOP Type;vType;value=uuid;java.util.UUID;ByteBuffer.allocate(2 * Long.BYTES).putLong(value.getLeastSignificantBits()).putLong(value.getMostSignificantBits()).array()
+        LOOP Type;vType;value=Date;Date;ByteBuffer.allocate(Long.BYTES).putLong(value.getTime()).array()
+         */
+        //<editor-fold id="xxFeatures">
+        /**
+         * Create a new binary feature.
+         * @param name the name of the new feature
+         * @param value the value for the new feature. {@code null} value will throw an exception
+         * @return the newly created feature object
+         */
         public static Feature binaryFeature(String name, byte[] value) {
             notNull(value);
             return new Feature(name, Type.BINARY, value);
         }
 
+        /**
+         * Create a new string feature.
+         * @param name the name of the new feature
+         * @param value the value for the new feature. {@code null} value will throw an exception
+         * @return the newly created feature object
+         */
         public static Feature stringFeature(String name, String value) {
             notNull(value);
             return new Feature(name, Type.STRING, value.getBytes(StandardCharsets.UTF_8));
         }
 
+        /**
+         * Create a new byte feature.
+         * @param name the name of the new feature
+         * @param value the value for the new feature. {@code null} value will throw an exception
+         * @return the newly created feature object
+         */
         public static Feature byteFeature(String name, Byte value) {
             notNull(value);
             return new Feature(name, Type.BYTE, new byte[]{value});
         }
 
+        /**
+         * Create a new short feature.
+         * @param name the name of the new feature
+         * @param value the value for the new feature. {@code null} value will throw an exception
+         * @return the newly created feature object
+         */
         public static Feature shortFeature(String name, Short value) {
             notNull(value);
             return new Feature(name, Type.SHORT, ByteBuffer.allocate(Short.BYTES).putShort(value).array());
         }
 
+        /**
+         * Create a new int feature.
+         * @param name the name of the new feature
+         * @param value the value for the new feature. {@code null} value will throw an exception
+         * @return the newly created feature object
+         */
         public static Feature intFeature(String name, Integer value) {
             notNull(value);
             return new Feature(name, Type.INT, ByteBuffer.allocate(Integer.BYTES).putInt(value).array());
         }
 
+        /**
+         * Create a new long feature.
+         * @param name the name of the new feature
+         * @param value the value for the new feature. {@code null} value will throw an exception
+         * @return the newly created feature object
+         */
         public static Feature longFeature(String name, Long value) {
             notNull(value);
             return new Feature(name, Type.LONG, ByteBuffer.allocate(Long.BYTES).putLong(value).array());
         }
 
+        /**
+         * Create a new float feature.
+         * @param name the name of the new feature
+         * @param value the value for the new feature. {@code null} value will throw an exception
+         * @return the newly created feature object
+         */
         public static Feature floatFeature(String name, Float value) {
             notNull(value);
             return new Feature(name, Type.FLOAT, ByteBuffer.allocate(Float.BYTES).putFloat(value).array());
         }
 
+        /**
+         * Create a new double feature.
+         * @param name the name of the new feature
+         * @param value the value for the new feature. {@code null} value will throw an exception
+         * @return the newly created feature object
+         */
         public static Feature doubleFeature(String name, Double value) {
             notNull(value);
             return new Feature(name, Type.DOUBLE, ByteBuffer.allocate(Double.BYTES).putDouble(value).array());
         }
 
+        /**
+         * Create a new bigInteger feature.
+         * @param name the name of the new feature
+         * @param value the value for the new feature. {@code null} value will throw an exception
+         * @return the newly created feature object
+         */
         public static Feature bigIntegerFeature(String name, BigInteger value) {
             notNull(value);
             return new Feature(name, Type.BIGINTEGER, value.toByteArray());
         }
 
+        /**
+         * Create a new uuid feature.
+         * @param name the name of the new feature
+         * @param value the value for the new feature. {@code null} value will throw an exception
+         * @return the newly created feature object
+         */
+        public static Feature uuidFeature(String name, java.util.UUID value) {
+            notNull(value);
+            return new Feature(name, Type.UUID, ByteBuffer.allocate(2 * Long.BYTES).putLong(value.getLeastSignificantBits()).putLong(value.getMostSignificantBits()).array());
+        }
+
+        /**
+         * Create a new date feature.
+         * @param name the name of the new feature
+         * @param value the value for the new feature. {@code null} value will throw an exception
+         * @return the newly created feature object
+         */
+        public static Feature dateFeature(String name, Date value) {
+            notNull(value);
+            return new Feature(name, Type.DATE, ByteBuffer.allocate(Long.BYTES).putLong(value.getTime()).array());
+        }
+
+        //</editor-fold>
+        /**
+         * Create a new BigDecimal feature.
+         * @param name the name of the new feature
+         * @param value the value for the new feature. {@code null} value will throw an exception
+         * @return the newly created feature object
+         */
         public static Feature bigDecimalFeature(String name, BigDecimal value) {
             notNull(value);
             byte[] b = value.unscaledValue().toByteArray();
@@ -461,20 +583,6 @@ public class Feature {
                     .putInt(value.scale())
                     .array());
         }
-
-        public static Feature uuidFeature(String name, java.util.UUID value) {
-            notNull(value);
-            return new Feature(name, Type.UUID, ByteBuffer.allocate(2 * Long.BYTES)
-                    .putLong(value.getLeastSignificantBits())
-                    .putLong(value.getMostSignificantBits())
-                    .array());
-        }
-
-        public static Feature dateFeature(String name, Date value) {
-            notNull(value);
-            return new Feature(name, Type.DATE, ByteBuffer.allocate(Long.BYTES).putLong(value.getTime()).array());
-        }
-
         /**
          * Create a feature from a string representation of the feature. The feature has to have the following format
          * <pre>
