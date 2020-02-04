@@ -67,7 +67,7 @@ public class LicenseKeyPair {
     /*
     public byte[] get{{Type}}() {
         keyNotNull(pair.get{{Type}}());
-        Key key = pair.get{{Type}}();
+        final Key key = pair.get{{Type}}();
         return getKeyBytes(key);
     }
 
