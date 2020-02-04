@@ -39,7 +39,7 @@ public class LicenseKeyPair {
      * @param pair                 the key pair
      * @param cipherTransformation the cipher string
      */
-    private LicenseKeyPair(KeyPair pair, String cipherTransformation) {
+    private LicenseKeyPair(final KeyPair pair, final String cipherTransformation) {
         this.pair = pair;
         this.cipherTransformation = cipherTransformation;
     }
@@ -84,7 +84,7 @@ public class LicenseKeyPair {
      */
     public byte[] getPublic() {
         keyNotNull(pair.getPublic());
-        Key key = pair.getPublic();
+        final Key key = pair.getPublic();
         return getKeyBytes(key);
     }
 
@@ -98,14 +98,14 @@ public class LicenseKeyPair {
      */
     public byte[] getPrivate() {
         keyNotNull(pair.getPrivate());
-        Key key = pair.getPrivate();
+        final Key key = pair.getPrivate();
         return getKeyBytes(key);
     }
 
     //</editor-fold>
 
 
-    private byte[] getKeyBytes(Key key) {
+    private byte[] getKeyBytes(final Key key) {
         final var algorithm = cipherTransformation.getBytes(StandardCharsets.UTF_8);
         final var len = algorithm.length + 1 + key.getEncoded().length;
         final var buffer = new byte[len];
@@ -115,7 +115,7 @@ public class LicenseKeyPair {
         return buffer;
     }
 
-    private void keyNotNull(Key key) {
+    private void keyNotNull(final Key key) {
         if (key == null) {
             throw new IllegalArgumentException("KeyPair does not have the key");
         }
@@ -131,7 +131,7 @@ public class LicenseKeyPair {
          * @param cipher     to be stored in the object
          * @return the new object
          */
-        public static LicenseKeyPair from(final PublicKey publicKey, PrivateKey privateKey, final String cipher) {
+        public static LicenseKeyPair from(final PublicKey publicKey, final PrivateKey privateKey, final String cipher) {
             return new LicenseKeyPair(new KeyPair(publicKey, privateKey), cipher);
         }
 
@@ -142,7 +142,7 @@ public class LicenseKeyPair {
          * @param cipher  to be stored in the object
          * @return the new object
          */
-        public static LicenseKeyPair from(final KeyPair keyPair, String cipher) {
+        public static LicenseKeyPair from(final KeyPair keyPair, final String cipher) {
             return new LicenseKeyPair(keyPair, cipher);
         }
 
@@ -173,7 +173,7 @@ public class LicenseKeyPair {
          */
         public static LicenseKeyPair from(final String cipher, final int size) throws NoSuchAlgorithmException {
             final var algorithm = algorithmPrefix(cipher);
-            KeyPairGenerator generator = KeyPairGenerator.getInstance(algorithm);
+            final KeyPairGenerator generator = KeyPairGenerator.getInstance(algorithm);
             generator.initialize(size);
             return new LicenseKeyPair(generator.genKeyPair(), cipher);
         }
@@ -192,8 +192,8 @@ public class LicenseKeyPair {
          * @throws InvalidKeySpecException if the bytes of the key are garbage and cannot be decoded by the actual
          * encryption provider.
          */
-        public static LicenseKeyPair from(byte[] encoded, int type) throws NoSuchAlgorithmException, InvalidKeySpecException {
-            final String cipher = getAlgorithm(encoded);
+        public static LicenseKeyPair from(final byte[] encoded, final int type) throws NoSuchAlgorithmException, InvalidKeySpecException {
+            final String cipher = getCipher(encoded);
             if (type == Modifier.PRIVATE)
                 return from(null, getPrivateEncoded(encoded), cipher);
             else
@@ -215,24 +215,24 @@ public class LicenseKeyPair {
          * @throws InvalidKeySpecException if the bytes of the key are garbage and cannot be decoded by the actual
          * encryption provider.
          */
-        public static LicenseKeyPair from(byte[] privateEncoded, byte[] publicEncoded) throws NoSuchAlgorithmException, InvalidKeySpecException {
-            final String cipher = getAlgorithm(publicEncoded);
+        public static LicenseKeyPair from(final byte[] privateEncoded, final byte[] publicEncoded) throws NoSuchAlgorithmException, InvalidKeySpecException {
+            final String cipher = getCipher(publicEncoded);
             return from(getPublicEncoded(publicEncoded), getPrivateEncoded(privateEncoded), cipher);
         }
 
-        private static PublicKey getPublicEncoded(byte[] buffer) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        private static PublicKey getPublicEncoded(final byte[] buffer) throws NoSuchAlgorithmException, InvalidKeySpecException {
             final var spec = new X509EncodedKeySpec(getEncoded(buffer));
-            final var factory = KeyFactory.getInstance(getAlgorithm(buffer));
+            final var factory = KeyFactory.getInstance(algorithmPrefix(getCipher(buffer)));
             return factory.generatePublic(spec);
         }
 
-        private static PrivateKey getPrivateEncoded(byte[] buffer) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        private static PrivateKey getPrivateEncoded(final byte[] buffer) throws NoSuchAlgorithmException, InvalidKeySpecException {
             final var spec = new PKCS8EncodedKeySpec(getEncoded(buffer));
-            final var factory = KeyFactory.getInstance(getAlgorithm(buffer));
+            final var factory = KeyFactory.getInstance(algorithmPrefix(getCipher(buffer)));
             return factory.generatePrivate(spec);
         }
 
-        private static String getAlgorithm(byte[] buffer) {
+        private static String getCipher(final byte[] buffer) {
             for (int i = 0; i < buffer.length; i++) {
                 if (buffer[i] == 0x00) {
                     return new String(Arrays.copyOf(buffer, i), StandardCharsets.UTF_8);
@@ -241,7 +241,7 @@ public class LicenseKeyPair {
             throw new IllegalArgumentException("key does not contain algorithm specification");
         }
 
-        private static byte[] getEncoded(byte[] buffer) {
+        private static byte[] getEncoded(final byte[] buffer) {
             for (int i = 0; i < buffer.length; i++) {
                 if (buffer[i] == 0x00) {
                     return Arrays.copyOfRange(buffer, i + 1, buffer.length);
