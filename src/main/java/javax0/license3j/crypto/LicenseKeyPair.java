@@ -161,7 +161,7 @@ public class LicenseKeyPair {
          * and will be used to sign/verify the license.
          * <p>
          * It is recommended to use the full cipher. Using only the algorithm will let the encryption provider to
-         * selects its own favoutire mode and padding. In this case it may happen that the signing and the verification
+         * selects its own favourite mode and padding. In this case it may happen that the signing and the verification
          * happening in different environments may use different providers that are not compatible and an otherwise
          * completely perfect license will not verify.
          *
