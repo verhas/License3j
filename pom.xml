@@ -24,6 +24,10 @@
             <name>Peter Verhas</name>
             <email>peter@verhas.com</email>
         </developer>
+        <developer>
+            <name>Robert Siebeck</name>
+            <email>robert@siebeck.org</email>
+        </developer>
     </developers>
     <scm>
         <connection>scm:git:git@github.com:verhas/License3j.git</connection>
