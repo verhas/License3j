@@ -238,7 +238,7 @@ public class LicenseKeyPair {
                     return new String(Arrays.copyOf(buffer, i), StandardCharsets.UTF_8);
                 }
             }
-            throw new IllegalArgumentException("key does not contain algorithm specification");
+            throw new IllegalArgumentException("key does not contain cipher specification");
         }
 
         private static byte[] getEncoded(final byte[] buffer) {
