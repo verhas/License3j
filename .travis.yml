@@ -1,12 +1,5 @@
 language: java
-
-script:
-  - echo PATH = ${PATH}
-  - echo JAVA_HOME = ${JAVA_HOME}
-  - java -version
-
-install: mvn clean install
+install: mvn install -Dmaven.javadoc.skip=true
+dist: xenial
 jdk:
- - openjdk11
-
-sudo: false # faster builds
+  - openjdk13
