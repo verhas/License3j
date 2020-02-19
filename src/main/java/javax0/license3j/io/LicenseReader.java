@@ -2,7 +2,12 @@ package javax0.license3j.io;
 
 import javax0.license3j.License;
 
-import java.io.*;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
@@ -14,11 +19,10 @@ public class LicenseReader implements Closeable {
     private final InputStream is;
 
     /**
-     * Create a new license reader that will read the license from the input stream.
-     * Note that using this version of LicenseReader does not provide any protection
-     * against enormously and erroneously large input. The caller has to make sure
-     * that the source of the input stream is really a license file and that it is not
-     * too large for the application with the actual memory settings.
+     * Create a new license reader that will read the license from the input stream. Note that using this version of
+     * LicenseReader does not provide any protection against enormously and erroneously large input. The caller has to
+     * make sure the source of the input stream is really a license file and that it is not too large for the
+     * application with the actual memory settings.
      *
      * @param is the input stream from which the license is to be read
      */
@@ -27,9 +31,8 @@ public class LicenseReader implements Closeable {
     }
 
     /**
-     * Create a new license reader that will read the license from the file.
-     * If the size of the file is larger than the given limit then this
-     * constrcutor will throw illegal argument exception.
+     * Create a new license reader that will read the license from the file. If the size of the file is larger than the
+     * given limit then this constructor will throw illegal argument exception.
      *
      * @param file  the file that contains the license
      * @param limit the maximum number of bytes of the license that the program can handle
@@ -43,9 +46,8 @@ public class LicenseReader implements Closeable {
     }
 
     /**
-     * Create a new license reader that will read the license from the file. This
-     * constructor simply opens an input stream from the file and calls {@link #LicenseReader(InputStream)}.
-     * See the notes there about the size limits.
+     * Create a new license reader that will read the license from the file. This constructor simply opens an input
+     * stream from the file and calls {@link #LicenseReader(InputStream)}. See the notes there about the size limits.
      *
      * @param file the file that contains the license
      * @throws FileNotFoundException if the file cannot be found
@@ -55,9 +57,9 @@ public class LicenseReader implements Closeable {
     }
 
     /**
-     * Create a new license reader that will read the license from the file named. This
-     * constructor simply opens an input stream from the file and calls {@link #LicenseReader(File, long)}.
-     * See the notes there about the size limits.
+     * Create a new license reader that will read the license from the file named. This constructor simply opens an
+     * input stream from the file and calls {@link #LicenseReader(File, long)}. See the notes there about the size
+     * limits.
      *
      * @param fileName the name of the file
      * @param limit    the maximum number of bytes of the license that the program can handle
@@ -68,9 +70,8 @@ public class LicenseReader implements Closeable {
     }
 
     /**
-     * Create a new license reader that will read the license from the file named. This
-     * constructor simply opens an input stream from the file and calls {@link #LicenseReader(File)}.
-     * See the notes there about the size limits.
+     * Create a new license reader that will read the license from the file named. This constructor simply opens an
+     * input stream from the file and calls {@link #LicenseReader(File)}. See the notes there about the size limits.
      *
      * @param fileName the name of the file
      * @throws FileNotFoundException if the file cannot be found
@@ -94,8 +95,8 @@ public class LicenseReader implements Closeable {
      * Read the license from the input assuming that the format of the license on the input has the format specified by
      * the argument.
      *
-     * @param format the assumed format of the license, can be {@link IOFormat#STRING},
-     *               {@link IOFormat#BASE64} or {@link IOFormat#BINARY}
+     * @param format the assumed format of the license, can be {@link IOFormat#STRING}, {@link IOFormat#BASE64} or
+     *               {@link IOFormat#BINARY}
      * @return the license
      * @throws IOException if the input cannot be read
      */
