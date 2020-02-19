@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -75,29 +74,20 @@ public class Feature {
             } catch (ParseException ignored) {
             }
         }
-        throw new IllegalArgumentException("Can not parse " + date);
+        throw new IllegalArgumentException("Cannot parse " + date);
     }
 
     static String[] splitString(String s) {
-        var nameEnd = s.indexOf(":");
-        final int typeEnd = s.indexOf("=", nameEnd + 1);
-        if (nameEnd > typeEnd) {
-            nameEnd = -1;
-        }
+        final int typeEnd = s.indexOf("=");
         if (typeEnd == -1) {
-            throw new IllegalArgumentException("Feature string representation needs '=' after the type");
+            throw new IllegalArgumentException("The feature's string representation must have a '=' after the type");
         }
-        final String name;
-        final String typeString;
-        if (nameEnd > 0) {
-            name = s.substring(0, nameEnd).trim();
-            typeString = s.substring(nameEnd + 1, typeEnd).trim();
-        } else {
-            name = s.substring(0, typeEnd).trim();
-            typeString = "STRING";
-        }
+        final var colIndex = s.substring(0, typeEnd).indexOf(":");
+        final var nameEnd = colIndex == -1 ? typeEnd : colIndex;
+        final String name = s.substring(0, nameEnd).trim();
+        final String type = nameEnd == typeEnd ? "STRING" : s.substring(nameEnd + 1, typeEnd).trim();
         final var valueString = s.substring(typeEnd + 1);
-        return new String[]{name, typeString, valueString};
+        return new String[]{name, type, valueString};
     }
 
     static Feature getFeature(String name, String typeString, String valueString) {
@@ -595,6 +585,7 @@ public class Feature {
          * @return the new object created from the string
          */
         public static Feature from(String s) {
+            notNull(s);
             final var parts = Feature.splitString(s);
             return getFeature(parts[0], parts[1], parts[2]);
         }
@@ -607,6 +598,7 @@ public class Feature {
          * @return a new feature object
          */
         public static Feature from(byte[] serialized) {
+            notNull(serialized);
             if (serialized.length < Integer.BYTES * 2) {
                 throw new IllegalArgumentException("Cannot load feature from a byte array that has "
                         + serialized.length + " bytes which is < " + (2 * Integer.BYTES));

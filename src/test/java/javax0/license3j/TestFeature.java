@@ -562,5 +562,27 @@ public class TestFeature {
         final var sut = Feature.Create.dateFeature("now", new Date(1545047719295L));
         Assertions.assertEquals("now:DATE=2018-12-17 11:55:19.295", sut.toString());
     }
+
+    @Test
+    @DisplayName("Properly splits up STRING feature that has a colon in it")
+    void canSplitStringFeatureWithColon() {
+        final var feature = "id=33:22";
+        var parts = Feature.splitString(feature);
+        Assertions.assertArrayEquals(new String[]{"id", "STRING", "33:22"}, parts);
+    }
+
+    @Test
+    @DisplayName("When the string representation of the feature does not contain an '=' then exception is thrown")
+    void throwsUpForBadFormatFeature() {
+        final var feature = "id : 3322";
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Feature.splitString(feature));
+    }
+
+    @Test
+    @DisplayName("It is not possible to create a feature from null")
+    void throwsUpForNull() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Feature.Create.from((String)null));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> Feature.Create.from((byte[])null));
+    }
 }
 
