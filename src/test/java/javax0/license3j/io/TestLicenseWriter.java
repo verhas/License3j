@@ -33,7 +33,7 @@ public class TestLicenseWriter {
         }
         Assertions.assertEquals(22, length);
         Assertions.assertArrayEquals(LIC_STRING.getBytes(StandardCharsets.UTF_8), buffer);
-        //new File(FILE_TEXT).delete();
+        new File(FILE_TEXT).delete();
     }
 
 
@@ -50,7 +50,7 @@ public class TestLicenseWriter {
         }
         Assertions.assertEquals(56, length);
         Assertions.assertArrayEquals(LIC_BASE64.getBytes(StandardCharsets.UTF_8), buffer);
-        //new File(FILE_BASE64).delete();
+        new File(FILE_BASE64).delete();
     }
 
     @Test
@@ -66,6 +66,6 @@ public class TestLicenseWriter {
         }
         Assertions.assertEquals(40, length);
         Assertions.assertArrayEquals(LIC_BINARY, buffer);
-        //new File(FILE_BINARY).delete();
+        new File(FILE_BINARY).delete();
     }
 }
