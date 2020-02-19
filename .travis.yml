@@ -1,14 +1,5 @@
 language: java
 
-
-before_install:
-  - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
-
-matrix:
-  include:
-    - env: JDK='OpenJDK 11'
-      install: . ./install-jdk.sh -F 11 -L GPL
-
 script:
   - echo PATH = ${PATH}
   - echo JAVA_HOME = ${JAVA_HOME}
