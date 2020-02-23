@@ -272,33 +272,26 @@ This is followed by the actual bytes that encode the value of the feature.
 The textual format of the license is text, obviously, encoded using the UTF-8 character set. Each line in the file is a
 feature, or a feature continuation line in case the feature value is represented on multiple lines.
 
-A line describing a feature starts with the name of the feature. This is
-followed by the type of the feature separated by a `:` from the name.
-The type is written in all capital letters as listed above `BINARY`,
-`STRING`, `BYTE` etc. The type is followed by a `=` and then comes the
-value of the feature. The type along with the separating `:` can be
-missing in case it is `STRING`.
+A line describing a feature starts with the name of the feature. This is followed by the type of the feature separated
+by a `:` from the name. The type is written in all capital letters as listed above `BINARY`, `STRING`, `BYTE` etc. The
+type is followed by a `=` and then comes the value of the feature. The type, along with the separating `:` can be
+missing in case it is `STRING`. (Note that there was a bug prior the version 3.1.5 that did not allow the use of string
+values that contained `:` characters, unless the explicit `:STRING` followed the name of the string feature.)
 
-When a `DATE` feature is converted to and from text then the actual
-value should be interpreted as time zone independent value. (Note that
-there was a bug in 3.X.X releases prior version 3.1.1 that used the
-local time zone to interpret text representation of the date/time
-values.)
+When a `DATE` feature is converted to and from text then the actual value should be interpreted as time zone independent
+value. (Note that there was a bug in 3.X.X releases prior the version 3.1.1 that used the local time zone to interpret
+text representation of the date/time values.)
 
-The values are encoded as text in a human-readable and editable way.
-When a value cannot fit on a single line, for example, a multi-line
-string then the feature value starts with the characters `<<` and it is
-followed by a string till the end of the line which does not appear in
-the value. The following lines contain the value of the feature until a
-line contains the string, which was after the `<<` characters on the
-start line. This is similar to the "here string" syntax of UNIX shell.
+The values are encoded as text in a human-readable and editable way. When a value cannot fit on a single line, for
+example, a multi-line string, then the feature value starts with the characters `<<` and it is followed by a string till
+the end of the line which does not appear in the value. The following lines contain the value of the feature until a
+line contains the string, which was after the `<<` characters on the start line. This is similar to the "here string"
+syntax of UNIX shell.
 
 ## License3j REPL application
 
-The repl application is NOT part of the `license3j.jar` file. It is
-available as a separate JAR from
-https://github.com/verhas/license3jrepl. To start the repl (Read
-Evaluate Print Loop) using the Java command:
+The repl application is NOT part of the `license3j.jar` file. It is available as a separate JAR from
+https://github.com/verhas/license3jrepl. To start the repl (Read Evaluate Print Loop) using the Java command:
 
 ```
 $ java -jar license3jrepl.jar
@@ -306,9 +299,8 @@ $ java -jar license3jrepl.jar
 
 You do not need any other library or class on the classpath.
 
-The application is interactive and it reads the commands from te console
-and writes the output to the standard output. If the console is not
-available then it uses the standard input. The prompt it displays is:
+The application is interactive, and it reads the commands from the console and writes the output to the standard output.
+If the console is not available then it uses the standard input. The prompt it displays is:
 
 ```
 License3j REPL
@@ -342,59 +334,44 @@ Keys are not loaded
 [INFO] For more information read the documentation
 ```
 
-Note that the actual output of the command `help` may be different for
-different versions of the program and from what you actually can see in
-this documentation.
+Note that the actual output of the command `help` may be different for different versions of the program and from what
+you actually can see in this documentation.
 
-You can exit the application using the command `exit`. You can execute
-external commands using the `!` mark. Any string you type on a line that
-starts with the `!` character will be passed to the underlying operating
-system and it will be executed. You can, for example , type `!ls` on
-Linux to see what files are there in the current working directory, or
-you can type `!dir` to do the same under Windows. You cannot change the
-current working directory this way. You can issue the command `cd
-other_dir` and it actually will change the current working directory but
-only for the new shell, which is executing the command and not for the
-process that executes the Repl application.
+You can exit the application using the command `exit`. You can execute external commands using the `!` mark. Any string
+you type on a line that starts with the `!` character will be passed to the underlying operating system, and it will be
+executed. You can, for example , type `!ls` on Linux to see what files are there in the current working directory, or
+you can type `!dir` to do the same under Windows. You cannot change the current working directory this way. You can
+issue the command `cd other_dir` and it actually will change the current working directory but only for the new shell,
+which is executing the command and not for the process that executes the Repl application. It means that as soon as the
+command has finished and returns to the repl application the current working directory is restored to the original
+value.
 
-When you execute the Repl you can create a new license, new key pair,
-you can save them to file or you can load them from files. The commands
-work on the keys and the license that are currently in the memory. The
-information is also printed on the screen about the license and the key.
-When you start the Repl there is no license or keys loaded.
+When you execute the Repl you can create a new license, new key pair, you can save them to files, or you can load them
+from files. The commands work with the keys using the license that is currently in the memory. The information is also
+printed on the screen about the license and the key. When you start the Repl there is no license or keys loaded.
 
-You can type the commands interactively or you can type a file name as a
-command following a `.` (dot) character. The Repl application will read
-the file line by line and execute the lines as they were types into the
-interactive prompt.
+You can type the commands interactively, or you can type a file name as a command following a `.` (dot) character. The
+Repl application will read the file line by line and execute the lines as they were typed into the interactive prompt.
 
-If there is a file `.license3j` in the current working directory when
-the Repl is started then it will be read and executed automatically.
-This can be use to load the default public and private keys that you
-usually work with.
+If there is a file `.license3j` in the current working directory when the Repl is started then it will be read and
+executed automatically. This can be used to load the default public and private keys that you usually work with.
 
-The commands can be abbreviated. You need to write only so many
-characters so that the command can uniquely identified. The same is true
-for the command parameters that have names. Thus you can type `si`
-instead of `sign` to sign a license.
+The commands can be abbreviated. You need to write only so many characters so that the command can uniquely be
+identified. The same is true for the command parameters that have names. Thus you can type `si` instead of `sign` to
+sign a license.
 
-Older versions of License3j included the Repl application. The current
-and later versions of License3j will not include the Repl application.
-The Repl application is moved to a separate library and it uses the
-`javax0.repl` library as a framework. This solution provides a leaner
-license3j library that you include into your application. Your
-application will not contain the code of the License3j Repl application
-and of the libraries that it uses. Moving the repl framework to a
-separate library makes it more viable and can be used by other Java
-applications as well.
+Older versions of License3j included the Repl application. The current and later versions of License3j will not include
+the Repl application. The Repl application is moved to a separate application. It uses the `javax0.repl` library as a
+framework. This solution provides a leaner license3j library that you include into your application. Your application
+will not contain the code of the License3j Repl application and of the libraries that it uses. Moving the repl framework
+to a separate library makes it more viable and can be used by other Java applications as well.
 
-No matter which version you use following 3.0.0 there will be a Repl
-application available to manage the licenses and the keys.
+No matter which version you use following 3.0.0 there will be a Repl application available to manage the licenses and
+the keys.
 
 ## Download and Installation
 
-The License3j module can be downloaded from the Sonatype central
-repository. To search the central repo follow the URL
+The License3j module can be downloaded from the Sonatype central repository. To search the central repo follow the URL
 `http://central.sonatype.org/`
 
 If you use maven you can insert the lines
@@ -403,39 +380,30 @@ If you use maven you can insert the lines
 <dependency>
     <groupId>com.javax0.license3j</groupId>
     <artifactId>license3j</artifactId>
-    <version>3.1.0</version>
+    <version>3.1.5</version>
 </dependency>
 ```
 
-in to your `pom.xml` file. Check the central repository for the latest
-version.
+in to your `pom.xml` file. Check the central repository for the latest version.
 
 ## Note on release history
 
-License3j versions 1.x.x and 2.0.0 were released for Java 1.5 ... 1.8.
-The release 3.0.0 is a total rewrite of the library. Neither the API nor
-the binary formats are compatible with previous versions. It is also
-released only for Java 11 and later and there is no planned backport
-release for Java 8 or earlier. Note however that the generated byte code
-is compatible with Java 8 JVM, so you can use the library as a dependency
-for Java 8 projects.
+License3j versions 1.x.x and 2.0.0 were released for Java 1.5 ... 1.8. The release 3.0.0 is a total rewrite of the
+library. Neither the API nor the binary formats are compatible with previous versions. It is also released only for Java
+11 and later and there is no planned backport release for Java 8 or earlier. Note however that the generated byte code
+is compatible with Java 8 JVM, so you can use the library as a dependency for Java 8 projects.
 
-License3j prior to version 3.0.0 has a dependency to Bouncy Castle
-encryption library. The version 3.0.0 and later breaks this dependency
-and this version is standalone. Also, this version can be used to
-generate the keys, sign licenses and does not need the external gpg
-tool. (Also note that you cannot use the gpg tool to generate keys for
-this version as the format of the keys are not compatible with older
-versions.)
+License3j prior to version 3.0.0 has a dependency on the Bouncy Castle encryption library. The version 3.0.0 and later
+breaks this dependency and this version is standalone. Also, this version can be used to generate the keys, sign
+licenses and does not need the external gpg tool. (Also note that you cannot use the gpg tool to generate keys for this
+version as the format of the keys are not compatible with older versions.)
 
 ## Name of the game
 
-There are many names that contain '2'. In these cases '2' stands for
-'to' instead of 'two'. There are names containing '4' that stands for
-'for'. For example license4j.
+There are many names that contain '2'. In these cases '2' stands for 'to' instead of 'two'. There are names containing
+'4' that stands for 'for'. For example license4j.
 
-'3' in license3j stands for 'free' instead of 'three'. Because this is a
-free program.
+'3' in license3j stands for 'free' instead of 'three'. Because this is a free program.
 
 ## Related projects
 
