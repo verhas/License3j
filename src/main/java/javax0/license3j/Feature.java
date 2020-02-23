@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -402,13 +403,6 @@ public class Feature {
         private Create() {
         }
 
-
-        private static void notNull(Object value) {
-            if (value == null) {
-                throw new IllegalArgumentException("Cannot create a feature from null value.");
-            }
-        }
-
         /* TEMPLATE
         /**
          * Create a new {{type}} feature.
@@ -420,7 +414,7 @@ public class Feature {
         // SKIP
         /*
         public static Feature {{type}}Feature(String name, {{vType}} value) {
-            notNull(value);
+            Objects.requireNonNull(value);
             return new Feature(name, Type.{{TYPE}}, {{value}});
         }
         
@@ -444,7 +438,7 @@ public class Feature {
          * @return the newly created feature object
          */
         public static Feature binaryFeature(String name, byte[] value) {
-            notNull(value);
+            Objects.requireNonNull(value);
             return new Feature(name, Type.BINARY, value);
         }
 
@@ -455,7 +449,7 @@ public class Feature {
          * @return the newly created feature object
          */
         public static Feature stringFeature(String name, String value) {
-            notNull(value);
+            Objects.requireNonNull(value);
             return new Feature(name, Type.STRING, value.getBytes(StandardCharsets.UTF_8));
         }
 
@@ -466,7 +460,7 @@ public class Feature {
          * @return the newly created feature object
          */
         public static Feature byteFeature(String name, Byte value) {
-            notNull(value);
+            Objects.requireNonNull(value);
             return new Feature(name, Type.BYTE, new byte[]{value});
         }
 
@@ -477,7 +471,7 @@ public class Feature {
          * @return the newly created feature object
          */
         public static Feature shortFeature(String name, Short value) {
-            notNull(value);
+            Objects.requireNonNull(value);
             return new Feature(name, Type.SHORT, ByteBuffer.allocate(Short.BYTES).putShort(value).array());
         }
 
@@ -488,7 +482,7 @@ public class Feature {
          * @return the newly created feature object
          */
         public static Feature intFeature(String name, Integer value) {
-            notNull(value);
+            Objects.requireNonNull(value);
             return new Feature(name, Type.INT, ByteBuffer.allocate(Integer.BYTES).putInt(value).array());
         }
 
@@ -499,7 +493,7 @@ public class Feature {
          * @return the newly created feature object
          */
         public static Feature longFeature(String name, Long value) {
-            notNull(value);
+            Objects.requireNonNull(value);
             return new Feature(name, Type.LONG, ByteBuffer.allocate(Long.BYTES).putLong(value).array());
         }
 
@@ -510,7 +504,7 @@ public class Feature {
          * @return the newly created feature object
          */
         public static Feature floatFeature(String name, Float value) {
-            notNull(value);
+            Objects.requireNonNull(value);
             return new Feature(name, Type.FLOAT, ByteBuffer.allocate(Float.BYTES).putFloat(value).array());
         }
 
@@ -521,7 +515,7 @@ public class Feature {
          * @return the newly created feature object
          */
         public static Feature doubleFeature(String name, Double value) {
-            notNull(value);
+            Objects.requireNonNull(value);
             return new Feature(name, Type.DOUBLE, ByteBuffer.allocate(Double.BYTES).putDouble(value).array());
         }
 
@@ -532,7 +526,7 @@ public class Feature {
          * @return the newly created feature object
          */
         public static Feature bigIntegerFeature(String name, BigInteger value) {
-            notNull(value);
+            Objects.requireNonNull(value);
             return new Feature(name, Type.BIGINTEGER, value.toByteArray());
         }
 
@@ -543,7 +537,7 @@ public class Feature {
          * @return the newly created feature object
          */
         public static Feature uuidFeature(String name, java.util.UUID value) {
-            notNull(value);
+            Objects.requireNonNull(value);
             return new Feature(name, Type.UUID, ByteBuffer.allocate(2 * Long.BYTES).putLong(value.getLeastSignificantBits()).putLong(value.getMostSignificantBits()).array());
         }
 
@@ -554,7 +548,7 @@ public class Feature {
          * @return the newly created feature object
          */
         public static Feature dateFeature(String name, Date value) {
-            notNull(value);
+            Objects.requireNonNull(value);
             return new Feature(name, Type.DATE, ByteBuffer.allocate(Long.BYTES).putLong(value.getTime()).array());
         }
 
@@ -566,7 +560,7 @@ public class Feature {
          * @return the newly created feature object
          */
         public static Feature bigDecimalFeature(String name, BigDecimal value) {
-            notNull(value);
+            Objects.requireNonNull(value);
             byte[] b = value.unscaledValue().toByteArray();
             return new Feature(name, Type.BIGDECIMAL, ByteBuffer.allocate(Integer.BYTES + b.length)
                     .put(b)
@@ -585,7 +579,7 @@ public class Feature {
          * @return the new object created from the string
          */
         public static Feature from(String s) {
-            notNull(s);
+            Objects.requireNonNull(s);
             final var parts = Feature.splitString(s);
             return getFeature(parts[0], parts[1], parts[2]);
         }
@@ -595,10 +589,10 @@ public class Feature {
          * the method {@link #serialized()}.
          *
          * @param serialized the serialized format.
-         * @return a new feature object
+         * @return a new feature object.
          */
         public static Feature from(byte[] serialized) {
-            notNull(serialized);
+            Objects.requireNonNull(serialized);
             if (serialized.length < Integer.BYTES * 2) {
                 throw new IllegalArgumentException("Cannot load feature from a byte array that has "
                         + serialized.length + " bytes which is < " + (2 * Integer.BYTES));

@@ -222,7 +222,7 @@ public class TestFeature {
     public void creationFromNull() {
         for (var method : Create.class.getMethods()) {
             if (Modifier.isStatic(method.getModifiers()) && method.getName().endsWith("Feature")) {
-                Assertions.assertThrows(IllegalArgumentException.class,
+                Assertions.assertThrows(NullPointerException.class,
                     () -> {
                         try {
                             method.invoke(null, "", null);
@@ -581,8 +581,8 @@ public class TestFeature {
     @Test
     @DisplayName("It is not possible to create a feature from null")
     void throwsUpForNull() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> Feature.Create.from((String)null));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> Feature.Create.from((byte[])null));
+        Assertions.assertThrows(NullPointerException.class, () -> Feature.Create.from((String)null));
+        Assertions.assertThrows(NullPointerException.class, () -> Feature.Create.from((byte[])null));
     }
 }
 
