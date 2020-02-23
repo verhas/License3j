@@ -33,8 +33,7 @@ public class HardwareBinder {
     private boolean useArchitecture = true;
 
     /**
-     * A very simple main that prints out the machine UUID to the standard
-     * output.
+     * A very simple main that prints out the machine UUID to the standard output.
      * <p>
      * This code takes into account the hardware address (Ethernet MAC) when
      * calculating the hardware UUID.

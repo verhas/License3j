@@ -159,21 +159,21 @@ class LicenseTest {
     }
 
     @Test
-    @DisplayName("Test that a feture does not give the value in a different format than it is")
+    @DisplayName("Test that a feature does not give the value in a different format than it is")
     void featureThrowsWhenWrongFormatIsQueried(){
         final var sut = Feature.Create.from("sampleBinary:BINARY=T2gsIG15IEdvZCE=");
         //Assertions.assertThrows(IllegalArgumentException.class,() -> sut.getBinary());
-        Assertions.assertThrows(IllegalArgumentException.class,() -> sut.getString());
-        Assertions.assertThrows(IllegalArgumentException.class,() -> sut.getByte());
-        Assertions.assertThrows(IllegalArgumentException.class,() -> sut.getShort());
-        Assertions.assertThrows(IllegalArgumentException.class,() -> sut.getInt());
-        Assertions.assertThrows(IllegalArgumentException.class,() -> sut.getLong());
-        Assertions.assertThrows(IllegalArgumentException.class,() -> sut.getFloat());
-        Assertions.assertThrows(IllegalArgumentException.class,() -> sut.getDouble());
-        Assertions.assertThrows(IllegalArgumentException.class,() -> sut.getBigInteger());
-        Assertions.assertThrows(IllegalArgumentException.class,() -> sut.getBigDecimal());
-        Assertions.assertThrows(IllegalArgumentException.class,() -> sut.getDate());
-        Assertions.assertThrows(IllegalArgumentException.class,() -> sut.getUUID());
+        Assertions.assertThrows(IllegalArgumentException.class, sut::getString);
+        Assertions.assertThrows(IllegalArgumentException.class, sut::getByte);
+        Assertions.assertThrows(IllegalArgumentException.class, sut::getShort);
+        Assertions.assertThrows(IllegalArgumentException.class, sut::getInt);
+        Assertions.assertThrows(IllegalArgumentException.class, sut::getLong);
+        Assertions.assertThrows(IllegalArgumentException.class, sut::getFloat);
+        Assertions.assertThrows(IllegalArgumentException.class, sut::getDouble);
+        Assertions.assertThrows(IllegalArgumentException.class, sut::getBigInteger);
+        Assertions.assertThrows(IllegalArgumentException.class, sut::getBigDecimal);
+        Assertions.assertThrows(IllegalArgumentException.class, sut::getDate);
+        Assertions.assertThrows(IllegalArgumentException.class, sut::getUUID);
     }
 
     @Test

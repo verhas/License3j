@@ -33,9 +33,9 @@ public class TestInterfaceSelector {
             IllegalAccessException,
             InvocationTargetException,
             InstantiationException, NoSuchMethodException {
-        Constructor constructor = NetworkInterface.class.getDeclaredConstructor();
+        Constructor<NetworkInterface> constructor = NetworkInterface.class.getDeclaredConstructor();
         constructor.setAccessible(true);
-        NetworkInterface ni = (NetworkInterface) constructor.newInstance();
+        NetworkInterface ni = constructor.newInstance();
         Field field = NetworkInterface.class.getDeclaredField("displayName");
         field.setAccessible(true);
         field.set(ni, name);
@@ -79,7 +79,7 @@ public class TestInterfaceSelector {
     }
 
     @Test
-    @DisplayName("If there is a regular expression allowing it and the denying regexes do not match then it is allowed")
+    @DisplayName("If there is a regular expression allowing it, and the denying regular expressions do not match then it is allowed")
     public void explicitlyAllowedNotDeniedByAny() throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException, NoSuchMethodException {
         test("allowed").allowed("allowed").denied("denied", "denied2").isUsable();
     }

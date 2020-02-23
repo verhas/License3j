@@ -24,7 +24,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -380,7 +379,7 @@ public class License {
      * during the signature creation of the license and stored as a feature in the license is also signed.
      */
     public byte[] unsigned() {
-        return serialized(new HashSet<>(Arrays.asList(SIGNATURE_KEY)));
+        return serialized(new HashSet<>(Collections.singletonList(SIGNATURE_KEY)));
     }
 
     /**

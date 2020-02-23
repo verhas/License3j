@@ -33,7 +33,7 @@ public class TestLicenseWriter {
         }
         Assertions.assertEquals(22, length);
         Assertions.assertArrayEquals(LIC_STRING.getBytes(StandardCharsets.UTF_8), buffer);
-        new File(FILE_TEXT).delete();
+        Assertions.assertTrue(new File(FILE_TEXT).delete());
     }
 
 
@@ -50,14 +50,14 @@ public class TestLicenseWriter {
         }
         Assertions.assertEquals(56, length);
         Assertions.assertArrayEquals(LIC_BASE64.getBytes(StandardCharsets.UTF_8), buffer);
-        new File(FILE_BASE64).delete();
+        Assertions.assertTrue(new File(FILE_BASE64).delete());
     }
 
     @Test
     void canWriteBinaryFile() throws IOException {
         final var lic = License.Create.from("simple:STRING=string feature");
         try (final var sut = new LicenseWriter(FILE_BINARY)) {
-            sut.write(lic, IOFormat.BINARY);
+            sut.write(lic);
         }
         final byte[] buffer = new byte[40];
         final int length;
@@ -66,6 +66,6 @@ public class TestLicenseWriter {
         }
         Assertions.assertEquals(40, length);
         Assertions.assertArrayEquals(LIC_BINARY, buffer);
-        new File(FILE_BINARY).delete();
+        Assertions.assertTrue(new File(FILE_BINARY).delete());
     }
 }

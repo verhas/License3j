@@ -18,7 +18,7 @@ import java.util.UUID;
 
 public class TestFeature {
 
-    private static Method findMethod(final String methodName, Method[] methods, Class klass) {
+    private static Method findMethod(final String methodName, Method[] methods, Class<?> klass) {
         for (final var method : methods) {
             if (method.getName().equalsIgnoreCase(methodName)) {
                 return method;
@@ -247,12 +247,12 @@ public class TestFeature {
                 + methodName + " is not static.");
             Assertions.assertTrue(Modifier.isPublic(modifiers), "Method "
                 + methodName + " is not public.");
-            var argtypes = method.getParameterTypes();
-            Assertions.assertEquals(2, argtypes.length, "Factory method "
+            var argTypes = method.getParameterTypes();
+            Assertions.assertEquals(2, argTypes.length, "Factory method "
                 + methodName + " should have exactly two arguments.");
-            Assertions.assertEquals(String.class, argtypes[0], "Factory method "
+            Assertions.assertEquals(String.class, argTypes[0], "Factory method "
                 + methodName + " first argument has to be String.");
-            if (argtypes[1].isArray()) {
+            if (argTypes[1].isArray()) {
                 var constField = Feature.class.getDeclaredField("VARIABLE_LENGTH");
                 constField.setAccessible(true);
                 final int VARIABLE_LENGTH = (int) constField.get(null);
@@ -296,10 +296,10 @@ public class TestFeature {
             var method = findMethod(methodName, methods, this.getClass());
             Assertions.assertNotNull(method);
             var modifiers = method.getModifiers();
-            Assertions.assertTrue(!Modifier.isStatic(modifiers), "Method " + methodName + " is static.");
+            Assertions.assertFalse(Modifier.isStatic(modifiers), "Method " + methodName + " is static.");
             Assertions.assertTrue(Modifier.isPublic(modifiers), "Method " + methodName + " is not public.");
-            var argtypes = method.getParameterTypes();
-            Assertions.assertEquals(0, argtypes.length, "Test method " + methodName + " should not have parameters.");
+            var argTypes = method.getParameterTypes();
+            Assertions.assertEquals(0, argTypes.length, "Test method " + methodName + " should not have parameters.");
         }
     }
 
@@ -549,8 +549,8 @@ public class TestFeature {
     }
 
     @Test
-    @DisplayName("Bigdecimal feature is converted to string")
-    public void testBigdecimalToString() {
+    @DisplayName("BigDecimal feature is converted to string")
+    public void testBigDecimalToString() {
         final var sut = Feature.Create.bigDecimalFeature("name",
             new BigDecimal("789012345678901234567890123456789.0123456789012345678901234567890123456789"));
         Assertions.assertEquals("name:BIGDECIMAL=789012345678901234567890123456789.0123456789012345678901234567890123456789", sut.toString());

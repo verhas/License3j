@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Objects;
 
 /**
  * Reads a license from some input.
@@ -17,7 +18,7 @@ import java.util.Base64;
 public class LicenseReader implements Closeable {
 
     private final InputStream is;
-
+    private boolean closed = false;
     /**
      * Create a new license reader that will read the license from the input stream. Note that using this version of
      * LicenseReader does not provide any protection against enormously and erroneously large input. The caller has to
@@ -27,6 +28,7 @@ public class LicenseReader implements Closeable {
      * @param is the input stream from which the license is to be read
      */
     public LicenseReader(InputStream is) {
+        Objects.requireNonNull(is);
         this.is = is;
     }
 
@@ -101,19 +103,30 @@ public class LicenseReader implements Closeable {
      * @throws IOException if the input cannot be read
      */
     public License read(IOFormat format) throws IOException {
+        final License license;
         switch (format) {
             case BINARY:
-                return License.Create.from(ByteArrayReader.readInput(is));
+                license = License.Create.from(ByteArrayReader.readInput(is));
+                break;
             case BASE64:
-                return License.Create.from(Base64.getDecoder().decode(ByteArrayReader.readInput(is)));
+                license = License.Create.from(Base64.getDecoder().decode(ByteArrayReader.readInput(is)));
+                break;
             case STRING:
-                return License.Create.from(new String(ByteArrayReader.readInput(is), StandardCharsets.UTF_8));
+                license = License.Create.from(new String(ByteArrayReader.readInput(is), StandardCharsets.UTF_8));
+                break;
+            default:
+                throw new IllegalArgumentException(IOFormat.class.getName() +
+                    " is incompatible with License3j, and was used with the value " +
+                    format + " which is unknown");
         }
-        throw new IllegalArgumentException("License format " + format + " is unknown.");
+        close();
+        return license;
     }
 
     @Override
     public void close() throws IOException {
+        if (closed) return;
+        closed = true;
         if (is != null) {
             is.close();
         }

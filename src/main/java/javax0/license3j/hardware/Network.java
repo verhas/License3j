@@ -63,7 +63,7 @@ public class Network {
              * Note that the name, which is checked is not the basic name (e.g.
              * <tt>eth0</tt>) but the display name, which is more human readable.
              *
-             * @param netIf the netrowk interface
+             * @param netIf the network interface
              * @return {@code true} if the interface has to be taken into the
              * calculation of the license and {@code false} (ignore the
              * interface) otherwise.

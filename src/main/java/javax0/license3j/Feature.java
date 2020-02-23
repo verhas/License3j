@@ -335,7 +335,7 @@ public class Feature {
         BYTE(3, Byte.BYTES,
                 Feature::getByte,
                 (name, value) -> Create.byteFeature(name, (Byte) value),
-                b -> String.format("0x%02X", (byte) (Byte) b), NumericParser.Byte::parse),
+                b -> String.format("0x%02X", (Byte) b), NumericParser.Byte::parse),
         SHORT(4, Short.BYTES,
                 Feature::getShort,
                 (name, value) -> Create.shortFeature(name, (Short) value),
