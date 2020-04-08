@@ -24,8 +24,7 @@ public class Network {
                 }
             }
 
-            static List<Data> gatherUsing(Network.Interface.Selector selector)
-                throws SocketException {
+            static List<Data> gatherUsing(Network.Interface.Selector selector) throws SocketException {
                 return Collections.list(NetworkInterface.getNetworkInterfaces()).stream()
                     .filter(selector::usable)
                     .map(Network.Interface.Data::new).collect(Collectors.toList());

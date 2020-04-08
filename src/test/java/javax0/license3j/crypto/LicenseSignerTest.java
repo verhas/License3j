@@ -21,9 +21,15 @@ public class LicenseSignerTest {
         final var license = new License();
         license.add(Feature.Create.stringFeature("owner", "Peter Verhas"));
         license.sign(keyPair.getPair().getPrivate(), "SHA-512");
+        // license is OK checking with the key
         Assertions.assertTrue(license.isOK(keyPair.getPair().getPublic()));
+        // license is OK checking with the byte[] format of the key
+        Assertions.assertTrue(license.isOK(keyPair.getPublic()));
         license.getSignature()[0] = (byte) ~license.getSignature()[0];
+        // license check should fail using the key
         Assertions.assertFalse(license.isOK(keyPair.getPair().getPublic()));
+        // license check should fail using the byte[] format of the key
+        Assertions.assertFalse(license.isOK(keyPair.getPublic()));
     }
 
     @Test

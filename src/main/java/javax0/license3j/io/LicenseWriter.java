@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Write the license into the output. Use the constructors to create a writer object specifying the target for the
@@ -23,7 +24,7 @@ import java.util.Objects;
  */
 public class LicenseWriter implements Closeable {
     private final OutputStream os;
-    private boolean closed = false;
+    AtomicBoolean closed = new AtomicBoolean(false);
 
     public LicenseWriter(OutputStream os) {
         Objects.requireNonNull(os);
@@ -72,9 +73,7 @@ public class LicenseWriter implements Closeable {
 
     @Override
     public void close() throws IOException {
-        if (closed) return;
-        closed = true;
-        if (os != null) {
+        if (closed.compareAndSet(false, true) && os != null) {
             os.close();
         }
     }

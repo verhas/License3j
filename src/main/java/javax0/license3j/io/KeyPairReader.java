@@ -13,6 +13,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Class to read a key from file. The class can be used in the application to load the public key, and it is also used
@@ -31,7 +32,7 @@ import java.util.Objects;
  */
 public class KeyPairReader implements Closeable {
     private final InputStream is;
-    boolean closed = false;
+    AtomicBoolean closed = new AtomicBoolean(false);
 
     /**
      * Create a reader with the input stream {@code is} as the source for the key.
@@ -140,10 +141,9 @@ public class KeyPairReader implements Closeable {
      */
     @Override
     public void close() throws IOException {
-        if (closed) return;
-        closed = true;
-        if (is != null) {
+        if (closed.compareAndSet(false, true) && is != null) {
             is.close();
         }
+
     }
 }

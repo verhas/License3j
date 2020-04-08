@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Base64;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Class to write the key pair into two files. Key are read individually but they are written in pairs right
@@ -22,7 +23,7 @@ import java.util.Objects;
 public class KeyPairWriter implements Closeable {
     private final OutputStream osPrivate;
     private final OutputStream osPublic;
-    private boolean closed = false;
+    AtomicBoolean closed = new AtomicBoolean(false);
 
     /**
      * Create a target for license key pair writing specifying the outputs as streams.
@@ -90,21 +91,21 @@ public class KeyPairWriter implements Closeable {
      */
     @Override
     public void close() throws IOException {
-        if (closed) return;
-        closed = true;
+        if (closed.compareAndSet(false, true)) {
 
-        IOException caught = null;
-        try {
-            if (osPrivate != null) {
-                osPrivate.close();
+            IOException caught = null;
+            try {
+                if (osPrivate != null) {
+                    osPrivate.close();
+                }
+            } catch (IOException e) {
+                // save the exception, try to close the other resource and throw it afterwards
+                caught = e;
             }
-        } catch (IOException e) {
-            // save the exception, try to close the other resource and throw it afterwards
-            caught = e;
+            if (osPublic != null) {
+                osPublic.close();
+            }
+            if (caught != null) throw caught;
         }
-        if (osPublic != null) {
-            osPublic.close();
-        }
-        if (caught != null) throw caught;
     }
 }

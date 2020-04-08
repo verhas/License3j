@@ -32,19 +32,17 @@ class HashCalculator {
         }
     }
 
-    void updateWithNetworkData(final MessageDigest md5)
-            throws SocketException {
+    void updateWithNetworkData(final MessageDigest md5) throws SocketException {
         final List<Network.Interface.Data> networkInterfaces = Network.Interface.Data.gatherUsing(selector);
         networkInterfaces.sort(Comparator.comparing(a -> a.name));
         updateWithNetworkData(md5, networkInterfaces);
     }
 
-    void updateWithHostName(final MessageDigest md5)
-            throws UnknownHostException {
+    void updateWithHostName(final MessageDigest md5) throws UnknownHostException {
         final String hostName = java.net.InetAddress.getLocalHost()
-                .getHostName();
+            .getHostName();
         md5.update(hostName.getBytes(StandardCharsets.UTF_8), 0,
-                hostName.getBytes(StandardCharsets.UTF_8).length);
+            hostName.getBytes(StandardCharsets.UTF_8).length);
     }
 
     void updateWithArchitecture(final MessageDigest md5) {
