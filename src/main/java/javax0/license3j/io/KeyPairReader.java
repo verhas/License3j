@@ -40,8 +40,7 @@ public class KeyPairReader implements Closeable {
      * @param is where the key bytes or characters in case of base64 encoding are coming from.
      */
     public KeyPairReader(InputStream is) {
-        Objects.requireNonNull(is);
-        this.is = is;
+        this.is = Objects.requireNonNull(is);
     }
 
     /**

@@ -32,10 +32,8 @@ public class KeyPairWriter implements Closeable {
      * @param publicKeyOutputStream  output stream for the public key
      */
     public KeyPairWriter(OutputStream privateKeyOutputStream, OutputStream publicKeyOutputStream) {
-        Objects.requireNonNull(privateKeyOutputStream);
-        Objects.requireNonNull(publicKeyOutputStream);
-        this.osPrivate = privateKeyOutputStream;
-        this.osPublic = publicKeyOutputStream;
+        this.osPrivate = Objects.requireNonNull(privateKeyOutputStream);
+        this.osPublic = Objects.requireNonNull(publicKeyOutputStream);
     }
 
     /**

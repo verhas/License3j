@@ -29,8 +29,7 @@ public class LicenseReader implements Closeable {
      * @param is the input stream from which the license is to be read
      */
     public LicenseReader(InputStream is) {
-        Objects.requireNonNull(is);
-        this.is = is;
+        this.is = Objects.requireNonNull(is);
     }
 
     /**

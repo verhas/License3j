@@ -2,11 +2,9 @@ package javax0.license3j.hardware;
 
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Network {
 
@@ -24,10 +22,10 @@ public class Network {
                 }
             }
 
-            static List<Data> gatherUsing(Network.Interface.Selector selector) throws SocketException {
-                return Collections.list(NetworkInterface.getNetworkInterfaces()).stream()
+            static Stream<Data> gatherUsing(Network.Interface.Selector selector) throws SocketException {
+                return NetworkInterface.networkInterfaces()
                     .filter(selector::usable)
-                    .map(Network.Interface.Data::new).collect(Collectors.toList());
+                    .map(Network.Interface.Data::new);
             }
         }
         public static class Selector {
