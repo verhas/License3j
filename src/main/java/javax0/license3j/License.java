@@ -98,7 +98,7 @@ public class License {
      * <ol>
      *
      * <li>Add the digest algorithm string to the license as a feature. The feature name is <!--CODE
-     * SIGNATURE_DIGEST-->{@code signatureDigest} (name is defined in the constant {@link #DIGEST_KEY} in this
+     * DIGEST_KEY-->{@code signatureDigest} (name is defined in the constant {@link #DIGEST_KEY} in this
      * class).</li>
      *
      * <li>The license is converted to binary format</li>
