@@ -175,7 +175,6 @@ public class License {
      * when calculating the signature. The signature has to be a BINARY feature.
      *
      * <p>
-     * <p>
      * The method throws exception in case the feature is the license signature, and the type is not {@code BINARY}.
      *
      * @param feature is added to the license
@@ -195,14 +194,12 @@ public class License {
      * invoked.
      *
      * <p>
-     * <p>
      * Every feature is formatted as
      *
      * <pre>
      *     name:TYPE=value
      * </pre>
      *
-     * <p>
      * <p>
      * when the value is multiline then it is converted to be multiline. Multiline strings are represented as usually in
      * unix, with the {@code HERE_STRING}. The value in this case starts right after the {@code =} character with the
@@ -219,12 +216,10 @@ public class License {
      * }</pre>
      *
      * <p>
-     * <p>
      * In this example the string {@code END} signals the end of the string, and the lines between are part of the
      * multi-line string. A feature string is also converted to multi-line representation if it happens to start with
      * the characters {@code <<}.
      *
-     * <p>
      * <p>
      * The returned string can be saved, transferred by eMail or other textual channel and finally it can be used as
      * argument to {@link Create#from(String)}.
@@ -309,11 +304,11 @@ public class License {
     /**
      * Generates a new license identifier.
      *
-     * <p> <p> This identifier is also stored in the license as a feature with the name <!--CODE LICENSE_ID-->{@code
+     * <p> This identifier is also stored in the license as a feature with the name <!--CODE LICENSE_ID-->{@code
      * licenseId}, thus there is no need to create an extra feature and add it to the license. (The type of the feature
      * is obviously UUID.)
      *
-     * <p> <p> Generating UUID can be handy when you want to identify each license individually. For example, you want
+     * <p> Generating UUID can be handy when you want to identify each license individually. For example, you want
      * to store revocation information about each license. The url to check the revocation may contain the <!--CODE
      * LICENSE_ID ${LICENSE_ID}-->{@code ${licenseId}} place holder that will be replaced by the actual uuid stored in
      * the license.
@@ -331,12 +326,16 @@ public class License {
      * optionally be set and can be used to identify the license. This ID can be used as a reference to the license in
      * databases, URLs.
      *
-     * <p> <hr> <em>An example</em> use it is to upload a simple, persumably zero length file to a publicly reachable
-     * server with the name of the license UUID so that it can be retrieved via a URL containing the UUID. The licensed
-     * program tries to download the file and in case the response code is 200 OK then it assumes that the license is
-     * OK. If the server is not reachable or for some other reason it cannot reach the file it may assume that this is a
-     * technical glitch and go on working for a while. However, if the response is a definitive 404 it means that the
-     * file was removed: the license is revoked. <hr>
+     * <hr>
+     *
+     * <em>An example</em> use it is to upload a simple, presumably zero length file to a publicly reachable server with
+     * the name of the license UUID so that it can be retrieved via a URL containing the UUID. The licensed program
+     * tries to download the file and in case the response code is 200 OK then it assumes that the license is OK. If the
+     * server is not reachable or for some other reason it cannot reach the file it may assume that this is a technical
+     * glitch and go on working for a while. However, if the response is a definitive 404 it means that the file was
+     * removed: the license is revoked.
+     *
+     * <hr>
      *
      * @return the UUID format identifier of the license or {@code null} in case the license does not contain an ID.
      */
@@ -368,9 +367,11 @@ public class License {
      * licenses similarly like the license id (see {@link #setLicenseId(UUID)},{@link #getLicenseId()}). The
      * fingerprint can be used even when the license does not have random ID stored in the license.
      *
-     * <p>
+     * <hr>
      *
-     * <hr> <em>NOTE:</em> <p>
+     * <em>NOTE:</em>
+     *
+     * <p>
      *
      * This fingerprint calculation is not used when the license is signed. {@code MD5} as a message digest is not
      * considered to be safe enough for electronic signature. License signature uses a message digest the caller
@@ -420,26 +421,21 @@ public class License {
      * Get the license as a {@code byte[]} without the signature key. This byte array is used to create the signature of
      * the license. Obviously, the signature itself cannot be part of the signed part of the license.
      *
-     * <p>
-     * <p>
-     * This method can be used when the license is going to be signed as well as when the signature is verified (though
+     * <p>This method can be used when the license is going to be signed as well as when the signature is verified (though
      * there are direct methods to sign and verify a license for upper layers). When a license is to be signed the
      * optionally already existing, and probably obsolete signature is excluded so that the new signature can overwrite
      * the old one. That way there is no need to remove first the signature feature before calculating the new
-     * signature.
+     * signature.</p>
      *
-     * <p>
-     * <p>
-     * Note, however, that the message digest algorithm is also stored in he license in a {@code STRING} feature named
+     * <p329>Note, however, that the message digest algorithm is also stored in he license in a {@code STRING} feature named
      * <!--CODE SIGNATURE_DIGEST-->{@code signatureDigest}. This feature is included into the signature creation
      * process. In case the message digest algorithm is not the same for the new signature as it was for the old one
      * when a license is resigned, then the <!--CODE SIGNATURE_DIGEST-->{@code signatureDigest} feature should be set to
      * be the name of the new message digest algorithm before calling {@code unsigned()}. This is actually done by the
      * method {@link #sign(PrivateKey, String)}. The recommended way to sign a license is to call {@link
      * #sign(PrivateKey, String)}, so client code should not really care about this nuisance, unless they chooses to
-     * create the signature their own way.
+     * create the signature their own way.</p>
      *
-     * <p>
      * <p>
      * When the license signature is verified the signature again is excluded and can be compared to the calculated one.
      * This is done by the methods {@link #isOK(byte[])} and {@link #isOK(PublicKey)}.
