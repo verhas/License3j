@@ -427,7 +427,7 @@ public class License {
      * the old one. That way there is no need to remove first the signature feature before calculating the new
      * signature.</p>
      *
-     * <p329>Note, however, that the message digest algorithm is also stored in he license in a {@code STRING} feature named
+     * <p>Note, however, that the message digest algorithm is also stored in he license in a {@code STRING} feature named
      * <!--CODE SIGNATURE_DIGEST-->{@code signatureDigest}. This feature is included into the signature creation
      * process. In case the message digest algorithm is not the same for the new signature as it was for the old one
      * when a license is resigned, then the <!--CODE SIGNATURE_DIGEST-->{@code signatureDigest} feature should be set to
