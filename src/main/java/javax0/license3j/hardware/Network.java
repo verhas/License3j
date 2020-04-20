@@ -2,6 +2,7 @@ package javax0.license3j.hardware;
 
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -23,7 +24,7 @@ public class Network {
             }
 
             static Stream<Data> gatherUsing(Network.Interface.Selector selector) throws SocketException {
-                return NetworkInterface.networkInterfaces()
+                return Collections.list(NetworkInterface.getNetworkInterfaces()).stream()
                     .filter(selector::usable)
                     .map(Network.Interface.Data::new);
             }
