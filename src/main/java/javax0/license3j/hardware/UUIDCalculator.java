@@ -44,11 +44,7 @@ public class UUIDCalculator {
     public String getMachineIdString(boolean useNetwork, boolean useHostName, boolean useArchitecture) throws
         SocketException, UnknownHostException, NoSuchAlgorithmException {
         final UUID uuid = getMachineId(useNetwork, useHostName, useArchitecture);
-        if (uuid != null) {
-            return uuid.toString();
-        } else {
-            return null;
-        }
+        return uuid.toString();
     }
 
     public boolean assertUUID(final UUID uuid, boolean useNetwork, boolean useHostName, boolean useArchitecture)
@@ -59,7 +55,7 @@ public class UUIDCalculator {
 
     public boolean assertUUID(final String uuid, boolean useNetwork, boolean useHostName, boolean useArchitecture) {
         try {
-            return assertUUID(java.util.UUID.fromString(uuid), useNetwork, useHostName, useArchitecture);
+            return assertUUID(UUID.fromString(uuid), useNetwork, useHostName, useArchitecture);
         } catch (Exception e) {
             return false;
         }

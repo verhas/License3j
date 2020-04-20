@@ -27,8 +27,7 @@ public class LicenseWriter implements Closeable {
     AtomicBoolean closed = new AtomicBoolean(false);
 
     public LicenseWriter(OutputStream os) {
-        Objects.requireNonNull(os);
-        this.os = os;
+        this.os = Objects.requireNonNull(os);
     }
 
     public LicenseWriter(File file) throws FileNotFoundException {

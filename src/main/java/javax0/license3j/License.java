@@ -450,7 +450,7 @@ public class License {
      * signature feature.
      */
     public byte[] unsigned() {
-        return serialized(new HashSet<>(Collections.singletonList(SIGNATURE_KEY)));
+        return serialized(Collections.singleton(SIGNATURE_KEY));
     }
 
     /**
