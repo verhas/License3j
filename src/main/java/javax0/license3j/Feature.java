@@ -24,20 +24,21 @@ import java.util.function.Function;
  * <li>a type</li>
  * <li>and a value.</li>
  * </ul>
- * The type can be one of the types that are defined in the enumeration {@link Type}.
- * <p>
- * There is a utility class inside this class called {@link Create} that contains public static methods to
- * create features for each type. Invoking one of those methods is the way to create a new feature instance.
- * <p>
- * A feature can be tested against the type calling one of the {@code boolean} methods {@code isXXX()},
+ *
+ * <p>The type can be one of the types that are defined in the enumeration {@link Type}.</p>
+ *
+ * <p>There is a utility class inside this class called {@link Create} that contains public static methods to
+ * create features for each type. Invoking one of those methods is the way to create a new feature instance.</p>
+ *
+ * <p>A feature can be tested against the type calling one of the {@code boolean} methods {@code isXXX()},
  * where  {@code XXX} is one
  * of the types. Getting the value from a type should be via the methods {@code getXXX}, where, again, {@code XXX} is
  * one of the types. Invoking {@code getXXX} for a feature that has a type that is not {@code XXX} will throw
- * {@link IllegalArgumentException}.
- * <p>
- * Features can be serialized to a byte array invoking the method {@link #serialized()}. The same byte array can be
- * used as an argument to the utility method {@link Create#from(byte[])} to create a {@code Feature} of the same name
- * and the same value.
+ * {@link IllegalArgumentException}.</p>
+ *
+ * <p>Features can be serialized to a byte array invoking the method {@link #serialized()}. The same byte array can be
+ * used as an argument to the utility method {@link Create#from(byte[])} to create a {@code Feature} of the same name,
+ * and the same value.</p>
  */
 public class Feature {
     private static final String[] DATE_FORMAT =
@@ -58,7 +59,7 @@ public class Feature {
         this.value = value;
     }
 
-    private static SimpleDateFormat getUTCDateFormat(String format){
+    private static SimpleDateFormat getUTCDateFormat(String format) {
         final var simpleDateFormat = new SimpleDateFormat(format);
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         return simpleDateFormat;
@@ -68,6 +69,16 @@ public class Feature {
         return getUTCDateFormat(DATE_FORMAT[0]).format(date);
     }
 
+    /**
+     * <p>Parse the string as a date using the different date format listed in the constant {@link #DATE_FORMAT}.
+     * Parsing uses the first format in the array, then the second until it finds one that can be used to
+     * parse the string as a date.</p>
+     *
+     * <p>If none of the formats can be used as a date then the method throws {@link IllegalArgumentException}.</p>
+     *
+     * @param date the date string, presumably formatted
+     * @return the {@link Date} object created from the string {@code date}.
+     */
     private static Date dateParse(String date) {
         for (var format : DATE_FORMAT) {
             try {
@@ -78,19 +89,43 @@ public class Feature {
         throw new IllegalArgumentException("Cannot parse " + date);
     }
 
-    static String[] splitString(String s) {
-        final int typeEnd = s.indexOf("=");
+    /**
+     * <p>Split up a string representing a feature into three parts</p>
+     *
+     * <ul>
+     *     <li>name</li>
+     *     <li>type</li>
+     *     <li>value</li>
+     * </ul>
+     *
+     * <p>A feature in string format contains these part in the above order. The name and the type are separated using a
+     * {@code :}. The type and the value are separated using a {@code =}. The type is optional. In case it is missing
+     * along with the {@code :} before it then the default value {@code STRING} is used as a type.</p>
+     *
+     * @param feature string represented feature
+     * @return a three-element String array containing the name, the type and the value of the feature in this order.
+     */
+    static String[] splitString(String feature) {
+        final int typeEnd = feature.indexOf("=");
         if (typeEnd == -1) {
             throw new IllegalArgumentException("The feature's string representation must have a '=' after the type");
         }
-        final var colIndex = s.substring(0, typeEnd).indexOf(":");
+        final var colIndex = feature.substring(0, typeEnd).indexOf(":");
         final var nameEnd = colIndex == -1 ? typeEnd : colIndex;
-        final String name = s.substring(0, nameEnd).trim();
-        final String type = nameEnd == typeEnd ? "STRING" : s.substring(nameEnd + 1, typeEnd).trim();
-        final var valueString = s.substring(typeEnd + 1);
+        final String name = feature.substring(0, nameEnd).trim();
+        final String type = nameEnd == typeEnd ? "STRING" : feature.substring(nameEnd + 1, typeEnd).trim();
+        final var valueString = feature.substring(typeEnd + 1);
         return new String[]{name, type, valueString};
     }
 
+    /**
+     * <p>Create a {@code Feature} object out of the name, type and value represented in the arguments as strings.</p>
+     *
+     * @param name        the name of the feature to be created
+     * @param typeString  the type of the feature represented as a String
+     * @param valueString the value of the feature string formatted
+     * @return the new {@code Feature} object
+     */
     static Feature getFeature(String name, String typeString, String valueString) {
         final var type = Type.valueOf(typeString);
         final var value = type.unstringer.apply(valueString);
@@ -106,11 +141,21 @@ public class Feature {
 
     @Override
     public String toString() {
-        return toStringWith(type.stringer.apply(type.objecter.apply(this)));
+        return toStringWith(valueString());
     }
 
+    /**
+     * <p>Convert a feature to its {@code name:TYPE=value} representation with the separately supplied {@code value}</p>
+     *
+     * <p>This method is used when the feature has to be formatted in a way that should take the fact into account that
+     * the string representation of the feature may be multi-line. In that case the value string is specially
+     * formatted.</p>
+     *
+     * @param value the string representation of the value
+     * @return the string representation of the feature
+     */
     String toStringWith(String value) {
-        return name + (type == Type.STRING ? "" : ":" + type.toString()) + "=" + value;
+        return name + type.colonedToString() + "=" + value;
     }
 
     /**
@@ -377,26 +422,53 @@ public class Feature {
                 (name, value) -> Create.uuidFeature(name, (java.util.UUID) value),
                 Object::toString, java.util.UUID::fromString);
 
-        final int fixedSize;
+        /**
+         * Every type has a serialized value that is used in the serialized format. This value is fixed and does not
+         * depend on the ordinal value of the enum. This is to keep the serialized format backward compatible if ever
+         * there is a new type inserted or an old type deleted from this enum.
+         */
         final int serialized;
-        final Function<Object, String> stringer;
+        /**
+         * The size if a value of this type when it is serialized. When the value cannot be represented on a fixed number
+         * of bytes then this value is {@link #VARIABLE_LENGTH}, that is {@code -1}.
+         */
+        final int fixedSize;
+        /**
+         * A function that extracts the value from a feature and returns it as an object of the appropriate type.
+         */
         final Function<Feature, Object> objecter;
-        final Function<String, Object> unstringer;
+        /**
+         * A bi-function that creates a new feature from a name and an object.
+         */
         final BiFunction<String, Object, Feature> factory;
+        final Function<Object, String> stringer;
+        final Function<String, Object> unstringer;
 
         Type(int serialized,
              int fixedSize,
              Function<Feature, Object> objecter,
              BiFunction<String, Object, Feature> factory,
-             Function<Object, String> toStringer,
+             Function<Object, String> stringer,
              Function<String, Object> unstringer) {
             this.serialized = serialized;
             this.fixedSize = fixedSize;
-            this.stringer = toStringer;
+            this.stringer = stringer;
             this.objecter = objecter;
             this.unstringer = unstringer;
             this.factory = factory;
         }
+
+        /**
+         * <p>Get the string representation of the type with a preceding colon in front of it. When the type is
+         * {@code STRING} then the return value is empty string considering that {@code STRING} is the default
+         * type in the string representation of a feature.</p>
+         *
+         * @return a '{@code :}' character and the name of the type or empty string in case the type is {@code STRING}.
+         */
+        public String colonedToString() {
+            return this == Type.STRING ? "" : ":" + toString();
+        }
+
     }
 
     public static class Create {
@@ -594,40 +666,56 @@ public class Feature {
         public static Feature from(byte[] serialized) {
             Objects.requireNonNull(serialized);
             if (serialized.length < Integer.BYTES * 2) {
-                throw new IllegalArgumentException("Cannot load feature from a byte array that has "
-                        + serialized.length + " bytes which is < " + (2 * Integer.BYTES));
+                throwBinaryWayTooShort(serialized.length);
             }
             var bb = ByteBuffer.wrap(serialized);
             var typeSerialized = bb.getInt();
             final Type type = typeFrom(typeSerialized);
             final var nameLength = bb.getInt();
             if (nameLength < 0) {
-                throw new IllegalArgumentException("Name size is too big. 31bit length should be enough.");
+                throwBinaryTooLong("Name");
             }
             final var valueLength = type.fixedSize == VARIABLE_LENGTH ? bb.getInt() : type.fixedSize;
             if (valueLength < 0) {
-                throw new IllegalArgumentException("Value size is too big. 31bit length should be enough.");
+                throwBinaryTooLong("Value");
             }
             final var nameBuffer = new byte[nameLength];
             if (nameLength > 0) {
                 if (bb.remaining() < nameLength) {
-                    throw new IllegalArgumentException("Feature binary is too short. It is " + (valueLength + nameLength - bb.remaining()) + " bytes shy.");
+                    throwBinaryTooShort(valueLength + nameLength - bb.remaining());
                 }
                 bb.get(nameBuffer);
             }
             final var value = new byte[valueLength];
             if (valueLength > 0) {
                 if (bb.remaining() < valueLength) {
-                    throw new IllegalArgumentException("Feature binary is too short. It is " + (valueLength - bb.remaining()) + " bytes shy.");
+                    throwBinaryTooShort(valueLength - bb.remaining());
                 }
                 bb.get(value);
             }
             if (bb.remaining() > 0) {
-                throw new IllegalArgumentException("Cannot load feature from a byte array that has "
-                        + serialized.length + " bytes which is " + bb.remaining() + " bytes too long");
+                throwBinaryTooLong(serialized.length, bb.remaining());
             }
             final var name = new String(nameBuffer, StandardCharsets.UTF_8);
             return new Feature(name, type, value);
+        }
+
+        public static void throwBinaryWayTooShort(int len) {
+            throw new IllegalArgumentException("Cannot load feature from a byte array that has "
+                    + len + " bytes which is < " + (2 * Integer.BYTES));
+        }
+
+        public static void throwBinaryTooShort(int len) {
+            throw new IllegalArgumentException("Feature binary is too short. It is " + len + " bytes shy.");
+        }
+
+        public static void throwBinaryTooLong(int len, int extra) {
+            throw new IllegalArgumentException("Cannot load feature from a byte array that has "
+                    + len + " bytes which is " + extra + " bytes too long");
+        }
+
+        public static void throwBinaryTooLong(String s) {
+            throw new IllegalArgumentException(s + " size is too big. 31bit length should be enough.");
         }
 
         private static Type typeFrom(int typeSerialized) {

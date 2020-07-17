@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class KeyPairReader implements Closeable {
     private final InputStream is;
-    AtomicBoolean closed = new AtomicBoolean(false);
+    final AtomicBoolean closed = new AtomicBoolean(false);
 
     /**
      * Create a reader with the input stream {@code is} as the source for the key.
@@ -129,8 +129,9 @@ public class KeyPairReader implements Closeable {
                 return LicenseKeyPair.Create.from(ByteArrayReader.readInput(is), type);
             case BASE64:
                 return LicenseKeyPair.Create.from(Base64.getDecoder().decode(ByteArrayReader.readInput(is)), type);
+            default:
+                throw new IllegalArgumentException("License format " + format + " is unknown.");
         }
-        throw new IllegalArgumentException("License format " + format + " is unknown.");
     }
 
     /**
@@ -140,7 +141,7 @@ public class KeyPairReader implements Closeable {
      */
     @Override
     public void close() throws IOException {
-        if (closed.compareAndSet(false, true) && is != null) {
+        if (closed.compareAndSet(false, true)) {
             is.close();
         }
 

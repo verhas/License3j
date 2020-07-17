@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class LicenseWriter implements Closeable {
     private final OutputStream os;
-    AtomicBoolean closed = new AtomicBoolean(false);
+    final AtomicBoolean closed = new AtomicBoolean(false);
 
     public LicenseWriter(OutputStream os) {
         this.os = Objects.requireNonNull(os);
@@ -57,6 +57,10 @@ public class LicenseWriter implements Closeable {
             case STRING:
                 os.write(license.toString().getBytes(StandardCharsets.UTF_8));
                 break;
+            default:
+                throw new IllegalArgumentException(IOFormat.class.getName() +
+                    " is incompatible with License3j, and was used with the value " +
+                    format + " which is unknown");
         }
         close();
     }
@@ -72,7 +76,7 @@ public class LicenseWriter implements Closeable {
 
     @Override
     public void close() throws IOException {
-        if (closed.compareAndSet(false, true) && os != null) {
+        if (closed.compareAndSet(false, true)) {
             os.close();
         }
     }

@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class LicenseReader implements Closeable {
 
     private final InputStream is;
-    AtomicBoolean closed = new AtomicBoolean(false);
+    final AtomicBoolean closed = new AtomicBoolean(false);
     /**
      * Create a new license reader that will read the license from the input stream. Note that using this version of
      * LicenseReader does not provide any protection against enormously and erroneously large input. The caller has to
@@ -125,7 +125,7 @@ public class LicenseReader implements Closeable {
 
     @Override
     public void close() throws IOException {
-        if (closed.compareAndSet(false, true) && is != null) {
+        if (closed.compareAndSet(false, true)) {
             is.close();
         }
     }

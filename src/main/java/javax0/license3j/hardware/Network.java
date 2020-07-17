@@ -35,6 +35,8 @@ public class Network {
             private final Set<String> deniedInterfaceNames = new HashSet<>();
 
             /**
+             * Check if any of the set of regular expressions match the given string.
+             *
              * @param string   to match
              * @param regexSet regular expressions provided as set of strings
              * @return {@code true} if the {@code string} matches any of the regular expressions
@@ -48,7 +50,7 @@ public class Network {
              * network interface. If there is a set of denied names then if any of the
              * regular expressions matches the name of the interface then the interface
              * is denied. If there is no denied set then the processing is not affected
-             * by the non existence. In other word not specifying any denied interface
+             * by the non-existence. In other words, not specifying any denied interface
              * name means that no interface is denied explicitly.
              * <p>
              * If there is a set of permitted names then if any of the regular
@@ -59,7 +61,7 @@ public class Network {
              * case that would require this feature.
              * <p>
              * Note that the name, which is checked is not the basic name (e.g.
-             * <tt>eth0</tt>) but the display name, which is more human readable.
+             * {@code eth0}), but the display name, which is more human readable.
              *
              * @param netIf the network interface
              * @return {@code true} if the interface has to be taken into the
@@ -70,15 +72,32 @@ public class Network {
                 final String name = netIf.getDisplayName();
 
                 return !matchesAny(name, deniedInterfaceNames)
-                    &&
-                    (allowedInterfaceNames.isEmpty() ||
-                        matchesAny(name, allowedInterfaceNames));
+                        &&
+                        (allowedInterfaceNames.isEmpty() ||
+                                matchesAny(name, allowedInterfaceNames));
             }
 
+            /**
+             * Add a regular expression to the set of regular expressions that may match the name of the interface names
+             * to be included into the calculation of the machine ID. If any of such regular expressions matches the
+             * name of the network interface name and none of the {@link #interfaceDenied(String) denied list} then the
+             * interface will be used in the calculation of the machine id.
+             *
+             * @param regex the regular expression that may match the name of the interface name
+             */
             public void interfaceAllowed(String regex) {
                 allowedInterfaceNames.add(regex);
             }
 
+            /**
+             * Add a regular expression to the set of regular expressions that may match the name of the interface names
+             * to be excluded from the calculation of the machine ID. If any of such regular expressions matches the
+             * name of the network interface name then the interface will NOT be used in the calculation of the machine
+             * id.
+             *
+             * @param regex the regular expression that may match the name of the interface name to exclude the
+             *              interface from the machine ID calculation
+             */
             public void interfaceDenied(String regex) {
                 deniedInterfaceNames.add(regex);
             }

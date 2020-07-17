@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class KeyPairWriter implements Closeable {
     private final OutputStream osPrivate;
     private final OutputStream osPublic;
-    AtomicBoolean closed = new AtomicBoolean(false);
+    final AtomicBoolean closed = new AtomicBoolean(false);
 
     /**
      * Create a target for license key pair writing specifying the outputs as streams.
@@ -78,8 +78,9 @@ public class KeyPairWriter implements Closeable {
                 osPublic.write(Base64.getEncoder().encode(pair.getPublic()));
                 close();
                 return;
+            default:
+                throw new IllegalArgumentException("Key format " + format + " is unknown.");
         }
-        throw new IllegalArgumentException("Key format " + format + " is unknown.");
     }
 
     /**
@@ -93,16 +94,12 @@ public class KeyPairWriter implements Closeable {
 
             IOException caught = null;
             try {
-                if (osPrivate != null) {
-                    osPrivate.close();
-                }
+                osPrivate.close();
             } catch (IOException e) {
                 // save the exception, try to close the other resource and throw it afterwards
                 caught = e;
             }
-            if (osPublic != null) {
-                osPublic.close();
-            }
+            osPublic.close();
             if (caught != null) throw caught;
         }
     }
