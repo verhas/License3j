@@ -3,8 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.verhas</groupId>
     <artifactId>license3j</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
     <packaging>jar</packaging>
+    <url>https:/github.com/verhas/license3j/tree/master</url>
 
     <name>License3j</name>
     <description>https://github.com/verhas/License3j</description>
@@ -42,7 +43,7 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpg-jdk15on</artifactId>
-            <version>1.57</version>
+            <version>1.60</version>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -68,6 +69,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -80,6 +82,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.1.1</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -88,6 +91,9 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <source>8</source>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
