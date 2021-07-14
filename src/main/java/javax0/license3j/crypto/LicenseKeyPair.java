@@ -13,7 +13,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
-import java.util.Objects;
 
 /**
  * A {@code LisenceKeyPair} contains the public and the private key. In some cases one of the keys may be null.
