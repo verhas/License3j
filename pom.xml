@@ -54,7 +54,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.6.2</version>
+            <version>5.7.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -65,77 +65,18 @@
         </dependency>
         <dependency>
             <groupId>com.javax0.geci</groupId>
-            <artifactId>javageci-core</artifactId>
-            <version>1.5.0</version>
+            <artifactId>javageci-testengine</artifactId>
+            <version>1.6.3</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
     <profiles>
         <profile>
             <!--
-            This profile is needed when the project is imported into IntelliJ IDEA. After the import the
-            IDE will signal all used Java features that are newer than Java 8. Most notably it will not allow
-            'var' for variable declaration. This is because the project is using Jabel to generate Java 8 compatible
-            byte-code while using Java9+ features.
-
-            After loading the project select this profile on the maven window under profiles (there should not be any
-            other profile) and all of a sudden the errors will disappear.
-
-            This profile does not use the Jabel annotation processor, and the same time it declares that the language
-            level is Java 11 with preview features enabled. The defined property 'idea.maven.embedder.version' is
-            suposed to switch on this profile automatically.
-            -->
-            <id>intellij-idea-only</id>
-            <activation>
-                <property>
-                    <name>idea.maven.embedder.version</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.7</version>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>3.8.1</version>
-                        <configuration>
-                            <release>13</release>
-                            <compilerArgs>
-                                <arg>--enable-preview</arg>
-                            </compilerArgs>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>3.0.0-M4</version>
-                        <configuration>
-                            <argLine>--enable-preview</argLine>
-                        </configuration>
-                        <dependencies>
-                            <dependency>
-                                <groupId>org.junit.platform</groupId>
-                                <artifactId>junit-platform-surefire-provider</artifactId>
-                                <version>1.3.2</version>
-                            </dependency>
-                            <dependency>
-                                <groupId>org.junit.jupiter</groupId>
-                                <artifactId>junit-jupiter-engine</artifactId>
-                                <version>5.6.0</version>
-                            </dependency>
-                        </dependencies>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <!--
             Use this profile to upload a new release to Maven Central
-            using mvn deploy -Possrh
+            using mvn -Prelease deploy
             -->
-            <id>ossrh</id>
+            <id>release</id>
             <build>
                 <plugins>
                     <plugin>
@@ -159,22 +100,19 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
+                <version>3.0.0-M4</version>
                 <dependencies>
-                    <dependency>
-                        <groupId>org.junit.platform</groupId>
-                        <artifactId>junit-platform-surefire-provider</artifactId>
-                        <version>1.3.2</version>
-                    </dependency>
                     <dependency>
                         <groupId>org.junit.jupiter</groupId>
                         <artifactId>junit-jupiter-engine</artifactId>
-                        <version>5.6.0</version>
+                        <version>5.7.0</version>
                     </dependency>
                 </dependencies>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>3.2.1</version>
                 <executions>
@@ -190,6 +128,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.2.0</version>
+                <configuration>
+                    <detectOfflineLinks>false</detectOfflineLinks>
+                </configuration>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -204,26 +145,20 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <encoding>UTF-8</encoding>
-                    <release>8</release>
-                    <annotationProcessorPaths>
-                        <annotationProcessorPath>
-                            <groupId>com.github.bsideup.jabel</groupId>
-                            <artifactId>jabel-javac-plugin</artifactId>
-                            <version>0.2.0</version>
-                        </annotationProcessorPath>
-                    </annotationProcessorPaths>
-                    <annotationProcessors>
-                        <annotationProcessor>com.github.bsideup.jabel.JabelJavacProcessor</annotationProcessor>
-                    </annotationProcessors>
+                    <release>11</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.8</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
 </project>

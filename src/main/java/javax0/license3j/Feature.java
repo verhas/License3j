@@ -13,6 +13,7 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.Objects;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -42,12 +43,12 @@ import java.util.function.Function;
  */
 public class Feature {
     private static final String[] DATE_FORMAT =
-            {"yyyy-MM-dd HH:mm:ss.SSS",
-                    "yyyy-MM-dd HH:mm:ss",
-                    "yyyy-MM-dd HH:mm",
-                    "yyyy-MM-dd HH",
-                    "yyyy-MM-dd"
-            };
+        {"yyyy-MM-dd HH:mm:ss.SSS",
+            "yyyy-MM-dd HH:mm:ss",
+            "yyyy-MM-dd HH:mm",
+            "yyyy-MM-dd HH",
+            "yyyy-MM-dd"
+        };
     private static final int VARIABLE_LENGTH = -1;
     private final String name;
     private final Type type;
@@ -188,8 +189,8 @@ public class Feature {
         final var nameLength = Integer.BYTES + nameBuffer.length;
         final var valueLength = type.fixedSize == VARIABLE_LENGTH ? Integer.BYTES + value.length : type.fixedSize;
         final var buffer = ByteBuffer.allocate(typeLength + nameLength + valueLength)
-                .putInt(type.serialized)
-                .putInt(nameBuffer.length);
+            .putInt(type.serialized)
+            .putInt(nameBuffer.length);
         if (type.fixedSize == VARIABLE_LENGTH) {
             buffer.putInt(value.length);
         }
@@ -197,14 +198,17 @@ public class Feature {
         return buffer.array();
     }
 
-    /* TEMPLATE
-    LOOP Type=Binary|String|Byte|Short|Int|Long|Float|Double|BigInteger|BigDecimal|Date|UUID
-    public boolean is{{Type}}() {
-        return type == Type.{{TYPE}};
+    /*!jamal
+    //<editor-fold id="is$Type() for $Type in (Binary,String,Byte,Short,Int,Long,Float,Double,BigInteger,BigDecimal,Date,UUID)">
+    {%!@for $Type in (Binary,String,Byte,Short,Int,Long,Float,Double,BigInteger,BigDecimal,Date,UUID)=
+    public boolean is$Type() {
+        return type == Type.{%@case:upper $Type%};
     }
-
+    %}
+    //</editor-fold>
      */
-    //<editor-fold id="iterate">
+    //<editor-fold id="is$Type() for $Type in (Binary,String,Byte,Short,Int,Long,Float,Double,BigInteger,BigDecimal,Date,UUID)">
+
     public boolean isBinary() {
         return type == Type.BINARY;
     }
@@ -254,28 +258,35 @@ public class Feature {
     }
 
     //</editor-fold>
+    // __END__
 
-    /* TEMPLATE
-    public {{rType}} get{{Type}}() {
-        if (type != Type.{{TYPE}}) {
-            throw new IllegalArgumentException("Feature is not {{TYPE}}");
+    /*!jamal
+    //<editor-fold id="get$Type for $Type in (Byte, Short, ... Date)">
+    {%@comment UUID and BigDecimal are handled separately, because they differ significantly%}\
+    {%!@for [separator="\\s*\n\\s*" skipEmpty]($Type,$return,$rType) in `LOOP`
+    Binary|value|byte[]
+    String|new String(value, StandardCharsets.UTF_8)|String
+    Byte|value[0]|byte
+    Short|ByteBuffer.wrap(value).getShort()|short
+    Int|ByteBuffer.wrap(value).getInt()|int
+    Long|ByteBuffer.wrap(value).getLong()|long
+    Float|ByteBuffer.wrap(value).getFloat()|float
+    Double|ByteBuffer.wrap(value).getDouble()|double
+    BigInteger|new BigInteger(value)|BigInteger
+    Date|new Date(ByteBuffer.wrap(value).getLong())|Date
+    `LOOP`=
+    public $rType get$Type() {
+        if (type != Type.{%@case:upper $Type%}) {
+            throw new IllegalArgumentException("Feature is not {%@case:upper $Type%}");
         }
-        return {{return}};
+        return $return;
     }
-
-    SEP1 ;
-    LOOP Type;return;rType=Binary;value;byte[]
-    LOOP Type;return;rType=String;new String(value, StandardCharsets.UTF_8);String
-    LOOP Type;return;rType=Byte;value[0];byte
-    LOOP Type;return;rType=Short;ByteBuffer.wrap(value).getShort();short
-    LOOP Type;return;rType=Int;ByteBuffer.wrap(value).getInt();int
-    LOOP Type;return;rType=Long;ByteBuffer.wrap(value).getLong();long
-    LOOP Type;return;rType=Float;ByteBuffer.wrap(value).getFloat();float
-    LOOP Type;return;rType=Double;ByteBuffer.wrap(value).getDouble();double
-    LOOP Type;return;rType=BigInteger;new BigInteger(value);BigInteger
-    LOOP Type;return;rType=Date;new Date(ByteBuffer.wrap(value).getLong());Date
+    %}
+    //</editor-fold>
      */
     //<editor-fold id="getters">
+
+
     public byte[] getBinary() {
         if (type != Type.BINARY) {
             throw new IllegalArgumentException("Feature is not BINARY");
@@ -347,7 +358,7 @@ public class Feature {
     }
 
     //</editor-fold>
-
+    // __END__
     public BigDecimal getBigDecimal() {
         if (type != Type.BIGDECIMAL) {
             throw new IllegalArgumentException("Feature is not BIGDECIMAL");
@@ -358,46 +369,74 @@ public class Feature {
         return new BigDecimal(new BigInteger(Arrays.copyOf(value, value.length - Integer.BYTES)), scale);
     }
 
-    public java.util.UUID getUUID() {
+    public UUID getUUID() {
         if (type != Type.UUID) {
             throw new IllegalArgumentException("Feature is not UUID");
         }
         var bb = ByteBuffer.wrap(value);
         final var ls = bb.getLong();
         final var ms = bb.getLong();
-        return new java.util.UUID(ms, ls);
+        return new UUID(ms, ls);
     }
 
-
-    private enum Type {
+    /*!jamal
+    private enum Type {{%@counter:define id=typeSerial%}\
+    {%!@for [separator="\\s*\n\\s*" skipEmpty]($type,$length,$cast,$stringer,$unstringer,$sep) in `LOOP`
+    binary|VARIABLE_LENGTH|byte[]|ba -> Base64.getEncoder().encodeToString((byte[]) ba)|enc -> Base64.getDecoder().decode(enc)|
+    string|VARIABLE_LENGTH|||s -> s|
+    byte|||b -> String.format("0x%02X", (Byte) b)|NumericParser.Byte::parse|
+    short||||NumericParser.Short::parse|
+    int|Integer.BYTES|Integer||NumericParser.Int::parse|
+    long||||NumericParser.Long::parse|
+    float||||Float::parseFloat|
+    double||||Double::parseDouble|
+    bigInteger|VARIABLE_LENGTH|||BigInteger::new|
+    bigDecimal|VARIABLE_LENGTH|||BigDecimal::new|
+    date|Long.BYTES||Feature::dateFormat|Feature::dateParse|
+    UUID|2 * Long.BYTES|java.util.UUID||java.util.UUID::fromString|;
+    `LOOP`=
+        {%@case:upper $type%}({%typeSerial%}, {%#if/$length/$length/{%@case:cap $type%}.BYTES%},
+                Feature::get{%@case:cap $type%},
+                (name, value) -> Create.{%@replace /$type/UUID/uuid%}Feature(name, ({%#if/$cast/$cast/{%@case:cap $type%}%}) value),
+                {%#if/$stringer/$stringer/Object::toString%}, $unstringer){%@if/$sep/$sep/,%}
+%}
+     */
+    private enum Type {    
         BINARY(1, VARIABLE_LENGTH,
                 Feature::getBinary,
                 (name, value) -> Create.binaryFeature(name, (byte[]) value),
                 ba -> Base64.getEncoder().encodeToString((byte[]) ba), enc -> Base64.getDecoder().decode(enc)),
+
         STRING(2, VARIABLE_LENGTH,
                 Feature::getString,
                 (name, value) -> Create.stringFeature(name, (String) value),
                 Object::toString, s -> s),
+
         BYTE(3, Byte.BYTES,
                 Feature::getByte,
                 (name, value) -> Create.byteFeature(name, (Byte) value),
                 b -> String.format("0x%02X", (Byte) b), NumericParser.Byte::parse),
+
         SHORT(4, Short.BYTES,
                 Feature::getShort,
                 (name, value) -> Create.shortFeature(name, (Short) value),
                 Object::toString, NumericParser.Short::parse),
+
         INT(5, Integer.BYTES,
                 Feature::getInt,
                 (name, value) -> Create.intFeature(name, (Integer) value),
                 Object::toString, NumericParser.Int::parse),
+
         LONG(6, Long.BYTES,
                 Feature::getLong,
                 (name, value) -> Create.longFeature(name, (Long) value),
                 Object::toString, NumericParser.Long::parse),
+
         FLOAT(7, Float.BYTES,
                 Feature::getFloat,
                 (name, value) -> Create.floatFeature(name, (Float) value),
                 Object::toString, Float::parseFloat),
+
         DOUBLE(8, Double.BYTES,
                 Feature::getDouble,
                 (name, value) -> Create.doubleFeature(name, (Double) value),
@@ -407,6 +446,7 @@ public class Feature {
                 Feature::getBigInteger,
                 (name, value) -> Create.bigIntegerFeature(name, (BigInteger) value),
                 Object::toString, BigInteger::new),
+
         BIGDECIMAL(10, VARIABLE_LENGTH,
                 Feature::getBigDecimal,
                 (name, value) -> Create.bigDecimalFeature(name, (BigDecimal) value),
@@ -422,10 +462,11 @@ public class Feature {
                 (name, value) -> Create.uuidFeature(name, (java.util.UUID) value),
                 Object::toString, java.util.UUID::fromString);
 
+        //__END__
         /**
          * Every type has a serialized value that is used in the serialized format. This value is fixed and does not
          * depend on the ordinal value of the enum. This is to keep the serialized format backward compatible if ever
-         * there is a new type inserted or an old type deleted from this enum.
+         * there is a new type inserted, or an old type deleted from this enum.
          */
         final int serialized;
         /**
@@ -475,34 +516,36 @@ public class Feature {
         private Create() {
         }
 
-        /* TEMPLATE
+        /*!jamal
+        //<editor-fold id="xxFeatures">
+        {%!@for [separator="\\s*\n\\s*" skipEmpty] ($type,$vType,$value) in `LOOP`
+Binary|byte[]|value
+String|String|value.getBytes(StandardCharsets.UTF_8)
+Byte|Byte|new byte[]{value}
+Short|Short|ByteBuffer.allocate(Short.BYTES).putShort(value).array()
+Int|Integer|ByteBuffer.allocate(Integer.BYTES).putInt(value).array()
+Long|Long|ByteBuffer.allocate(Long.BYTES).putLong(value).array()
+Float|Float|ByteBuffer.allocate(Float.BYTES).putFloat(value).array()
+Double|Double|ByteBuffer.allocate(Double.BYTES).putDouble(value).array()
+BigInteger|BigInteger|value.toByteArray()
+uuid|java.util.UUID|ByteBuffer.allocate(2 * Long.BYTES).putLong(value.getLeastSignificantBits()).putLong(value.getMostSignificantBits()).array()
+Date|Date|ByteBuffer.allocate(Long.BYTES).putLong(value.getTime()).array()
+        `LOOP`=
         /**
-         * Create a new {{type}} feature.
+         * Create a new {%@case:decap $type%} feature.
          * @param name the name of the new feature
          * @param value the value for the new feature. {@code null} value will throw an exception
          * @return the newly created feature object
-        ESCAPE
-         */
-        // SKIP
-        /*
-        public static Feature {{type}}Feature(String name, {{vType}} value) {
+         *{%@comment%}/
+        public static Feature {%@case:decap $type%}Feature(String name, $vType value) {
             Objects.requireNonNull(value);
-            return new Feature(name, Type.{{TYPE}}, {{value}});
+            return new Feature(name, Type.{%@case:upper $type%}, $value);
         }
-        
-        SEP1 ;
-        LOOP Type;vType;value=Binary;byte[];value|String;String;value.getBytes(StandardCharsets.UTF_8)
-        LOOP Type;vType;value=Byte;Byte;new byte[]{value}
-        LOOP Type;vType;value=Short;Short;ByteBuffer.allocate(Short.BYTES).putShort(value).array()
-        LOOP Type;vType;value=Int;Integer;ByteBuffer.allocate(Integer.BYTES).putInt(value).array()
-        LOOP Type;vType;value=Long;Long;ByteBuffer.allocate(Long.BYTES).putLong(value).array()
-        LOOP Type;vType;value=Float;Float;ByteBuffer.allocate(Float.BYTES).putFloat(value).array()
-        LOOP Type;vType;value=Double;Double;ByteBuffer.allocate(Double.BYTES).putDouble(value).array()
-        LOOP Type;vType;value=BigInteger;BigInteger;value.toByteArray()
-        LOOP Type;vType;value=uuid;java.util.UUID;ByteBuffer.allocate(2 * Long.BYTES).putLong(value.getLeastSignificantBits()).putLong(value.getMostSignificantBits()).array()
-        LOOP Type;vType;value=Date;Date;ByteBuffer.allocate(Long.BYTES).putLong(value.getTime()).array()
+%}
+        //</editor-fold>
          */
         //<editor-fold id="xxFeatures">
+
         /**
          * Create a new binary feature.
          * @param name the name of the new feature
@@ -625,9 +668,12 @@ public class Feature {
         }
 
         //</editor-fold>
+        //__END__
+
         /**
          * Create a new BigDecimal feature.
-         * @param name the name of the new feature
+         *
+         * @param name  the name of the new feature
          * @param value the value for the new feature. {@code null} value will throw an exception
          * @return the newly created feature object
          */
@@ -635,10 +681,11 @@ public class Feature {
             Objects.requireNonNull(value);
             byte[] b = value.unscaledValue().toByteArray();
             return new Feature(name, Type.BIGDECIMAL, ByteBuffer.allocate(Integer.BYTES + b.length)
-                    .put(b)
-                    .putInt(value.scale())
-                    .array());
+                .put(b)
+                .putInt(value.scale())
+                .array());
         }
+
         /**
          * Create a feature from a string representation of the feature. The feature has to have the following format
          * <pre>
@@ -702,7 +749,7 @@ public class Feature {
 
         public static void throwBinaryWayTooShort(int len) {
             throw new IllegalArgumentException("Cannot load feature from a byte array that has "
-                    + len + " bytes which is < " + (2 * Integer.BYTES));
+                + len + " bytes which is < " + (2 * Integer.BYTES));
         }
 
         public static void throwBinaryTooShort(int len) {
@@ -711,7 +758,7 @@ public class Feature {
 
         public static void throwBinaryTooLong(int len, int extra) {
             throw new IllegalArgumentException("Cannot load feature from a byte array that has "
-                    + len + " bytes which is " + extra + " bytes too long");
+                + len + " bytes which is " + extra + " bytes too long");
         }
 
         public static void throwBinaryTooLong(String s) {
@@ -728,4 +775,5 @@ public class Feature {
         }
     }
 }
+
 

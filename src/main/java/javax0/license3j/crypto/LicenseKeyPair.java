@@ -13,6 +13,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * A {@code LisenceKeyPair} contains the public and the private key. In some cases one of the keys may be null.
@@ -53,27 +54,27 @@ public class LicenseKeyPair {
         return pair;
     }
 
-    /* TEMPLATE
+    /*!jamal
+    //<editor-fold id="get$Type for $Type in (Public,Private)">
+    {%!@for ($Type) in (Public,Private)=
     /**
-     * Get the byte representation of the {{type}} key as it is returned
+     * Get the byte representation of the {%@case:lower $Type%} key as it is returned
      * by the underlying security library. This is NOT the byte array
      * that contains the algorithm at the start. This is the key in raw
      * format.
      *
      * @return the key as bytes
-     ESCAPE
-     */
-    //SKIP
-    /*
-    public byte[] get{{Type}}() {
-        keyNotNull(pair.get{{Type}}());
-        final Key key = pair.get{{Type}}();
+     *{%@comment%}/
+    public byte[] get$Type() {
+        keyNotNull(pair.get$Type());
+        final var key = pair.get$Type();
         return getKeyBytes(key);
     }
-
-    LOOP Type=Public|Private
+    %}
+    //</editor-fold>
     */
-    //<editor-fold id="iterate">
+    //<editor-fold id="get$Type for $Type in (Public,Private)">
+
     /**
      * Get the byte representation of the public key as it is returned
      * by the underlying security library. This is NOT the byte array
@@ -84,7 +85,7 @@ public class LicenseKeyPair {
      */
     public byte[] getPublic() {
         keyNotNull(pair.getPublic());
-        final Key key = pair.getPublic();
+        final var key = pair.getPublic();
         return getKeyBytes(key);
     }
 
@@ -98,12 +99,12 @@ public class LicenseKeyPair {
      */
     public byte[] getPrivate() {
         keyNotNull(pair.getPrivate());
-        final Key key = pair.getPrivate();
+        final var key = pair.getPrivate();
         return getKeyBytes(key);
     }
 
     //</editor-fold>
-
+    //__END__
 
     private byte[] getKeyBytes(final Key key) {
         final var algorithm = cipherTransformation.getBytes(StandardCharsets.UTF_8);
@@ -251,3 +252,7 @@ public class LicenseKeyPair {
         }
     }
 }
+
+
+
+
