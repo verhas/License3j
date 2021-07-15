@@ -1,13 +1,50 @@
 package javax0.license3j.hardware;
 
-import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Network {
+    public static class NetworkInterface {
+        private final java.net.NetworkInterface ni;
+
+        private NetworkInterface(java.net.NetworkInterface ni) {
+            this.ni = ni;
+        }
+
+        public String getName() {
+            return ni.getName();
+        }
+
+        public byte[] getHardwareAddress() throws SocketException {
+            return ni.getHardwareAddress();
+        }
+
+        public static Enumeration<NetworkInterface> getNetworkInterfaces()
+            throws SocketException {
+            return Collections.enumeration(Collections.list(java.net.NetworkInterface.getNetworkInterfaces()).stream().map(ni -> new NetworkInterface(ni)).collect(Collectors.toList()));
+        }
+
+        public String getDisplayName() {
+            return ni.getDisplayName();
+        }
+
+        public boolean isLoopback() throws SocketException {
+            return ni.isLoopback();
+        }
+
+        public boolean isVirtual() throws SocketException {
+            return ni.isVirtual();
+        }
+
+        public boolean isPointToPoint() throws SocketException {
+            return ni.isPointToPoint();
+        }
+    }
 
     public static class Interface {
         public static class Data {
@@ -29,6 +66,7 @@ public class Network {
                     .map(Network.Interface.Data::new);
             }
         }
+
         public static class Selector {
 
             private final Set<String> allowedInterfaceNames = new HashSet<>();
@@ -72,9 +110,9 @@ public class Network {
                 final String name = netIf.getDisplayName();
 
                 return !matchesAny(name, deniedInterfaceNames)
-                        &&
-                        (allowedInterfaceNames.isEmpty() ||
-                                matchesAny(name, allowedInterfaceNames));
+                    &&
+                    (allowedInterfaceNames.isEmpty() ||
+                        matchesAny(name, allowedInterfaceNames));
             }
 
             /**

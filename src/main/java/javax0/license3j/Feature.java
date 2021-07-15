@@ -284,8 +284,7 @@ public class Feature {
     %}
     //</editor-fold>
      */
-    //<editor-fold id="getters">
-
+    //<editor-fold id="get$Type for $Type in (Byte, Short, ... Date)">
 
     public byte[] getBinary() {
         if (type != Type.BINARY) {
@@ -775,5 +774,6 @@ Date|Date|ByteBuffer.allocate(Long.BYTES).putLong(value.getTime()).array()
         }
     }
 }
+
 
 

@@ -103,6 +103,15 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M4</version>
+                <configuration>
+                    <argLine>
+                        --add-opens com.javax0.license3j/javax0.license3j=ALL-UNNAMED
+                        --add-opens com.javax0.license3j/javax0.license3j.crypto=ALL-UNNAMED
+                        --add-opens com.javax0.license3j/javax0.license3j.io=ALL-UNNAMED
+                        --add-opens com.javax0.license3j/javax0.license3j.parsers=ALL-UNNAMED
+                        --add-opens com.javax0.license3j/javax0.license3j.hardware=ALL-UNNAMED
+                    </argLine>
+                </configuration>
                 <dependencies>
                     <dependency>
                         <groupId>org.junit.jupiter</groupId>

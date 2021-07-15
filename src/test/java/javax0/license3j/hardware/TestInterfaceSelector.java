@@ -2,9 +2,8 @@ package javax0.license3j.hardware;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.NetworkInterface;
 
@@ -28,18 +27,10 @@ public class TestInterfaceSelector {
         return new IfTest(ifName);
     }
 
-    private static NetworkInterface mockInterface(final String name)
-            throws NoSuchFieldException,
-            IllegalAccessException,
-            InvocationTargetException,
-            InstantiationException, NoSuchMethodException {
-        Constructor<NetworkInterface> constructor = NetworkInterface.class.getDeclaredConstructor();
-        constructor.setAccessible(true);
-        NetworkInterface ni = constructor.newInstance();
-        Field field = NetworkInterface.class.getDeclaredField("displayName");
-        field.setAccessible(true);
-        field.set(ni, name);
-        return ni;
+    private static Network.NetworkInterface mockInterface(final String name) {
+        final var miockNetworkInterface = Mockito.mock(Network.NetworkInterface.class);
+        Mockito.when(miockNetworkInterface.getDisplayName()).thenReturn(name);
+        return miockNetworkInterface;
     }
 
     @Test
@@ -85,7 +76,7 @@ public class TestInterfaceSelector {
     }
 
     private static class IfTest {
-        NetworkInterface ni;
+        Network.NetworkInterface ni;
         Network.Interface.Selector sut;
 
         IfTest(String name) throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchFieldException, NoSuchMethodException {
