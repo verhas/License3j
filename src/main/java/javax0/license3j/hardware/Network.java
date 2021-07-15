@@ -16,33 +16,51 @@ public class Network {
             this.ni = ni;
         }
 
-        public String getName() {
-            return ni.getName();
-        }
+        /*!jamal
+        {%!@for [separator="\\s*\n\\s*" skipEmpty]($rettype,$name,$exceptions) in
+        `LOOP`
+        String|getName|
+        byte[]|getHardwareAddress|SocketException
+        String|getDisplayName|
+        boolean|isLoopback|SocketException
+        boolean|isVirtual|SocketException
+        boolean|isPointToPoint|SocketException
+        `LOOP`=
+        public $rettype $name(){%#if/$exceptions/ throws $exceptions/%}{
+            return ni.$name();
+            }
+        %}
+         */
 
-        public byte[] getHardwareAddress() throws SocketException {
+        public String getName(){
+            return ni.getName();
+            }
+
+        public byte[] getHardwareAddress() throws SocketException{
             return ni.getHardwareAddress();
-        }
+            }
+
+        public String getDisplayName(){
+            return ni.getDisplayName();
+            }
+
+        public boolean isLoopback() throws SocketException{
+            return ni.isLoopback();
+            }
+
+        public boolean isVirtual() throws SocketException{
+            return ni.isVirtual();
+            }
+
+        public boolean isPointToPoint() throws SocketException{
+            return ni.isPointToPoint();
+            }
+
+        //__END__
 
         public static Enumeration<NetworkInterface> getNetworkInterfaces()
             throws SocketException {
             return Collections.enumeration(Collections.list(java.net.NetworkInterface.getNetworkInterfaces()).stream().map(ni -> new NetworkInterface(ni)).collect(Collectors.toList()));
-        }
-
-        public String getDisplayName() {
-            return ni.getDisplayName();
-        }
-
-        public boolean isLoopback() throws SocketException {
-            return ni.isLoopback();
-        }
-
-        public boolean isVirtual() throws SocketException {
-            return ni.isVirtual();
-        }
-
-        public boolean isPointToPoint() throws SocketException {
-            return ni.isPointToPoint();
         }
     }
 
@@ -167,3 +185,5 @@ public class Network {
     }
 
 }
+
+

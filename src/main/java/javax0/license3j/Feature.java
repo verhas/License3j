@@ -506,7 +506,7 @@ public class Feature {
          * @return a '{@code :}' character and the name of the type or empty string in case the type is {@code STRING}.
          */
         public String colonedToString() {
-            return this == Type.STRING ? "" : ":" + toString();
+            return this == Type.STRING ? "" : ":" + this;
         }
 
     }
@@ -774,6 +774,9 @@ Date|Date|ByteBuffer.allocate(Long.BYTES).putLong(value.getTime()).array()
         }
     }
 }
+
+
+
 
 
 
