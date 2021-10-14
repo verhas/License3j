@@ -20,7 +20,7 @@ public enum CloudProvider {
      */
     Azure {
         @Override
-        String getInstanceId() {
+        public String getInstanceId() {
             return instanceIdFor("http://169.254.169.254/metadata/instance/compute/vmId?api-version=2021-02-01&format=text", "Metadata", "true");
         }
     },
@@ -33,7 +33,7 @@ public enum CloudProvider {
      */
     AWS {
         @Override
-        String getInstanceId() {
+        public String getInstanceId() {
             return instanceIdFor("http://169.254.169.254/latest/meta-data/instance-id", "Metadata", "true");
         }
     },
@@ -47,13 +47,13 @@ public enum CloudProvider {
      */
     Google {
         @Override
-        String getInstanceId() {
+        public String getInstanceId() {
             return instanceIdFor("http://169.254.169.254/computeMetadata/v1/instance?alt=text", "Metadata-Flavor", "Google");
         }
     };
 
 
-    abstract String getInstanceId();
+    abstract public String getInstanceId();
 
 
     private static String instanceIdFor(String instanceIdUrl, String... headers) {
