@@ -47,6 +47,11 @@ class HashCalculator {
         update(md5, architecture);
     }
 
+    void updateWithCloudInstanceId(final MessageDigest md5, final CloudProvider cloudProvider) {
+        final String instanceId = cloudProvider.getInstanceId();
+        update(md5, instanceId);
+    }
+
     private void update(final MessageDigest md5, final String input) {
         final byte[] bytes = input.getBytes(StandardCharsets.UTF_8);
         md5.update(bytes, 0, bytes.length);

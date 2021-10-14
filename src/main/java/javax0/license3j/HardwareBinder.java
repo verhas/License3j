@@ -1,5 +1,6 @@
 package javax0.license3j;
 
+import javax0.license3j.hardware.CloudProvider;
 import javax0.license3j.hardware.Network;
 import javax0.license3j.hardware.UUIDCalculator;
 
@@ -31,6 +32,7 @@ public class HardwareBinder {
     private boolean useHostName = true;
     private boolean useNetwork = true;
     private boolean useArchitecture = true;
+    private CloudProvider cloudProvider;
 
     /**
      * A very simple main that prints out the machine UUID to the standard output.
@@ -84,6 +86,18 @@ public class HardwareBinder {
     }
 
     /**
+     * Add a cloud provider if you want to take into account the unique and immutable instance/machine id reported by teh provider.
+     * By default no cloud provider is taken into account.
+     *
+     * @param cloudProvider the desired cloud provider.
+     * @return the HardwareBinder object so method calls can be chained.
+     */
+    public HardwareBinder forCloudProvider(CloudProvider cloudProvider) {
+        this.cloudProvider = cloudProvider;
+        return this;
+    }
+
+    /**
      * Add a regular expression to the set of the regular expressions that are
      * checked against the display name of the network interface cards. If any
      * of the regular expressions are matched against the display name then the
@@ -103,6 +117,7 @@ public class HardwareBinder {
 
 
     public class Ignore {
+
         /**
          * When calculating the machine UUID the host name is also taken into
          * account by default. If you want the method to ignore the machine name
@@ -166,7 +181,7 @@ public class HardwareBinder {
      */
     public UUID getMachineId() throws NoSuchAlgorithmException,
         SocketException, UnknownHostException {
-        return calculator.getMachineId(useNetwork, useHostName, useArchitecture);
+        return calculator.getMachineId(cloudProvider, useNetwork, useHostName, useArchitecture);
     }
 
     /**
@@ -179,7 +194,7 @@ public class HardwareBinder {
      */
     public String getMachineIdString() throws NoSuchAlgorithmException,
         SocketException, UnknownHostException {
-        return calculator.getMachineIdString(useNetwork, useHostName, useArchitecture);
+        return calculator.getMachineIdString(cloudProvider, useNetwork, useHostName, useArchitecture);
     }
 
     /**
@@ -194,7 +209,7 @@ public class HardwareBinder {
     public boolean assertUUID(final UUID uuid)
         throws NoSuchAlgorithmException, SocketException,
         UnknownHostException {
-        return calculator.assertUUID(uuid, useNetwork, useHostName, useArchitecture);
+        return calculator.assertUUID(uuid, cloudProvider, useNetwork, useHostName, useArchitecture);
     }
 
     /**
@@ -204,7 +219,7 @@ public class HardwareBinder {
      * @return true if the argument passed is the uuid of the current machine.
      */
     public boolean assertUUID(final String uuid) {
-        return calculator.assertUUID(uuid, useNetwork, useHostName, useArchitecture);
+        return calculator.assertUUID(uuid, cloudProvider, useNetwork, useHostName, useArchitecture);
     }
 
 }
