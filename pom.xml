@@ -38,6 +38,10 @@
             <name>Robert Siebeck</name>
             <email>robert@siebeck.org</email>
         </developer>
+        <developer>
+            <name>Hristo I Stoyanov</name>
+            <url>https://github.com/hrstoyanov</url>
+        </developer>
     </developers>
     <scm>
         <connection>scm:git:git@github.com:verhas/License3j.git</connection>
