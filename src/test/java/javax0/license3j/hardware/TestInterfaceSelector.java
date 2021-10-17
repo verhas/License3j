@@ -28,9 +28,9 @@ public class TestInterfaceSelector {
     }
 
     private static Network.NetworkInterface mockInterface(final String name) {
-        final var miockNetworkInterface = Mockito.mock(Network.NetworkInterface.class);
-        Mockito.when(miockNetworkInterface.getDisplayName()).thenReturn(name);
-        return miockNetworkInterface;
+        final var mockNetworkInterface = Mockito.mock(Network.NetworkInterface.class);
+        Mockito.when(mockNetworkInterface.getDisplayName()).thenReturn(name);
+        return mockNetworkInterface;
     }
 
     @Test
