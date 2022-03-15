@@ -11,7 +11,7 @@ public class TestLicenseReader {
     @Test
     @DisplayName("Can read license from text file")
     void canReadLicenseFromTextFile() throws IOException {
-        try (final var sut = new LicenseReader(this.getClass().getResource(TestLicenseWriter.FILE_TEXT).getFile())) {
+        try (final var sut = new LicenseReader(this.getClass().getResource(TestLicenseWriter.FILE_TEXT).getFile().replaceAll("%20"," "))) {
             final var lic = sut.read(IOFormat.STRING);
             Assertions.assertEquals("string feature", lic.get("simple").getString());
         }
@@ -20,7 +20,7 @@ public class TestLicenseReader {
     @Test
     @DisplayName("Can read license from binary file")
     void canReadLicenseFromBinaryFile() throws IOException {
-        try (final var sut = new LicenseReader(this.getClass().getResource(TestLicenseWriter.FILE_BINARY).getFile())) {
+        try (final var sut = new LicenseReader(this.getClass().getResource(TestLicenseWriter.FILE_BINARY).getFile().replaceAll("%20"," "))) {
             final var lic = sut.read(IOFormat.BINARY);
             Assertions.assertEquals("string feature", lic.get("simple").getString());
         }
@@ -29,7 +29,7 @@ public class TestLicenseReader {
     @Test
     @DisplayName("Can read license from binary file using default read()")
     void canReadDefaultLicenseFromBinaryFile() throws IOException {
-        try (final var sut = new LicenseReader(this.getClass().getResource(TestLicenseWriter.FILE_BINARY).getFile())) {
+        try (final var sut = new LicenseReader(this.getClass().getResource(TestLicenseWriter.FILE_BINARY).getFile().replaceAll("%20"," "))) {
             final var lic = sut.read();
             Assertions.assertEquals("string feature", lic.get("simple").getString());
         }
@@ -38,7 +38,7 @@ public class TestLicenseReader {
     @Test
     @DisplayName("Can read license from base64 file")
     void canReadLicenseFromBase64File() throws IOException {
-        try (final var sut = new LicenseReader(this.getClass().getResource(TestLicenseWriter.FILE_BASE64).getFile())) {
+        try (final var sut = new LicenseReader(this.getClass().getResource(TestLicenseWriter.FILE_BASE64).getFile().replaceAll("%20"," "))) {
             final var lic = sut.read(IOFormat.BASE64);
             Assertions.assertEquals("string feature", lic.get("simple").getString());
         }
@@ -48,6 +48,6 @@ public class TestLicenseReader {
     @DisplayName("Avoids reading too long file")
     void avoidTooLongFile() {
         Assertions.assertThrows(IllegalArgumentException.class,
-            () -> new LicenseReader(this.getClass().getResource(TestLicenseWriter.FILE_TEXT).getFile(), 1));
+            () -> new LicenseReader(this.getClass().getResource(TestLicenseWriter.FILE_TEXT).getFile().replaceAll("%20"," "), 1));
     }
 }

@@ -70,7 +70,7 @@
         <dependency>
             <groupId>com.javax0.geci</groupId>
             <artifactId>javageci-testengine</artifactId>
-            <version>1.6.6</version>
+            <version>1.6.5</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
