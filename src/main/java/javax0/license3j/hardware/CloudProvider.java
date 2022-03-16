@@ -15,7 +15,6 @@ import java.util.Objects;
  * Some cloud providers implement a GET rest endpoint (based on a dedicated, non-routable ip address)
  * that can report back the instance id easily. In some, cases such a rest endpoint is accessible with special tokens only.
  * In other cases, specific OS specific commands exists to obtain the instance id.
- * </p>
  */
 public enum CloudProvider {
 
@@ -65,7 +64,6 @@ public enum CloudProvider {
      * <p>
      * Refer to <a href="https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/gettingmetadata.htm#metadata-keys">Oracle Cloud docs</a>
      * Refer to <a href="https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/gettingmetadata.htm#metadata-keys">Oracle Cloud metadata keys</a>
-     * <p/>
      */
     Oracle {
         @Override
@@ -78,7 +76,6 @@ public enum CloudProvider {
      * Obtain an Digital Ocean instance id.
      * <p>
      * Refer to <a href="https://www.alibabacloud.com/help/doc-detail/108460.htm?spm=a2c63.p38356.b99.196.4e3b3828rFutRB">How to Access Droplet Metadata</a>
-     * </p>
      */
     DigitalOcean {
         @Override
@@ -91,12 +88,25 @@ public enum CloudProvider {
      * Obtain Alibaba cloud instance id.
      * <p>
      * Refer to <a href="https://www.alibabacloud.com/help/doc-detail/108460.htm?spm=a2c63.p38356.b99.196.4e3b3828rFutRB">View instance metadata</a>
-     * </p>
      */
     AliBaba {
         @Override
         public String getInstanceId() {
             return instanceIdFor("http://100.100.100.200/latest/meta-data/instance-id", (String[]) null);
+        }
+    },
+
+    /**
+     * Obtain cloud instance id from a custom rest endpoint. Before using this value call the
+     * {@link #setInstanceIdUrl(String)} and optionally the {@link #setHeaders(String...)} methods
+     * setting the url and the headers required by the specific end-point.
+     * <p>
+     * Note that this way you can only handle only one proprietary cloud provider in a program.
+     */
+    Proprietary {
+        @Override
+        public String getInstanceId() {
+            return instanceIdFor(instanceIdUrl, (String[]) null);
         }
     };
 
@@ -106,6 +116,17 @@ public enum CloudProvider {
      * @return the instance id.
      */
     abstract public String getInstanceId();
+
+    private static String instanceIdUrl;
+    private static String[] headers;
+
+    public static void setInstanceIdUrl(final String instanceIdUrl) {
+        CloudProvider.instanceIdUrl = instanceIdUrl;
+    }
+
+    public static void setHeaders(final String... headers) {
+        CloudProvider.headers = headers;
+    }
 
     /**
      * Get the instance id.
