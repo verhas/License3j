@@ -201,6 +201,9 @@ public class Feature {
     /*!jamal
     //<editor-fold id="is$Type() for $Type in (Binary,String,Byte,Short,Int,Long,Float,Double,BigInteger,BigDecimal,Date,UUID)">
     {%!@for $Type in (Binary,String,Byte,Short,Int,Long,Float,Double,BigInteger,BigDecimal,Date,UUID)=
+    /**
+     * @return {@code true} if the feature is of type $Type
+     *{%@ident%}/
     public boolean is$Type() {
         return type == Type.{%@case:upper $Type%};
     }
@@ -209,50 +212,86 @@ public class Feature {
      */
     //<editor-fold id="is$Type() for $Type in (Binary,String,Byte,Short,Int,Long,Float,Double,BigInteger,BigDecimal,Date,UUID)">
 
+    /**
+     * @return {@code true} if the feature is of type Binary
+     */
     public boolean isBinary() {
         return type == Type.BINARY;
     }
 
+    /**
+     * @return {@code true} if the feature is of type String
+     */
     public boolean isString() {
         return type == Type.STRING;
     }
 
+    /**
+     * @return {@code true} if the feature is of type Byte
+     */
     public boolean isByte() {
         return type == Type.BYTE;
     }
 
+    /**
+     * @return {@code true} if the feature is of type Short
+     */
     public boolean isShort() {
         return type == Type.SHORT;
     }
 
+    /**
+     * @return {@code true} if the feature is of type Int
+     */
     public boolean isInt() {
         return type == Type.INT;
     }
 
+    /**
+     * @return {@code true} if the feature is of type Long
+     */
     public boolean isLong() {
         return type == Type.LONG;
     }
 
+    /**
+     * @return {@code true} if the feature is of type Float
+     */
     public boolean isFloat() {
         return type == Type.FLOAT;
     }
 
+    /**
+     * @return {@code true} if the feature is of type Double
+     */
     public boolean isDouble() {
         return type == Type.DOUBLE;
     }
 
+    /**
+     * @return {@code true} if the feature is of type BigInteger
+     */
     public boolean isBigInteger() {
         return type == Type.BIGINTEGER;
     }
 
+    /**
+     * @return {@code true} if the feature is of type BigDecimal
+     */
     public boolean isBigDecimal() {
         return type == Type.BIGDECIMAL;
     }
 
+    /**
+     * @return {@code true} if the feature is of type Date
+     */
     public boolean isDate() {
         return type == Type.DATE;
     }
 
+    /**
+     * @return {@code true} if the feature is of type UUID
+     */
     public boolean isUUID() {
         return type == Type.UUID;
     }
@@ -774,9 +813,3 @@ Date|Date|ByteBuffer.allocate(Long.BYTES).putLong(value.getTime()).array()
         }
     }
 }
-
-
-
-
-
-
