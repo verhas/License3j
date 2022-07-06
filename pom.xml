@@ -1,15 +1,14 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.javax0.license3j</groupId>
     <artifactId>license3j</artifactId>
     <version>3.2.0</version>
-    <packaging>jar</packaging>
-
+    <packaging>jar
+</packaging>
     <name>License3j</name>
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <sourceEncoding>UTF-8</sourceEncoding>
     </properties>
     <distributionManagement>
         <snapshotRepository>
@@ -40,46 +39,48 @@
         </developer>
         <developer>
             <name>Hristo I Stoyanov</name>
-            <url>https://github.com/hrstoyanov</url>
+            <url>https://github.com/hrstoyanov
+</url>
         </developer>
     </developers>
     <scm>
         <connection>scm:git:git@github.com:verhas/License3j.git</connection>
         <developerConnection>scm:git:ssh://github.com/verhas/License3j.git</developerConnection>
-        <url>https://github.com/verhas/License3j/tree/master</url>
+        <url>https://github.com/verhas/License3j/tree/master
+</url>
     </scm>
     <dependencies>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>4.4.0</version>
-            <scope>test</scope>
+            <scope>test
+</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>5.8.2</version>
-            <scope>test</scope>
+            <scope>test
+</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>5.8.2</version>
-            <scope>test</scope>
+            <scope>test
+</scope>
         </dependency>
         <dependency>
             <groupId>com.javax0.geci</groupId>
             <artifactId>javageci-testengine</artifactId>
-            <version>1.6.6</version>
-            <scope>test</scope>
+            <version>1.6.5</version>
+            <scope>test
+</scope>
         </dependency>
     </dependencies>
     <profiles>
         <profile>
-            <!--
-            Use this profile to upload a new release to Maven Central
-            using mvn -Prelease deploy
-            -->
             <id>release</id>
             <build>
                 <plugins>
@@ -92,7 +93,8 @@
                                 <id>sign-artifacts</id>
                                 <phase>verify</phase>
                                 <goals>
-                                    <goal>sign</goal>
+                                    <goal>sign
+</goal>
                                 </goals>
                             </execution>
                         </executions>
@@ -120,7 +122,8 @@
                     <dependency>
                         <groupId>org.junit.jupiter</groupId>
                         <artifactId>junit-jupiter-engine</artifactId>
-                        <version>5.7.0</version>
+                        <version>5.7.0
+</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -132,7 +135,8 @@
                     <execution>
                         <id>attach-sources</id>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>jar
+</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -148,7 +152,8 @@
                     <execution>
                         <id>attach-javadocs</id>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>jar
+</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -158,7 +163,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <release>11</release>
+                    <release>11
+</release>
                 </configuration>
             </plugin>
             <plugin>
