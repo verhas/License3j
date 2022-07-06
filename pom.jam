@@ -1,0 +1,124 @@
+{#thinXml{@xmlFormat}
+project  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    modelVersion>4.0.0
+    groupId>com.javax0.license3j
+    artifactId>license3j
+    version>3.2.0
+    packaging>jar
+
+    name>License3j
+    properties>sourceEncoding>UTF-8
+    distributionManagement>
+        snapshotRepository>
+            id>ossrh
+            url>https://oss.sonatype.org/content/repositories/snapshots
+        repository>
+            id>ossrh
+            url>https://oss.sonatype.org/service/local/staging/deploy/maven2/
+    description>Free license manager
+    url>https://github.com/verhas/License3j/tree/master
+    licenses>license>
+            name>The Apache License, Version 2.0
+            url>http://www.apache.org/licenses/LICENSE-2.0.txt
+    developers>
+        developer>
+            name>Peter Verhas
+            email>peter@verhas.com
+        developer>
+            name>Robert Siebeck
+            email>robert@siebeck.org
+        developer>
+            name>Hristo I Stoyanov
+            url>https://github.com/hrstoyanov
+            
+    scm>
+        connection>scm:git:git@github.com:verhas/License3j.git
+        developerConnection>scm:git:ssh://github.com/verhas/License3j.git
+        url>https://github.com/verhas/License3j/tree/master
+        
+    dependencies>
+        dependency>
+            groupId>org.mockito
+            artifactId>mockito-core
+            version>4.4.0
+            scope>test
+        
+        dependency>
+            groupId>org.junit.jupiter
+            artifactId>junit-jupiter-api
+            version>5.8.2
+            scope>test
+        
+        dependency>
+            groupId>org.junit.jupiter
+            artifactId>junit-jupiter-engine
+            version>5.8.2
+            scope>test
+        
+        dependency>
+            groupId>com.javax0.geci
+            artifactId>javageci-testengine
+            version>1.6.5
+            scope>test
+
+    profiles>profile>
+        id>release
+        build>plugins>plugin>
+            groupId>org.apache.maven.plugins
+            artifactId>maven-gpg-plugin
+            version>1.6
+            executions>execution>
+                id>sign-artifacts
+                phase>verify
+                goals>goal>sign
+
+    build>
+        plugins>
+            plugin>
+                groupId>org.apache.maven.plugins
+                artifactId>maven-surefire-plugin
+                version>3.0.0-M4
+                configuration>argLine>
+                        --add-opens com.javax0.license3j/javax0.license3j=ALL-UNNAMED
+                        --add-opens com.javax0.license3j/javax0.license3j.crypto=ALL-UNNAMED
+                        --add-opens com.javax0.license3j/javax0.license3j.io=ALL-UNNAMED
+                        --add-opens com.javax0.license3j/javax0.license3j.parsers=ALL-UNNAMED
+                        --add-opens com.javax0.license3j/javax0.license3j.hardware=ALL-UNNAMED
+                dependencies>dependency>
+                        groupId>org.junit.jupiter
+                        artifactId>junit-jupiter-engine
+                        version>5.7.0
+                    
+            plugin>
+                groupId>org.apache.maven.plugins
+                artifactId>maven-source-plugin
+                version>3.2.1
+                executions>execution>
+                        id>attach-sources
+                        goals>goal>jar
+
+            plugin>
+                groupId>org.apache.maven.plugins
+                artifactId>maven-javadoc-plugin
+                version>3.2.0
+                configuration>detectOfflineLinks>false
+                executions>execution>
+                        id>attach-javadocs
+                        goals>goal>jar
+
+            plugin>
+                groupId>org.apache.maven.plugins
+                artifactId>maven-compiler-plugin
+                version>3.8.1
+                configuration>release>11
+
+            plugin>
+                groupId>org.sonatype.plugins
+                artifactId>nexus-staging-maven-plugin
+                version>1.6.8
+                extensions>true
+                configuration>
+                    serverId>ossrh
+                    nexusUrl>https://oss.sonatype.org/
+                    autoReleaseAfterClose>true
+}
