@@ -1,11 +1,11 @@
-{#thinXml{@xmlFormat}
+{@comment}
+{#thinXml
 project  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     modelVersion>4.0.0
     groupId>com.javax0.license3j
     artifactId>license3j
     version>3.2.0
     packaging>jar
-
     name>License3j
     properties>sourceEncoding>UTF-8
     distributionManagement>
@@ -55,12 +55,6 @@ project  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://mav
             version>5.8.2
             scope>test
         
-        dependency>
-            groupId>com.javax0.geci
-            artifactId>javageci-testengine
-            version>1.6.5
-            scope>test
-
     profiles>profile>
         id>release
         build>plugins>plugin>
@@ -89,6 +83,13 @@ project  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://mav
                         artifactId>junit-jupiter-engine
                         version>5.7.0
                     
+            plugin>
+                groupId>com.javax0.jamal
+                artifactId>jamal-maven-plugin
+                version>2.1.0-SNAPSHOT
+                executions>execution>
+                        goals>goal>jamal
+
             plugin>
                 groupId>org.apache.maven.plugins
                 artifactId>maven-source-plugin
@@ -121,4 +122,4 @@ project  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://mav
                     serverId>ossrh
                     nexusUrl>https://oss.sonatype.org/
                     autoReleaseAfterClose>true
-}
+}{@xmlFormat}

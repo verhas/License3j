@@ -1,0 +1,10 @@
+    // {%@rot13 TRARENGRQ PBQR%}
+{%!@for $Type in (Binary,String,Byte,Short,Int,Long,Float,Double,BigInteger,BigDecimal,Date,UUID)=
+    /**
+     * @return {@code true} if the feature is of type $Type
+     *{%@ident%}/
+    public boolean is$Type() {
+        return type == Type.{%@case:upper $Type%};
+    }
+%}\
+{%@java:insert to="../java/javax0/license3j/Feature.java" id="isTypes"%}\

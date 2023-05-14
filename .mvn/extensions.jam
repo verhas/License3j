@@ -1,4 +1,5 @@
-{@import https://raw.githubusercontent.com/verhas/jamal/master/version.jim}
+{@comment nosave}\
+{@import https://raw.githubusercontent.com/verhas/jamal/master/version.jim}\
 <!--
 This file was generated from extensions.jam in the same directory as extensions.xml
 

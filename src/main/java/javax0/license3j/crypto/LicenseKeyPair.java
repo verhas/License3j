@@ -2,13 +2,7 @@ package javax0.license3j.crypto;
 
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -53,31 +47,11 @@ public class LicenseKeyPair {
         return pair;
     }
 
-    /*!jamal
-    //<editor-fold id="get$Type for $Type in (Public,Private)">
-    {%!@for ($Type) in (Public,Private)=
-    /**
-     * Get the byte representation of the {%@case:lower $Type%} key as it is returned
-     * by the underlying security library. This is NOT the byte array
-     * that contains the algorithm at the start. This is the key in raw
-     * format.
-     *
-     * @return the key as bytes
-     *{%@comment%}/
-    public byte[] get$Type() {
-        keyNotNull(pair.get$Type());
-        final var key = pair.get$Type();
-        return getKeyBytes(key);
-    }
-    %}
-    //</editor-fold>
-    */
-    //<editor-fold id="get$Type for $Type in (Public,Private)">
-
-    /**
+    //<editor-fold id="getTypes">
+    /**GENERATED CODE
      * Get the byte representation of the public key as it is returned
-     * by the underlying security library. This is NOT the byte array
-     * that contains the algorithm at the start. This is the key in raw
+     * by the underlying security library. It is NOT the byte array
+     * that contains the algorithm at the start. It is the key in raw
      * format.
      *
      * @return the key as bytes
@@ -87,11 +61,10 @@ public class LicenseKeyPair {
         final var key = pair.getPublic();
         return getKeyBytes(key);
     }
-
-    /**
+    /**GENERATED CODE
      * Get the byte representation of the private key as it is returned
-     * by the underlying security library. This is NOT the byte array
-     * that contains the algorithm at the start. This is the key in raw
+     * by the underlying security library. It is NOT the byte array
+     * that contains the algorithm at the start. It is the key in raw
      * format.
      *
      * @return the key as bytes
@@ -102,8 +75,9 @@ public class LicenseKeyPair {
         return getKeyBytes(key);
     }
 
-    //</editor-fold>
-    //__END__
+
+//</editor-fold>
+
 
     private byte[] getKeyBytes(final Key key) {
         final var algorithm = cipherTransformation.getBytes(StandardCharsets.UTF_8);
@@ -148,7 +122,7 @@ public class LicenseKeyPair {
 
         private static String algorithmPrefix(final String cipher) {
             if (cipher.contains("/")) {
-                return cipher .substring(0, cipher.indexOf("/"));
+                return cipher.substring(0, cipher.indexOf("/"));
             } else {
                 return cipher;
             }
@@ -157,7 +131,7 @@ public class LicenseKeyPair {
         /**
          * Create a new key pair using the algorithm and the size for the key. The cipher transformation may optionally
          * contain the mode and the padding as {@code algorithm/mode/padding}. Note that the mode and the padding is
-         * not needed for the key generation. Nevertheless these are also stored in the generated {@link LicenseKeyPair}
+         * not needed for the key generation. Nevertheless, these are also stored in the generated {@link LicenseKeyPair}
          * and will be used to sign/verify the license.
          * <p>
          * It is recommended to use the full cipher. Using only the algorithm will let the encryption provider to
@@ -181,16 +155,17 @@ public class LicenseKeyPair {
         /**
          * Create a new {@link LicenseKeyPair} that contains only one of the keys, either the private or the public.
          * The key is provided in binary format as a byte array.
+         *
          * @param encoded the key encoded as byte array. This is the format that contains the algorithm at the start
          *                of the byte array as zero byte terminated string.
-         * @param type either 1 for public key specification or 2 for private key specification. These commands are
-         *             defined in the JDK in the {@link Modifier} class as {@link Modifier#PUBLIC} and
-         *             {@link Modifier#PRIVATE}.
+         * @param type    either 1 for public key specification or 2 for private key specification. These commands are
+         *                defined in the JDK in the {@link Modifier} class as {@link Modifier#PUBLIC} and
+         *                {@link Modifier#PRIVATE}.
          * @return the newly created {@link LicenseKeyPair}
          * @throws NoSuchAlgorithmException if the algorithm in the encoded key is not implemented by the actual
-         * encryption provider
-         * @throws InvalidKeySpecException if the bytes of the key are garbage and cannot be decoded by the actual
-         * encryption provider.
+         *                                  encryption provider
+         * @throws InvalidKeySpecException  if the bytes of the key are garbage and cannot be decoded by the actual
+         *                                  encryption provider.
          */
         public static LicenseKeyPair from(final byte[] encoded, final int type) throws NoSuchAlgorithmException, InvalidKeySpecException {
             final String cipher = getCipher(encoded);
@@ -202,18 +177,19 @@ public class LicenseKeyPair {
 
         /**
          * Create a new {@link LicenseKeyPair} from the public and the private key pairs.
-         *
-         * The method does not check that the encoded cipher specification at the start of the keys are the same or not.
+         * <p>
+         * The method does not check that the encoded cipher specification at the start of the keys is the same or not.
          * They are supposed to be the same. There is also no check that the private and the public key are a pair.
+         *
          * @param privateEncoded the private key encoded including the cipher specification with a zero byte
          *                       terminated at the start of the byte array
-         * @param publicEncoded the public key encoded including the cipher specification with a zero byte
-         *                      terminated at the start of the byte array
+         * @param publicEncoded  the public key encoded including the cipher specification with a zero byte
+         *                       terminated at the start of the byte array
          * @return the newly created {@link LicenseKeyPair}
          * @throws NoSuchAlgorithmException if the algorithm in the encoded key is not implemented by the actual
-         * encryption provider
-         * @throws InvalidKeySpecException if the bytes of the key are garbage and cannot be decoded by the actual
-         * encryption provider.
+         *                                  encryption provider
+         * @throws InvalidKeySpecException  if the bytes of the key are garbage and cannot be decoded by the actual
+         *                                  encryption provider.
          */
         public static LicenseKeyPair from(final byte[] privateEncoded, final byte[] publicEncoded) throws NoSuchAlgorithmException, InvalidKeySpecException {
             final String cipher = getCipher(publicEncoded);

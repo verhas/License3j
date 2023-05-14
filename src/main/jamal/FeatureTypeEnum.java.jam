@@ -1,0 +1,21 @@
+private enum Type {{%@counter:define id=typeSerial%}\
+{%!@for [separator="\\s*\n\\s*" skipEmpty]($type,$length,$cast,$stringer,$unstringer,$sep) in `LOOP`
+binary|VARIABLE_LENGTH|byte[]|ba -> Base64.getEncoder().encodeToString((byte[]) ba)|enc -> Base64.getDecoder().decode(enc)|
+string|VARIABLE_LENGTH|||s -> s|
+byte|||b -> String.format("0x%02X", (Byte) b)|NumericParser.Byte::parse|
+short||||NumericParser.Short::parse|
+int|Integer.BYTES|Integer||NumericParser.Int::parse|
+long||||NumericParser.Long::parse|
+float||||Float::parseFloat|
+double||||Double::parseDouble|
+bigInteger|VARIABLE_LENGTH|||BigInteger::new|
+bigDecimal|VARIABLE_LENGTH|||BigDecimal::new|
+date|Long.BYTES||Feature::dateFormat|Feature::dateParse|
+UUID|2 * Long.BYTES|java.util.UUID||java.util.UUID::fromString|;
+`LOOP`=
+        {%@case:upper $type%}({%typeSerial%}, {%#if/$length/$length/{%@case:cap $type%}.BYTES%},
+                Feature::get{%@case:cap $type%},
+                (name, value) -> Create.{%@replace /$type/UUID/uuid%}Feature(name, ({%#if/$cast/$cast/{%@case:cap $type%}%}) value),
+                {%#if/$stringer/$stringer/Object::toString%}, $unstringer){%@if/$sep/$sep/,%}
+%}
+{%@java:insert to="../java/javax0/license3j/Feature.java" id="TypesEnum"%}

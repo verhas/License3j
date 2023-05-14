@@ -1,0 +1,14 @@
+        {%!@for [separator="\\s*\n\\s*" skipEmpty]($rettype,$name,$exceptions) in
+        `LOOP`
+        String|getName|
+        byte[]|getHardwareAddress|SocketException
+        String|getDisplayName|
+        boolean|isLoopback|SocketException
+        boolean|isVirtual|SocketException
+        boolean|isPointToPoint|SocketException
+        `LOOP`=
+        public $rettype $name(){%#if/$exceptions/ throws $exceptions/%} {
+            return ni.$name();
+        }
+        %}
+{%@java:insert to="../java/javax0/license3j/hardware/Network.java" id="Network"%}

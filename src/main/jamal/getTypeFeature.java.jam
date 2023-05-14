@@ -1,0 +1,21 @@
+    {%@comment UUID and BigDecimal are handled separately, because they differ significantly%}\
+    {%!@for [separator="\\s*\n\\s*" skipEmpty]($Type,$return,$rType) in `LOOP`
+    Binary|value|byte[]
+    String|new String(value, StandardCharsets.UTF_8)|String
+    Byte|value[0]|byte
+    Short|ByteBuffer.wrap(value).getShort()|short
+    Int|ByteBuffer.wrap(value).getInt()|int
+    Long|ByteBuffer.wrap(value).getLong()|long
+    Float|ByteBuffer.wrap(value).getFloat()|float
+    Double|ByteBuffer.wrap(value).getDouble()|double
+    BigInteger|new BigInteger(value)|BigInteger
+    Date|new Date(ByteBuffer.wrap(value).getLong())|Date
+    `LOOP`=
+    public $rType get$Type() {
+        if (type != Type.{%@case:upper $Type%}) {
+            throw new IllegalArgumentException("Feature is not {%@case:upper $Type%}");
+        }
+        return $return;
+    }
+    %}\
+{%@java:insert to="../java/javax0/license3j/Feature.java" id="getTypes"%}\

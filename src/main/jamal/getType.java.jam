@@ -1,0 +1,15 @@
+{%!@for ($Type) in (Public,Private)=    /**GENERATED CODE
+     * Get the byte representation of the {%@case:lower $Type%} key as it is returned
+     * by the underlying security library. It is NOT the byte array
+     * that contains the algorithm at the start. It is the key in raw
+     * format.
+     *
+     * @return the key as bytes
+     *{%@comment%}/
+    public byte[] get$Type() {
+        keyNotNull(pair.get$Type());
+        final var key = pair.get$Type();
+        return getKeyBytes(key);
+    }
+%}\
+{%@java:insert to="../java/javax0/license3j/crypto/LicenseKeyPair.java" id="getTypes"%}

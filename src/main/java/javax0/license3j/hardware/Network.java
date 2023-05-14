@@ -1,5 +1,6 @@
 package javax0.license3j.hardware;
 
+import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -16,50 +17,37 @@ public class Network {
             this.ni = ni;
         }
 
-        /*!jamal
-        {%!@for [separator="\\s*\n\\s*" skipEmpty]($rettype,$name,$exceptions) in
-        `LOOP`
-        String|getName|
-        byte[]|getHardwareAddress|SocketException
-        String|getDisplayName|
-        boolean|isLoopback|SocketException
-        boolean|isVirtual|SocketException
-        boolean|isPointToPoint|SocketException
-        `LOOP`=
-        public $rettype $name(){%#if/$exceptions/ throws $exceptions/%}{
-            return ni.$name();
-            }
-        %}
-         */
-
-        public String getName(){
+        //<editor-fold id="Network">
+        
+        public String getName() {
             return ni.getName();
-            }
-
-        public byte[] getHardwareAddress() throws SocketException{
+        }
+        
+        public byte[] getHardwareAddress() throws SocketException {
             return ni.getHardwareAddress();
-            }
-
-        public String getDisplayName(){
+        }
+        
+        public String getDisplayName() {
             return ni.getDisplayName();
-            }
-
-        public boolean isLoopback() throws SocketException{
+        }
+        
+        public boolean isLoopback() throws SocketException {
             return ni.isLoopback();
-            }
-
-        public boolean isVirtual() throws SocketException{
+        }
+        
+        public boolean isVirtual() throws SocketException {
             return ni.isVirtual();
-            }
-
-        public boolean isPointToPoint() throws SocketException{
+        }
+        
+        public boolean isPointToPoint() throws SocketException {
             return ni.isPointToPoint();
-            }
+        }
+        
 
-        //__END__
+        //</editor-fold>
 
         public static Enumeration<NetworkInterface> getNetworkInterfaces()
-            throws SocketException {
+                throws SocketException {
             return Collections.enumeration(Collections.list(java.net.NetworkInterface.getNetworkInterfaces()).stream().map(ni -> new NetworkInterface(ni)).collect(Collectors.toList()));
         }
     }
@@ -80,8 +68,8 @@ public class Network {
 
             static Stream<Data> gatherUsing(Network.Interface.Selector selector) throws SocketException {
                 return Collections.list(NetworkInterface.getNetworkInterfaces()).stream()
-                    .filter(selector::usable)
-                    .map(Network.Interface.Data::new);
+                        .filter(selector::usable)
+                        .map(Network.Interface.Data::new);
             }
         }
 
@@ -128,9 +116,9 @@ public class Network {
                 final String name = netIf.getDisplayName();
 
                 return !matchesAny(name, deniedInterfaceNames)
-                    &&
-                    (allowedInterfaceNames.isEmpty() ||
-                        matchesAny(name, allowedInterfaceNames));
+                        &&
+                        (allowedInterfaceNames.isEmpty() ||
+                                matchesAny(name, allowedInterfaceNames));
             }
 
             /**
@@ -165,7 +153,7 @@ public class Network {
              */
             boolean usable(final NetworkInterface netIf) {
                 return !isSpecial(netIf)
-                    && matchesRegexLists(netIf);
+                        && matchesRegexLists(netIf);
             }
 
             /**

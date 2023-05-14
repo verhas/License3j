@@ -1,0 +1,26 @@
+{%!@for [separator="\\s*\n\\s*" skipEmpty] ($type,$vType,$value) in `LOOP`
+Binary|byte[]|value
+String|String|value.getBytes(StandardCharsets.UTF_8)
+Byte|Byte|new byte[]{value}
+Short|Short|ByteBuffer.allocate(Short.BYTES).putShort(value).array()
+Int|Integer|ByteBuffer.allocate(Integer.BYTES).putInt(value).array()
+Long|Long|ByteBuffer.allocate(Long.BYTES).putLong(value).array()
+Float|Float|ByteBuffer.allocate(Float.BYTES).putFloat(value).array()
+Double|Double|ByteBuffer.allocate(Double.BYTES).putDouble(value).array()
+BigInteger|BigInteger|value.toByteArray()
+uuid|java.util.UUID|ByteBuffer.allocate(2 * Long.BYTES).putLong(value.getLeastSignificantBits()).putLong(value.getMostSignificantBits()).array()
+Date|Date|ByteBuffer.allocate(Long.BYTES).putLong(value.getTime()).array()
+`LOOP`=
+        /**
+         * Create a new {%@case:decap $type%} feature.
+         *
+         * @param name the name of the new feature
+         * @param value the value for the new feature. {@code null} value will throw an exception
+         * @return the newly created feature object
+         *{%@comment%}/
+        public static Feature {%@case:decap $type%}Feature(String name, $vType value) {
+            Objects.requireNonNull(value);
+            return new Feature(name, Type.{%@case:upper $type%}, $value);
+        }
+%}
+{%@java:insert to="../java/javax0/license3j/Feature.java" id="FeatureMethods"%}
