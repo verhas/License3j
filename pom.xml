@@ -114,6 +114,7 @@
                         --add-opens com.javax0.license3j/javax0.license3j.io=ALL-UNNAMED
                         --add-opens com.javax0.license3j/javax0.license3j.parsers=ALL-UNNAMED
                         --add-opens com.javax0.license3j/javax0.license3j.hardware=ALL-UNNAMED
+                        --add-opens java.base/java.lang=ALL-UNNAMED
                     </argLine>
                 </configuration>
                 <dependencies>
