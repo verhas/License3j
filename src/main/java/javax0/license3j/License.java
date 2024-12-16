@@ -139,7 +139,8 @@ public class License {
      */
     public boolean isOK(byte[] key) {
         try {
-            return isOK(LicenseKeyPair.Create.from(key, Modifier.PUBLIC).getPair().getPublic());
+            LicenseKeyPair lkp = LicenseKeyPair.Create.from(key, Modifier.PUBLIC);
+            return isOK(lkp.getPair().getPublic(), lkp.cipher());
         } catch (Exception e) {
             return false;
         }
@@ -154,11 +155,15 @@ public class License {
      * false}.
      */
     public boolean isOK(PublicKey key) {
+        return isOK(key, key.getAlgorithm());
+    }
+
+    private boolean isOK(PublicKey key, String algorithm) {
         try {
             final var digester = MessageDigest.getInstance(get(DIGEST_KEY).getString());
             final var ser = unsigned();
             final var digestValue = digester.digest(ser);
-            final var cipher = Cipher.getInstance(key.getAlgorithm());
+            final var cipher = Cipher.getInstance(algorithm);
             cipher.init(Cipher.DECRYPT_MODE, key);
             final var sigDigest = cipher.doFinal(getSignature());
             return Arrays.equals(digestValue, sigDigest);
