@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.javax0.license3j</groupId>
     <artifactId>license3j</artifactId>
-    <version>3.3.0-RC2</version>
+    <version>3.3.0</version>
     <packaging>jar</packaging>
     <name>License3j</name>
     <properties>
@@ -79,7 +79,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
+                        <version>3.2.7</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>

@@ -4,7 +4,7 @@ project  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://mav
     modelVersion>4.0.0
     groupId>com.javax0.license3j
     artifactId>license3j
-    version>3.3.0-RC2
+    version>3.3.0
     packaging>jar
     name>License3j
     properties>sourceEncoding>UTF-8
@@ -60,7 +60,7 @@ project  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://mav
         build>plugins>plugin>
             groupId>org.apache.maven.plugins
             artifactId>maven-gpg-plugin
-            version>1.6
+            version>3.2.7
             executions>execution>
                 id>sign-artifacts
                 phase>verify
