@@ -43,6 +43,15 @@ public class TestLicenseReader {
     }
 
     @Test
+    @DisplayName("Can read license from binary file checking")
+    void canReadLicenseFromBinaryFileChecking() throws IOException {
+        try (final var sut = getSut(TestLicenseWriter.FILE_BINARY, -1)) {
+            final var lic = sut.readChecking(IOFormat.BINARY);
+            Assertions.assertEquals("string feature", lic.get("simple").getString());
+        }
+    }
+
+    @Test
     @DisplayName("Can read license from binary file using default read()")
     void canReadDefaultLicenseFromBinaryFile() throws IOException {
         try (final var sut = getSut(TestLicenseWriter.FILE_BINARY, -1)) {
@@ -56,6 +65,15 @@ public class TestLicenseReader {
     void canReadLicenseFromBase64File() throws IOException {
         try (final var sut = getSut(TestLicenseWriter.FILE_BASE64, -1)) {
             final var lic = sut.read(IOFormat.BASE64);
+            Assertions.assertEquals("string feature", lic.get("simple").getString());
+        }
+    }
+
+    @Test
+    @DisplayName("Can read license from base64 file checking")
+    void canReadLicenseFromBase64FileChecking() throws IOException {
+        try (final var sut = getSut(TestLicenseWriter.FILE_BASE64, -1)) {
+            final var lic = sut.readChecking(IOFormat.BASE64);
             Assertions.assertEquals("string feature", lic.get("simple").getString());
         }
     }

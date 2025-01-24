@@ -165,13 +165,13 @@ public class Feature {
      * Convert a feature to byte array. The bytes will have the following structure
      *
      * <pre>
-     *      [4-byte type][4-byte name length][4-byte value length][name][value]
+     *   [4-byte type][4-byte name length][4-byte value length][name][value]
      *  </pre>
      * <p>
      * or
      *
      * <pre>
-     *      [4-byte type][4-byte name length][name][value]
+     *   [4-byte type][4-byte name length][name][value]
      *  </pre>
      * <p>
      * if the length of the value can be determined from the type (some types have fixed length values).

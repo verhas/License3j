@@ -96,7 +96,7 @@ public class KeyPairWriter implements Closeable {
             try {
                 osPrivate.close();
             } catch (IOException e) {
-                // save the exception, try to close the other resource and throw it afterwards
+                // save the exception, try to close the other resource and throw it afterward
                 caught = e;
             }
             osPublic.close();

@@ -12,23 +12,8 @@ import java.io.StringReader;
 import java.lang.reflect.Modifier;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
-import java.security.InvalidKeyException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.security.*;
+import java.util.*;
 
 /**
  * A license describes the rights a certain user has. The rights are represented by {@link Feature}s. Each feature has a
@@ -39,10 +24,16 @@ import java.util.UUID;
  */
 public class License {
     private static final int MAGIC = 0x21CE_4E_5E; // LICE(N=4E)SE
-    final private static String LICENSE_ID = "licenseId";
-    private static final String SIGNATURE_KEY = "licenseSignature";
-    private static final String DIGEST_KEY = "signatureDigest";
-    final private static String EXPIRATION_DATE = "expiryDate";
+    public static final byte[] MAGIC_BYTES = {(byte) 0x21, (byte) 0xCE, (byte) 0x4E, (byte) 0x5E};
+    public static final byte[] MAGIC_BASE64 = {0x49, 0x63, 0x35, 0x4F, 0x58};
+
+    // snippet LICENSE_KEYS
+    private static final String LICENSE_ID = "licenseId"; // the unique id of the license (`UUID`)
+    private static final String SIGNATURE_KEY = "licenseSignature"; // the signature of the license (`BINARY`)
+    private static final String DIGEST_KEY = "signatureDigest"; // the digest of the license that was signed (`STRING`)
+    final private static String EXPIRATION_DATE = "expiryDate"; // the expiry date of the license (`DATE`)
+    // end snippet
+    private static final Set<String> FINGERPRINT_EXCLUDED_KEYS = new HashSet<>(Arrays.asList(SIGNATURE_KEY, DIGEST_KEY));
     final private Map<String, Feature> features = new HashMap<>();
 
     public License() {
@@ -120,7 +111,7 @@ public class License {
      * @throws IllegalBlockSizeException this exception comes from the underlying encryption library
      */
     public void sign(PrivateKey key, String digest) throws NoSuchAlgorithmException, NoSuchPaddingException,
-        InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+            InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
         add(Feature.Create.stringFeature(DIGEST_KEY, digest));
         final var digester = MessageDigest.getInstance(digest);
         final var ser = unsigned();
@@ -238,8 +229,8 @@ public class License {
         for (Feature feature : features) {
             final var valueString = feature.valueString();
             final String value =
-                valueString.contains("\n") || valueString.startsWith("<<")
-                    ? multilineValueString(valueString) : valueString;
+                    valueString.contains("\n") || valueString.startsWith("<<")
+                            ? multilineValueString(valueString) : valueString;
             sb.append(feature.toStringWith(value)).append("\n");
         }
         return sb.toString();
@@ -254,7 +245,7 @@ public class License {
      */
     private Feature[] featuresSorted(Set<String> excluded) {
         return this.features.values().stream().filter(f -> !excluded.contains(f.name()))
-            .sorted(Comparator.comparing(Feature::name)).toArray(Feature[]::new);
+                .sorted(Comparator.comparing(Feature::name)).toArray(Feature[]::new);
     }
 
 
@@ -359,14 +350,14 @@ public class License {
      * so the stored fingerprint will not be the fingerprint of the license any more.
      *
      * <p>
-     *
+     * <p>
      * The calculation of the fingerprint ignores the signature of the license as well as the feature that stores the
      * name of the signature digest algorithm (usually "SHA-512"). This is to ensure that even if you change the
      * signature on the license using a different digest algorithm: fingerprint will not change. The fingerprint is
      * relevant to the core content of the license.
      *
      * <p>
-     *
+     * <p>
      * Since the fingerprint is calculated from the binary representation of the license using the MD5 algorithm
      * it is likely that each license will have different fingerprint. This fingerprint can be used to identify
      * licenses similarly like the license id (see {@link #setLicenseId(UUID)},{@link #getLicenseId()}). The
@@ -377,7 +368,7 @@ public class License {
      * <em>NOTE:</em>
      *
      * <p>
-     *
+     * <p>
      * This fingerprint calculation is not used when the license is signed. {@code MD5} as a message digest is not
      * considered to be safe enough for electronic signature. License signature uses a message digest the caller
      * specifies and which is implemented in Java. Usually {@code SHA-512}. It can actually be {@code MD5} if the caller
@@ -391,7 +382,7 @@ public class License {
     public UUID fingerprint() {
         try {
             final var bb = ByteBuffer.wrap(MessageDigest.getInstance("MD5").digest(
-                serialized(new HashSet<>(Arrays.asList(SIGNATURE_KEY, DIGEST_KEY)))));
+                    serialized(FINGERPRINT_EXCLUDED_KEYS)));
             final var ms = bb.getLong();
             final var ls = bb.getLong();
             return new UUID(ms, ls);
@@ -546,7 +537,7 @@ public class License {
          * generated by the {@link License#toString()}.
          *
          * <p>
-         *
+         * <p>
          * The syntax is more relaxed than in case of {@link License#toString()}, however. The spaces at the start of
          * the lines, between the feature name and the {@code :} and around the type name before the {@code =} sign are
          * removed. In case of multi-line string the spaces before and after the end string are also removed. Spaces,
@@ -576,7 +567,7 @@ public class License {
          * Get the value string from the {@code valueString} that is after the {@code =} character in the feature definition
          * string and from the buffered reader that optionally supply the following lines.
          * <p>
-         *
+         * <p>
          * If the {@code valueString} does not start with the characters {@code <<} then it is simply returned. If it
          * starts with the {@code <<} characters then the rest of the string is interpreted as the {@code HERE_STRING}
          * (see {@link #toString()}), and the subsequent lines are read from the buffered reader {@code reader} till the
@@ -587,7 +578,7 @@ public class License {
          * @param valueString the value string that was on the first line of the feature definition.
          * @return the valueString compiled from the current line and possibly from subsequent lines.
          * @throws IOException if the reader throws, which should never happen as we read from a {@link
-         * java.lang.String}
+         *                     java.lang.String}
          */
         private static String getValueString(BufferedReader reader, String valueString) throws IOException {
             if (valueString.startsWith("<<")) {

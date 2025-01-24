@@ -25,6 +25,7 @@ public class LicenseSignerTest {
         Assertions.assertTrue(license.isOK(keyPair.getPair().getPublic()));
         // license is OK checking with the byte[] format of the key
         Assertions.assertTrue(license.isOK(keyPair.getPublic()));
+        // ruin the signature, after this the checks should fail
         license.getSignature()[0] = (byte) ~license.getSignature()[0];
         // license check should fail using the key
         Assertions.assertFalse(license.isOK(keyPair.getPair().getPublic()));

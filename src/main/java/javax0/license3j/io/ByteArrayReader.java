@@ -17,4 +17,21 @@ class ByteArrayReader {
         }
         return buffer.toByteArray();
     }
+    static byte[] readInput(InputStream is, byte[] startsWith) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int len;
+        final var data = new byte[4096];
+        if( (len = is.read(data)) != -1){
+            buffer.write(data, 0, len);
+            for( int i = 0; i < startsWith.length; i++ ){
+                if( data[i] != startsWith[i] ){
+                    throw new IllegalArgumentException("serialized license is corrupt");
+                }
+            }
+        }
+        while ((len = is.read(data)) != -1) {
+            buffer.write(data, 0, len);
+        }
+        return buffer.toByteArray();
+    }
 }

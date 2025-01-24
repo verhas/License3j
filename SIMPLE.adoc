@@ -1,0 +1,44 @@
+= License3j Free Simple License management for Java
+
+
+
+image:images/logo.svg[alt text]
+
+In some environments there is a need to create licenses that are simple and short.
+For example, a license can look like
+
+  DCWI3U-6RDTB8-EBMPTJ-TVURQ7
+
+and there is no need to store features, and electronic signature.
+
+To create a license object, you can do the following call:
+[source,java]
+----
+          final var lic = SimpleLicense
+                            .withSecret("abraka dabra")
+                            .forValue("my special user");
+        final var code = lic.toString();
+
+----
+
+The secret should be something that is hidden in your code, and you do not openly give it to your users.
+The value is some string that is specific for each user.
+It can be some user id, or license id or the combination of both.
+
+It does not matter how much information you include in the value; the length of the license key will always be four blocks of six characters `-` separated.
+The license key does not store the value.
+The key is simply a shortened form of a hash code of the secret and the value.
+
+You can read the license code from the installation of your application and you can compare it to the one you got with the above code from the license, or you can call:
+
+[source,java]
+----
+          Assertions.assertTrue(lic.isOK(code));
+
+----
+
+This is all License3j simple license can provide.
+
+== Non-repudiation
+
+

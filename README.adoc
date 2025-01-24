@@ -1,27 +1,47 @@
 = License3j Free License management for Java
 
+
+
 image:images/logo.svg[alt text]
 
-License3j is a free and open source Java library to manage license files in Java programs that need technical license management enforcement support.
-A license file is a special configuration file, which is electronically signed.
-The library can create, sign such license files and can also check the signature and parameters of the license file when embedded into the licensed application.
+License3j is a free and open-source Java library to manage license files in Java programs.
+
+A license file is a special electronically signed configuration file.
+The library can create (including signing), read, and verify such license files.
 
 == Introduction
 
-License3j is a Java library that can be used to create and assert license files.
-This way, Java programs can enforce the users to compensate for their use of the software in the form of payment.
-This is the usual way when closed source programs are distributed.
+License3j license management system is designed to ensure that software usage complies with the terms agreed upon in the license.
+At its core, the system uses a combination of a key-value file and a special electronic signature to verify the license's authenticity.
+This signature is created using a highly secure private key, which is known only to you, the software provider.
 
-License management alone does not guarantee that the program will not be stolen, pirated or used in any illegal way.
-However, license management may increase the difficulty to use the program illegally and therefore may drive users to become customers.
-There is another effect of license management which is a legal aspect.
-If there is sufficient license management, illegal users have less probability to successfully claim their use was based on the lack of, or on false knowledge of license conditions.
+If someone tries to modify or tamper with the license file—such as changing the values to extend their usage period or gain unauthorized access—they cannot create a valid replacement license.
+Without the private key, it is mathematically impossible to forge the required signature.
+This means that any altered or unauthorized license file will fail verification.
 
-License3j is an open source license manager that you can use free of charge for non-profit purposes…
+While the license-checking mechanism is implemented in Java, and technically a user could bypass it in some cases, doing so would clearly violate the terms of the software license agreement.
+Importantly, anyone tampering with the license file cannot claim they were unaware of their actions or received the license from a legitimate source.
+This is because the license file is electronically signed, and only your private key can create a valid signature.
+If a signature does not match, it serves as undeniable proof that the file was altered or created illegitimately.
 
-as well as for profit purposes as well under the license terms covered by Apache 2.0 license as defined on the web page http://www.apache.org/licenses/LICENSE-2.0
+This system provides *non-repudiation*, a key concept in security and legal contexts.
+Non-repudiation means that any misuse or unauthorized changes to the license cannot be denied or claimed to be accidental.
+It ensures that if such a situation arises, there is clear and verifiable evidence to support the rightful owner of the software.
+In simple terms, even if someone bypasses the license-checking mechanism, they cannot pretend that their modified or fake license is legitimate or came from a trusted source.
+
+In summary, License3j protects the authenticity of licenses and provides a clear trail of evidence to support legitimate use.
+While it relies on trust that users respect license terms, it also ensures accountability in cases where terms are knowingly violated.
+
+== License3j License is Apache v2.0
+
+License3j is an open source license manager under the license terms covered by Apache 2.0 license
+
+http://www.apache.org/licenses/LICENSE-2.0
 
 == JavaDoc
+
+You may find it useful to read the Javadoc of the library when you use it.
+The documentation is extensive, and we are open to any improvement and suggestion.
 
 https://verhas.github.io/License3j/
 
@@ -35,7 +55,7 @@ Add the dependency to your project:
 <dependency>
     <groupId>com.javax0.license3j</groupId>
     <artifactId>license3j</artifactId>
-    <version>3.2.0</version>
+    <version>3.3.0-RC1</version>
 </dependency>
 ----
 
@@ -43,41 +63,53 @@ The following code fragment shows the structure you have to program to check the
 
 [source,java]
 ----
+        final License license;
+        try (var reader = new LicenseReader("license.bin")) {
+            license = reader.read();
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading license file " + e);
+        }
 
-// load the license using a license reader
-try (var reader = new LicenseReader('license.bin')) {
-    License license = reader.read();
-} catch (IOException e) {
-    error("Error reading license file " + e);
-}
 
 // encode the public key into your application
 // (you can copy paste this from License3jRepl after key generation, see later)
-byte [] key = new byte[] {
-    (byte)0x30,
-    (byte)0x81, (byte)0x9F, (byte)0x30, (byte)0x0D, (byte)0x06, (byte)0x09, (byte)0x2A, (byte)0x86,
-    (byte)0x48, (byte)0x86, (byte)0xF7, (byte)0x0D, (byte)0x01, (byte)0x01, (byte)0x01, (byte)0x05,
-    (byte)0x00, (byte)0x03, (byte)0x81, (byte)0x8D, (byte)0x00, (byte)0x30, (byte)0x81, (byte)0x89,
+    private final byte[] public_key = {
+            (byte)0x52,
+            (byte)0x53,(byte)0x41,(byte)0x00,(byte)0x30,(byte)0x82,(byte)0x01,(byte)0x22,(byte)0x30,
+            (byte)0x0D,(byte)0x06,(byte)0x09,(byte)0x2A,(byte)0x86,(byte)0x48,(byte)0x86,(byte)0xF7,
+            (byte)0x0D,(byte)0x01,(byte)0x01,(byte)0x01,(byte)0x05,(byte)0x00,(byte)0x03,(byte)0x82,
+            (byte)0x01,(byte)0x0F,(byte)0x00,(byte)0x30,(byte)0x82,(byte)0x01,(byte)0x0A,(byte)0x02,
+
 
     ... some lines are deleted as actual values are irrelevant ...
+    ... you can find the full code in DocumentationTest.java
 
-    (byte)0xE3, (byte)0xBB, (byte)0xE3, (byte)0xB1, (byte)0x67, (byte)0xAC, (byte)0x2A, (byte)0x9D,
-    (byte)0x9D, (byte)0x67, (byte)0xB0, (byte)0x9D, (byte)0x3A, (byte)0xDE, (byte)0x48, (byte)0xA5,
-    (byte)0x2A, (byte)0xE8, (byte)0xBB, (byte)0xC6, (byte)0xE2, (byte)0x39, (byte)0x0D, (byte)0x41,
-    (byte)0xDF, (byte)0x76, (byte)0xD0, (byte)0xA7, (byte)0x02, (byte)0x03, (byte)0x01, (byte)0x00,
-    (byte)0x01,
+            (byte)0x38,(byte)0xBB,(byte)0x81,(byte)0xB7,(byte)0x02,(byte)0x03,(byte)0x01,(byte)0x00,
+            (byte)0x01
     };
-// check that the license is signed properly
-if( !license.isOK(key) ){
-    // if not signed, stop the application
-    return;
-}
-// get a feature and from the feature type specific data, like date, int, long, String...
-Date birthday = license.get("bd").getDate();
+
+
+
+        // check that the license is signed properly
+        if (!license.isOK(public_key)) {
+            // if not signed, stop the application
+            return;
+        }
+
+
+        // get a feature and from the feature type-specific data, like date, int, long, String...
+        Date birthday = license.get("bd").getDate();
+
 
 ----
 
 Create keys, license and sign license using a text editor, and/or the REPL application (see below).
+
+== SimpleLicense
+
+The library also includes a simplified license management API.
+It is independent of the other features of License3j.
+See the documentation of link:SIMPLE.adoc[Simple License] separately.
 
 == What is a license in License3j
 
@@ -89,8 +121,19 @@ Each feature has
 * a value.
 
 The name can be any string you like, but there are some predefined names that have special meaning for the license management library.
-A feature's type can be
+These are the following:
 
+* `licenseId`  the unique id of the license (`UUID`)
+
+* `licenseSignature`  the signature of the license (`BINARY`)
+
+* `signatureDigest`  the digest of the license that was signed (`STRING`)
+
+* `expiryDate`  the expiry date of the license (`DATE`)
+
+
+
+A feature's type can be
 
 * `BINARY` can contain an arbitrary binary value that is retrieved by the Java code as a `byte[]` array
 * `STRING` can contain any string, will be retrieved as `java.lang.String`
@@ -105,8 +148,7 @@ A feature's type can be
 * `DATE` contains a date value
 * `UUID` contains a UUID value
 
-
-The value of the different features can be retrieved as the corresponding Java object or a primitive value.
+The value of the different features can be retrieved as the corresponding Java object or as a primitive value if there is a matching primitive type.
 There is no automatic conversion between the different types of the features.
 
 When the license is saved to a file, it can be saved binary, base64 or text.
@@ -117,10 +159,10 @@ It may not be suitable to be sent over the internet inside and eMail and is not 
 
 * `BASE64`, the format is the same as the binary format, but it is encoded using the base64 encoding
 
-* `TEXT`, the format is a human-readable format, suitable for editing in a text editor, looking at the actual content of the license without any special tool.
-The text format is always encoded UTF-8 a character set.
+* `STRING`, the format is a human-readable format, suitable for editing in a text editor, looking at the actual content of the license without any special tool.
+The text format is always encoded in UTF-8.
 
-All three formats are suitable to store the license information, and when a program is protected using License3j it can be programmed to read only one, two and all three formats.
+All three formats are suitable to store the license information, and when a program is protected using License3j it can be programmed to read-only one, two and all three formats.
 The license object created in the JVM memory as a result of reading the license file is the same independent of the source format.
 
 When a program is protected using License3j the application has a small code fragment that checks the existence of a license file, the validity of the license, and it can also use the parameters encoded in the license as license features.
@@ -131,11 +173,12 @@ To read a license from a file you need a `javax0.license3j.io.LicenseReader` obj
 
 [source,java]
 ----
-try (var reader = new LicenseReader('license.bin')) {
-    License license = reader.read();
-} catch (IOException e) {
-    error("Error reading license file " + e);
-}
+        final License license;
+        try (var reader = new LicenseReader("license.bin")) {
+            license = reader.read();
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading license file " + e);
+        }
 
 ----
 
@@ -178,47 +221,55 @@ To embed this key into the application, you can execute the command `dumpPublicK
 ----
 --KEY DIGEST START
 byte [] digest = new byte[] {
-(byte)0xA1,
-(byte)0x04, (byte)0x1D, (byte)0x2C, (byte)0xF1, (byte)0x56, (byte)0xFB, (byte)0x06, (byte)0x43,
+(byte)0xA1,(byte)0x04,(byte)0x1D,(byte)0x2C,(byte)0xF1,
+(byte)0x56,(byte)0xFB,(byte)0x06,(byte)0x43,
 
 ... some lines are deleted as actual values are irrelevant ...
 
-(byte)0x98, (byte)0xB6, (byte)0xD9, (byte)0x60, (byte)0x51, (byte)0x9E, (byte)0xA2,
+(byte)0x98,(byte)0xB6,(byte)0xD9,(byte)0x60,
+(byte)0x51,(byte)0x9E,(byte)0xA2
 };
 ---KEY DIGEST END
 --KEY START
 byte [] key = new byte[] {
-(byte)0x30,
-(byte)0x81, (byte)0x9F, (byte)0x30, (byte)0x0D, (byte)0x06, (byte)0x09, (byte)0x2A, (byte)0x86,
-(byte)0x48, (byte)0x86, (byte)0xF7, (byte)0x0D, (byte)0x01, (byte)0x01, (byte)0x01, (byte)0x05,
-(byte)0x00, (byte)0x03, (byte)0x81, (byte)0x8D, (byte)0x00, (byte)0x30, (byte)0x81, (byte)0x89,
+(byte)0x30,(byte)0x81,(byte)0x9F,(byte)0x30,
+(byte)0x0D,(byte)0x06,(byte)0x09,(byte)0x2A,
+(byte)0x86,(byte)0x48,(byte)0x86,(byte)0xF7,
+(byte)0x0D,(byte)0x01,(byte)0x01,(byte)0x01,
+(byte)0x05,(byte)0x00,(byte)0x03,(byte)0x81,
+(byte)0x8D,(byte)0x00,(byte)0x30,(byte)0x81,(byte)0x89,
 
 ... some lines are deleted as actual values are irrelevant ...
 
-(byte)0xE3, (byte)0xBB, (byte)0xE3, (byte)0xB1, (byte)0x67, (byte)0xAC, (byte)0x2A, (byte)0x9D,
-(byte)0x9D, (byte)0x67, (byte)0xB0, (byte)0x9D, (byte)0x3A, (byte)0xDE, (byte)0x48, (byte)0xA5,
-(byte)0x2A, (byte)0xE8, (byte)0xBB, (byte)0xC6, (byte)0xE2, (byte)0x39, (byte)0x0D, (byte)0x41,
-(byte)0xDF, (byte)0x76, (byte)0xD0, (byte)0xA7, (byte)0x02, (byte)0x03, (byte)0x01, (byte)0x00,
-(byte)0x01,
+(byte)0xE3,(byte)0xBB,(byte)0xE3,(byte)0xB1,(byte)0x67,(byte)0xAC,(byte)0x2A,(byte)0x9D,
+(byte)0x9D,(byte)0x67,(byte)0xB0,(byte)0x9D,(byte)0x3A,(byte)0xDE,(byte)0x48,(byte)0xA5,
+(byte)0x2A,(byte)0xE8,(byte)0xBB,(byte)0xC6,(byte)0xE2,(byte)0x39,(byte)0x0D,(byte)0x41,
+(byte)0xDF,(byte)0x76,(byte)0xD0,(byte)0xA7,(byte)0x02,(byte)0x03,(byte)0x01,(byte)0x00,
+(byte)0x01
 };
 ---KEY END
 ----
 
 The digest is the SHA-512 digest of the public key.
-If you want to arrange your code so that it loads the public key from a file or from some external resource you can check the key against the stored digest.
+If you want to arrange your code so that it loads the public key from a file or from some external resource, you can check the key against the stored digest.
 This ensures that the key is really the one to use to check the signature.
 The recommended way, however, is to copy and paste into your application the second array, which is the actual public key.
 
-Having a loaded license and the public key it is fairly straightforward to check the validity of the license.
+It is fairly straightforward to check the license after you have the license and the public key loaded.
 All you have to invoke is
 
 [source,java]
 ----
-license.isOK(key)
+        // check that the license is signed properly
+        if (!license.isOK(public_key)) {
+            // if not signed, stop the application
+            return;
+        }
+
 ----
 
-This call will return true if the license is signed, and the license signature can be verified using the `key` argument.
-If this call returns false, the license should not be used as a reliable source for usage rights configuration.
+This call will return `true` if the license is signed, and the license signature can be verified using the `key` argument.
+If this call returns `false`, the license should not be used as a reliable source.
 
 When the license is verified, the features can be retrieved using the names of the features.
 The call to `license.get(name)` will return the feature object of the name `name`.
@@ -235,47 +286,54 @@ The Base64 format is encoded using the base64 encoding to ensure that only print
 Neither of the forms is directly readable by a human.
 You can, however, read and convert any of the formats using the REPL application (mentioned above).
 
-=== Magic bytes
+==== Magic bytes
 
 The binary representation of the license starts with the bytes `0xCE`, `0x21`, `0x5E`, `0x4E`.
 This is the serialized format of the Java Integer value `0x21CE4E5E` that stands for `21` -> `LI` (leet code), `CE` itself, `4E` -> `N` (ASCII), `5E` -> `SE` (leet code).
 It reads together as `LICENSE`.
 It is a bit lame but gives a bit of joy to the game and prevents accidental loading of non-license files.
-Since the sizes and the types are stored on four bytes as Integers, very large files could be loaded accidentally.
+Since the sizes and the types are stored on four bytes as Integers, huge files could be loaded accidentally.
 
 If the loading of too large files is a concern, there are size limiting constructors for the class `LicenseReader`.
-Using the constructor reading of large files will be aborted before it would eat up Java memory.
+Using the constructor, reading of large files will be aborted before it would eat up Java memory.
 
-=== Feature length 4bytes
+You can also read the license calling the method `readChecking()`.
+This method stops after a few KB of data if the file does not start with the magic bytes.
+Other than that it can be used exactly the same as `read()`.
+
+==== Feature length 4 bytes
 
 The magic bytes are followed by the features in binary format.
-The length of the feature encoded on 4 bytes precedes the feature.
 
-=== Feature type 4bytes
+The length of the feature encoded on four bytes precedes the feature.
 
-The feature starts with the type of the feature also in 4 bytes.
+==== Feature type 4 bytes
+
+The feature starts with the type of the feature also in four bytes.
 Since there are a limited number of types, there is plenty of room for introducing new types.
 
-=== Name length 4bytes
+==== Name length 4 bytes
 
-This is followed by the length of the name also in 4 bytes.
+This is followed by the name length, also in four bytes.
 
-=== Value length 4bytes (optional)
+==== Value length 4 bytes (optional)
 
 Some types have fixed length.
-If the type has fixed length, the value directly follows and the four bytes of the length.
-If the value for the given type can be variable length, then the value length follows on 4 bytes.
+If the type has a fixed length, the value directly follows and the four bytes of the length.
+If the value for the given type can be a variable length, then the value length follows on four bytes.
 
-Currently only `BINARY`, `STRING`, `BIGINTEGER` and `BIGDECIMAL` types have variable length.
+Currently `BINARY`, `STRING`, `BIGINTEGER` and `BIGDECIMAL` types have variable length.
 
-=== Name and value
+==== Name and value
 
 The next section is the feature's name and value.
-Since the length of the name and the value is known, the name and the value can be read directly.
+The name is presented as UTF-8 encoded string bytes, as many as the name length field indicates.
+There is no terminating zero, or any special bytes after the name.
+The bytes of the name are followed by the bytes of the value.
 
 === License Text
 
-The textual format of the license encoded using the UTF-8 character set.
+The textual format of the license is encoded using the UTF-8 character set.
 Each line in the file is a feature, or a feature continuation.
 Continuation lines are used to represent features on multiple lines.
 
@@ -290,8 +348,8 @@ When a `DATE` feature is converted to and from a text then the actual value shou
 (Note that there was a bug in 3.X.X releases prior the version 3.1.1 that used the local time zone to interpret text representation of the date/time values.)
 
 The values are encoded as text in a human-readable and editable way.
-When a value cannot fit on a single line, for example, a multi-line string, then the feature value starts with the characters `&lt;&lt;` and it is followed by a string till the end of the line which does not appear in the value.
-The following lines contain the value of the feature until a line contains the string, which was after the `&lt;&lt;` characters on the start line.
+When a value cannot fit on a single line, for example, a multi-line string, then the feature value starts with the characters `<<` and it is followed by a string till the end of the line which does not appear in the value.
+The following lines contain the value of the feature until a line contains the string, which was after the `<<` characters on the start line.
 This is similar to the "here string" syntax of UNIX shell.
 
 == License3j REPL application
@@ -348,15 +406,15 @@ Note that the actual output of the command `help` may be different for different
 You can exit the application using the command `exit`.
 You can execute external commands using the `!` mark.
 Any string you type on a line that starts with the `!` character will be passed to the underlying operating system, and it will be executed.
-You can, for example , type `!ls` on Linux to see what files are there in the current working directory, or you can type `!dir` to do the same under Windows.
+You can, for example, type `!ls` on Linux to see what files are there in the current working directory, or you can type `!dir` to do the same under Windows.
 You cannot change the current working directory this way.
-You can issue the command `cd other_dir` and it actually will change the current working directory but only for the new shell, which is executing the command and not for the process that executes the Repl application.
-It means that as soon as the command has finished and returns to the repl application the current working directory is restored to the original value.
+You can issue the command `cd other_dir` and it actually will change the current working directory but only for the new shell, which is executing the command, and not for the process that executes the Repl application.
+It means that as soon as the command has finished and returns to the repl application, the current working directory is restored to the original value.
 
 When you execute the Repl you can create a new license, new key pair, you can save them to files, or you can load them from files.
 The commands work with the keys using the license that is currently in the memory.
 The information is also printed on the screen about the license and the key.
-When you start the Repl there is no license or keys loaded.
+When you start the Repl there are no licenses or keys loaded.
 
 You can type the commands interactively, or you can type a file name as a command following a `.` (dot) character.
 The Repl application will read the file line by line and execute the lines as they were typed into the interactive prompt.
@@ -367,7 +425,7 @@ This can be used to load the default public and private keys that you usually wo
 The commands can be abbreviated.
 You need to write only so many characters so that the command can uniquely be identified.
 The same is true for the command parameters that have names.
-Thus you can type `si` instead of `sign` to sign a license.
+You can type `si` instead of `sign` to sign a license.
 
 Older versions of License3j included the Repl application.
 The current and later versions of License3j will not include the Repl application.
@@ -387,29 +445,30 @@ To search the central repo follow the URL
 
 If you use maven you can insert the lines
 
+[source,xml]
 ----
 <dependency>
     <groupId>com.javax0.license3j</groupId>
     <artifactId>license3j</artifactId>
-    <version>3.1.5</version>
+    <version>3.3.0-RC1</version>
 </dependency>
 ----
 
 in to your `pom.xml` file.
 Check the central repository for the latest version.
+If you read this documentation on Github, the version may refer to a development version.
 
 == Note on release history
 
-License3j versions 1.x.x and 2.0.0 were released for Java 1.5 … 1.8. The release 3.0.0 is a total rewrite of the library.
+License3j versions 1.x.x and 2.0.0 were released for Java 1.5 to Java 8. The release 3.0.0 is a total rewrite of the library.
 Neither the API nor the binary formats are compatible with previous versions.
-It is also released only for Java 11 and later and there is no planned backport release for Java 8 or earlier.
-Note however that the generated byte code is compatible with Java 8 JVM, so you can use the library as a dependency for Java 8 projects.
-This may change in later releases.
+It is also released only for Java 11 and later, and there is no planned backport release for Java 8 or earlier.
 
 License3j prior to version 3.0.0 has a dependency on the Bouncy Castle encryption library.
-The version 3.0.0 and later breaks this dependency and this version is standalone.
+The version 3.0.0 and later breaks this dependency.
+Version 3.x.x are standalone, without any external dependency.
 Also, this version can be used to generate the keys, sign licenses and does not need the external gpg tool.
-(Also note that you cannot use the gpg tool to generate keys for this version as the format of the keys are not compatible with older versions.)
+(Also note that you cannot use the gpg tool to generate keys for this version as the format of the keys is not compatible with older versions.)
 
 == Name of the game
 

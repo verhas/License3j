@@ -3,10 +3,23 @@ package javax0.license3j.parsers;
 /**
  * A simple string parser that can parse decimal and hexa format numbers to be stored in byte, short, int or long.
  * It also takes care that all values in Java are signed and thus, for example, 0xFF would not be treated as a valid
- * byte value. Using this parser it will result a proper -1 byte.
+ * byte value. Using this parser, it will result in a proper -1 byte.
  */
 public class NumericParser {
 
+    /**
+     * Parses a number that has to be between {@code minValue} and {@code maxValue}.
+     *
+     * @param s        is the string representation of the number
+     * @param minValue is the smallest number that is accepted (e.g.: {@code Byte.MIN_VALUE})
+     * @param maxValue is the largest number that is accepted (e.g.: {@code Byte.MAX_VALUE})
+     *                 if the actual value is larger than {@code maxValue} but does not exceed the double of it
+     *                 then it will be interpreted as an unsigned number and converted to the negative value,
+     *                 for example, 255 will be converted to -1 if the maxValue is {@code Byte.MAX_VALUE}
+     * @return the long-sized parsed number
+     * @throws NumberFormatException if the string {@code s} is not well formatted,
+     *                               or the number is too small or too large
+     */
     private static long numberParse(final String s, long minValue, long maxValue) {
         final var trimmed = s.trim();
         final long parsedValue;

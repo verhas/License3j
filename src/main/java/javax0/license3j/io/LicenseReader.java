@@ -2,12 +2,7 @@ package javax0.license3j.io;
 
 import javax0.license3j.License;
 
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Objects;
@@ -20,6 +15,7 @@ public class LicenseReader implements Closeable {
 
     private final InputStream is;
     final AtomicBoolean closed = new AtomicBoolean(false);
+
     /**
      * Create a new license reader that will read the license from the input stream. Note that using this version of
      * LicenseReader does not provide any protection against enormously and erroneously large input. The caller has to
@@ -116,8 +112,35 @@ public class LicenseReader implements Closeable {
                 break;
             default:
                 throw new IllegalArgumentException(IOFormat.class.getName() +
-                    " is incompatible with License3j, and was used with the value " +
-                    format + " which is unknown");
+                        " is incompatible with License3j, and was used with the value " +
+                        format + " which is unknown");
+        }
+        close();
+        return license;
+    }
+
+    /**
+     * The same functionality as {@link #read(IOFormat)} but it stops reading after the first few KB if the file
+     * does not start with the magic constant.
+     *
+     * @param format the assumed format of the license, can be {@link IOFormat#BASE64} or{@link IOFormat#BINARY}.
+     *               It must not be {@link IOFormat#STRING}.
+     * @return the license
+     * @throws IOException if the input cannot be read
+     */
+    public License readChecking(IOFormat format) throws IOException {
+        final License license;
+        switch (format) {
+            case BINARY:
+                license = License.Create.from(ByteArrayReader.readInput(is, License.MAGIC_BYTES));
+                break;
+            case BASE64:
+                license = License.Create.from(Base64.getDecoder().decode(ByteArrayReader.readInput(is, License.MAGIC_BASE64)));
+                break;
+            default:
+                throw new IllegalArgumentException(IOFormat.class.getName() +
+                        " is incompatible with License3j, and was used with the value " +
+                        format + " which is unknown and/or cannot be used with readCheking");
         }
         close();
         return license;
